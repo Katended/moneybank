@@ -1,0 +1,5 @@
+Loan Number,Contribution, Date,"Payment Mode
+(CA:Cash,SA:Savings,CQ:Cheque,DB:Bank to Bank)",Savings Account,Savings Product ID,Cash Account,Voucher,Principal,Interest,Commision,Penalty,Cheque Number,"Bank Account
+(Bank Account Number as registred)",Membeship ID,"Igonore System 
+Payment Priorities"
+PP/004921,,31/03/2018,SA,,,110001,,1000,500,,,,,,

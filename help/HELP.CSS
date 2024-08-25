@@ -1,0 +1,11 @@
+BODY {
+	FONT-SIZE: 1em; FONT-FAMILY: Geneva, Arial, Helvetica, san-serif;
+	margin:0px;
+}
+TD {
+	FONT-SIZE: 1em; FONT-FAMILY: Geneva, Arial, Helvetica, san-serif
+}
+.welcome {
+	FONT-WEIGHT: normal; FONT-SIZE: 28px; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif
+; color: #333399}
+.heading { FONT-WEIGHT: bold; FONT-SIZE: 1em; FONT-FAMILY: Geneva, Arial, Helvetica, san-serif; color: #333399 }

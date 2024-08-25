@@ -1,0 +1,8 @@
+R,R,R,R,,,,,,,,,,,
+Loan Number,Amount Disbursed,Disbursement Date,Transation Mode(Required),"GL account
+(Bank/Cash Only)","Savings Product
+(Required if by Savings)","Savings Account Identification
+(Required if by Savings)",Membership ID,Voucher,Cycle,VAT,Commission,Cheque Number,"Bank Account
+(Bank Account Number as registred)","Stationery 
+Fee"
+1000I000000000104,1000,04/24/2017,CQ,12000,S0000,1000I000000000046,,V1,,,,C0001,AC099999999999999999,

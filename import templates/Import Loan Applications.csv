@@ -1,0 +1,15 @@
+Loan Amount(e.g 10000),Interest Rate(10),"Interest Type
+(i.e Flat Rate(FR), Declining Balance Discounted(DD))",Number of Installments(e.g 10),"Product Code
+(eg. L0000)","Grace Period
+(in days)(Number of Days before first installment e.g 5)","Charge Interest
+ in Grace Period(e.g Y/N)","Compound Interest
+ In Grace Period(e.g Y/N)","Add  Interest Installment
+in Grace Period(e.g Y/N)","All Interest on
+ First Installment(e.g F: First Installement,L: Last Installement)","Adjust Due Dates to(e.g 2nd:2, 3rd:3,4th:4 of the month etc)","Adjust Due Date 
+to Working day",Compound Interest,"Start Date
+(Loan Application date)","All Interest Paid at 
+Dibursement(e.g Y/N)","Interest in Days
+(e.g Y/N)","Installment 
+Frequency(D:Daily,M:Monthly,W:Weekly,,B:Bi-Weekly,Q:Quatery,S:semi-Annual,A:Annually,T:Two-Monthly)",Fund(Fund Code default:0000),Interest Amount,Loan Category 1,Loan Category 2,Loan Category 3,Donor Code(Default:00000),Client Code,Member ID,Commission,Freeze Date,"Loan Status
+(e.g LA: Loan Approved,PA:Pending Approval,DI:Disbursed) If a Loan is entered with 'LA'. The Loan Application Record will be autmatically added too.",Amount Approved
+9000,10,FR,3,L0000,0,N,N,N,,N,N,N,14/01/2017,N,,M,0,0,1,1,1,0,PP/I/050012,,,,LA,
