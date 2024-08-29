@@ -52,6 +52,16 @@ a:focus {
   color: #070bf5;
 }
 
+
+.selected-row {
+  background-color: #d1e7dd; /* Light green color */
+}
+
+.selected-row tr:hover {
+  background-color: #d1e7dd; /* Light green color */
+}
+
+
 .s10:hover {
   color: #990000;  
 }

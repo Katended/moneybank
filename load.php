@@ -203,8 +203,8 @@ if ($_POST['action'] == 'search') {
         case 'BUSLOANSREP':
             
             // determine if user has used a search term
-            if(isset($_POST['searchterm'])){
-                $searchterm =  filter_input(INPUT_POST, 'searchterm', FILTER_SANITIZE_SPECIAL_CHARS);
+            if(isset($_POST['searchterm']) || isset($_POST['search'])){
+                $searchterm =  filter_input(INPUT_POST, (isset($_POST['searchterm'])?'searchterm':'search'), FILTER_SANITIZE_SPECIAL_CHARS);
             }else{
                 $searchterm =  filter_input(INPUT_GET, 'searchterm', FILTER_SANITIZE_SPECIAL_CHARS);
             }
@@ -788,22 +788,18 @@ if ($_POST['action'] == 'search') {
             endif;            
        
             Common::getlables("9,1093,1019,1665", "", "", $Conn);
-            NewGrid::$columntitle = array( '',Common::$lablearray['9'], Common::$lablearray['1093'], Common::$lablearray['1019']);
-            NewGrid::$keyfield ='entity_idno';
-            NewGrid::$fieldlist = array('entity_idno','entity_idno','entity_name','entity_idno','entity_regdate');
+             NewGrid::$columntitle = array(Common::$lablearray['9'], Common::$lablearray['1093'], Common::$lablearray['1019']);
+         //   NewGrid::$keyfield ='entity_idno';
+            NewGrid::$fieldlist = array('entity_idno','entity_name','entity_regdate');
             NewGrid::$actionlinks = "<span><a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='large'><img src='images/icons/pencil.png' border='0' alt='edit'></a></span>";
             NewGrid::$grid_id = 'grid_'.($_POST['theid']??'');
             NewGrid::$request = $_POST;
             NewGrid::$sSQL = $query;       
             NewGrid::$order =' ORDER BY c.entity_idno DESC ';
             NewGrid::$searchcatparam = $pageparams;
-           
-            
-            if (isset($_POST['grid_id'])):                          
-                echo NewGrid::getData();               
-             else:
-                echo NewGrid::generateDatatableHTML();
-            endif;
+                     
+            echo NewGrid::getData();               
+       
  
             exit();
 
@@ -1554,10 +1550,9 @@ switch ($_POST['frmid']) {
 
                     $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT * FROM " . TABLE_ENTITY . "  WHERE entity_idno='" . tep_db_prepare_input($_POST['theid']) . "'"));
                     Common::push_element_into_array($main_array, 'client_idno', $client_array['entity_idno']);
-
                     Common::push_element_into_array($main_array, 'client_regdate', Common::changeMySQLDateToPageFormat($client_array['entity_regdate']));
-
                     Common::push_element_into_array($main_array, 'div_name', $client_array['entity_name']);
+                    Common::push_element_into_array($main_array, 'theid', $_POST['theid']);
                     Common::push_element_into_array($main_array, 'entity_name', $client_array['entity_name']);
                     Common::push_element_into_array($main_array, 'client_postad', $client_array['entity_postad']);
                     Common::push_element_into_array($main_array, 'client_city', $client_array['entity_city']);

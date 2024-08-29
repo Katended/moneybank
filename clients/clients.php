@@ -591,7 +591,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
 </form>
 <div id="wrapper" style="text-align: center">
-    <div id="toppanel" style="display:none;width:auto;border-radius: 10px;padding:1px;"></div>
+<table id="grid_toppanel" width="100%"></table>
 </div>
 </div>
 

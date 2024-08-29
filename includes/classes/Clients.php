@@ -76,146 +76,81 @@ Class Clients extends ProductConfig {
      * @param array $formdata: Data from the form    
      */
     public static function updateRenameKeys(&$formdata,$ctype ='') {
-
-        Common::replace_key_function($formdata, 'branch_code', 'BRCODE');
-
-        switch($ctype):
-        case 'G':
-        case 'B':
-        case 'I':          
-            
-            
-            Common::replace_key_function($formdata, 'client_postad', 'POSTAD');
-            Common::replace_key_function($formdata, 'client_enddate', 'EDATE');
-            Common::replace_key_function($formdata, 'client_city', 'CITY');
-            Common::replace_key_function($formdata, 'client_addressphysical', 'PAD');
-            Common::replace_key_function($formdata, 'client_tel1', 'TEL1');
-            Common::replace_key_function($formdata, 'client_tel2', 'TEL2');
-            Common::replace_key_function($formdata, 'clientcode', 'CCODE');
-            Common::replace_key_function($formdata, 'client_regstatus', 'STATUS');
-            Common::replace_key_function($formdata, 'areacode_code', 'ACODE');
-            Common::replace_key_function($formdata, 'bussinesssector_code', 'BCODE');               
-            Common::replace_key_function($formdata, 'client_surname', 'SNAME');
-            Common::replace_key_function($formdata, 'client_firstname', 'FNAME');
-            Common::replace_key_function($formdata, 'client_middlename', 'MNAME');
-            Common::replace_key_function($formdata, 'client_gender', 'GENDER');            
-            Common::replace_key_function($formdata, 'client_emailad', 'EMAIL');
-            Common::replace_key_function($formdata, 'client_postad', 'PAD');      
-            Common::replace_key_function($formdata, 'client_cat1', 'CAT1');
-            Common::replace_key_function($formdata, 'client_cat2', 'CAT2');
-            Common::replace_key_function($formdata, 'costcenters_code', 'CCODE');                               
-            Common::replace_key_function($formdata, 'client_idno', 'CLIENTIDNO');
-            Common::replace_key_function($formdata, 'client_regdate', 'RDATE');
-            Common::replace_key_function($formdata, 'client_idno', 'EDATE');
-            Common::replace_key_function($formdata, 'client_bday', 'BDAY');                
-            Common::replace_key_function($formdata, 'client_occupation', 'OCP');
-            Common::replace_key_function($formdata, 'client_kinname', 'KIN');
-            Common::replace_key_function($formdata, 'client_maritalstate', 'MSTATE');
-            $formdata['MSTATE'] =  $formdata['MSTATE']??'';
-
-            break;
-      
-        case 'M':
-
-            Common::replace_key_function($formdata, 'client_idno', 'CLIENTIDNO');
-            Common::replace_key_function($formdata, 'member_regdate', 'MRDATE');
-            Common::replace_key_function($formdata, 'member_firstname', 'FNAME');
-            Common::replace_key_function($formdata, 'member_middlename', 'MNAME');
-            Common::replace_key_function($formdata, 'member_lastname', 'LNAME');
-            Common::replace_key_function($formdata, 'member_maritalstate', 'MSTAT');
-            Common::replace_key_function($formdata, 'member_children', 'CHILD');
-            Common::replace_key_function($formdata, 'member_dependants', 'DEP');
-            Common::replace_key_function($formdata, 'member_category1_id1', 'CAT1');
-            Common::replace_key_function($formdata, 'member_category1_id2', 'CAT2');
-            Common::replace_key_function($formdata, 'member_educationlevel_id', 'EDUC');
-            Common::replace_key_function($formdata, 'member_income', 'INCOME');
-            Common::replace_key_function($formdata, 'member_clientlanguages_id1', 'LANG1');
-            Common::replace_key_function($formdata, 'member_clientlanguages_id2', 'LANG2');
-            Common::replace_key_function($formdata, 'member_incomecategories_id', 'INCOMEID');
-            Common::replace_key_function($formdata, 'member_email', 'EMAIL');
-            Common::replace_key_function($formdata, 'member_regstatus', 'STATUS');
-            Common::replace_key_function($formdata, 'member_no', 'MNO');
-            Common::replace_key_function($formdata, 'member_enddate', 'MEDATE');
-            Common::replace_key_function($formdata, 'member_bday', 'BDAY');
-            Common::replace_key_function($formdata, 'member_regstatus', 'STATUS');
-            Common::replace_key_function($formdata, 'members_idno', 'MID');
-       
-            break;
-
-        case 'D':
-            
-            Common::replace_key_function($formdata, 'document_issuedate', 'IDATE');
-            Common::replace_key_function($formdata, 'document_docexpiry', 'DOCEXP');         
-            Common::replace_key_function($formdata, 'documenttypes_id', 'DOCID');
-            Common::replace_key_function($formdata, 'document_serial', 'SERIAL');
-            
-            break;
-
-        default:
-            break;
-        endswitch;
-
-        Common::replace_key_function($formdata, 'client_type', 'CTYPE');        
-        Common::replace_key_function($formdata, 'branch_code', 'BRCODE');        
-        Common::replace_key_function($formdata, 'theid', 'CLIENTIDNO');
-
-        // fix dates
-        switch($ctype):
-            case 'I':
-            case 'B':
-            case 'G':
-
-                // Registration Date
-                if($formdata['RDATE']!=''):
-                    $formdata['RDATE'] = Common::changeDateFromPageToMySQLFormat($formdata['RDATE']);
-                else:
-                    $formdata['RDATE'] = NULL;
-                endif;
-
-                // End Date
-                if($formdata['EDATE']!=''):
-                    $formdata['EDATE'] = Common::changeDateFromPageToMySQLFormat($formdata['EDATE']);
-                else:
-                    $formdata['EDATE'] = NULL;
-                endif;
-
-                // Birth Date
-                if($formdata['BDAY']!=''):
-                    $formdata['BDAY'] = Common::changeDateFromPageToMySQLFormat($formdata['BDAY']);
-                else:
-                    $formdata['BDAY'] = NULL;
-                endif;
-
-                break;
-
-            case 'M': 
-
-                if($formdata['MRDATE']!="")
-                    $formdata['MRDATE'] = Common::changeDateFromPageToMySQLFormat($formdata['MRDATE']);
-    
-                if($formdata['MEDATE']!=""):
-                    $formdata['MEDATE'] = Common::changeDateFromPageToMySQLFormat($formdata['MEDATE']);
-                else:
-                    $formdata['MEDATE'] = "NULL";    
-                endif;
-
-                if($formdata['BDAY']!=""):
-                    $formdata['BDAY'] = Common::changeDateFromPageToMySQLFormat($formdata['BDAY']);
-                else:
-                    $formdata['BDAY'] = "NULL";    
-                endif;
-           
-                break;
-
-            default:
-                break;
-            endswitch;
-
+        
+        $replacements = [
+            'branch_code' => 'BRCODE',
+            'client_postad' => 'POSTAD',
+            'client_enddate' => 'EDATE',
+            'client_city' => 'CITY',
+            'client_addressphysical' => 'PAD',
+            'client_tel1' => 'TEL1',
+            'client_tel2' => 'TEL2',
+            'clientcode' => 'CCODE',
+            'client_regstatus' => 'STATUS',
+            'areacode_code' => 'ACODE',
+            'bussinesssector_code' => 'BCODE',
+            'client_surname' => 'SNAME',
+            'client_firstname' => 'FNAME',
+            'client_middlename' => 'MNAME',
+            'client_gender' => 'GENDER',
+            'client_emailad' => 'EMAIL',
+            'client_postad' => 'PAD',
+            'client_cat1' => 'CAT1',
+            'client_cat2' => 'CAT2',
+            'costcenters_code' => 'CCODE',
+            'client_idno' => 'CLIENTIDNO',
+            'client_regdate' => 'RDATE',
+            'client_enddate' => 'EDATE',
+            'client_bday' => 'BDAY',
+            'client_occupation' => 'OCP',
+            'client_kinname' => 'KIN',
+            'client_maritalstate' => 'MSTATE',
+            'entity_name' => 'ENAME',
+            'member_regdate' => 'MRDATE',
+            'member_firstname' => 'FNAME',
+            'member_middlename' => 'MNAME',
+            'member_lastname' => 'LNAME',
+            'member_maritalstate' => 'MSTAT',
+            'member_children' => 'CHILD',
+            'member_dependants' => 'DEP',
+            'member_category1_id1' => 'CAT1',
+            'member_category1_id2' => 'CAT2',
+            'member_educationlevel_id' => 'EDUC',
+            'member_income' => 'INCOME',
+            'member_clientlanguages_id1' => 'LANG1',
+            'member_clientlanguages_id2' => 'LANG2',
+            'member_incomecategories_id' => 'INCOMEID',
+            'member_email' => 'EMAIL',
+            'member_regstatus' => 'STATUS',
+            'member_no' => 'MNO',
+            'member_enddate' => 'MEDATE',
+            'member_bday' => 'BDAY',
+            'member_regstatus' => 'STATUS',
+            'members_idno' => 'MID',
+            'document_issuedate' => 'IDATE',
+            'document_docexpiry' => 'DOCEXP',
+            'documenttypes_id' => 'DOCID',
+            'document_serial' => 'SERIAL',
+            'client_type' => 'CTYPE',
+            'branch_code' => 'BRCODE',
+            'theid' => 'CLIENTIDNO',
+        ];
+        
+        $dateFields = ['RDATE', 'EDATE', 'BDAY', 'MRDATE', 'MEDATE'];
+        
+        foreach ($formdata as $key => $value) {
+            if (array_key_exists($key, $replacements)) {
+                $formdata[$replacements[$key]] = $value;
+                unset($formdata[$key]);
+            } elseif (in_array($key, $dateFields)) {
+                $formdata[$key] = !empty($formdata[$key])
+                    ? Common::changeDateFromPageToMySQLFormat($formdata[$key])
+                    : null;
+            }
+        }
 
         return $formdata;
-        
     }
-
 
     /**
      * updateClient

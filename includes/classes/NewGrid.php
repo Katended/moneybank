@@ -91,6 +91,8 @@ class NewGrid {
         Datatable::$order = self::$order;
         Datatable::$keyfield = self::$keyfield; 
         Datatable::$sSQL = self::$sSQL;
+        self::$request['columntitle']= self::$columntitle;
+        self::$request['columns']= self::$fieldlist;
    
         $json = json_encode(Datatable::simple(self::$request));
 

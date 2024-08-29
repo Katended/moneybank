@@ -3983,9 +3983,9 @@ Common::$lablearray['E01'] = '';
                     exit();
                 endif;
 
-                Common::replace_key_function($formdata, 'client_regdate', 'RDATE');
+          //      Common::replace_key_function($formdata, 'client_regdate', 'RDATE');
 
-                $formdata['RDATE'] = common::changeDateFromPageToMySQLFormat($formdata['RDATE']);
+            //    $formdata['RDATE'] = common::changeDateFromPageToMySQLFormat($formdata['RDATE']);
             // endif;
             break;
             
@@ -4035,12 +4035,9 @@ Common::$lablearray['E01'] = '';
                     endif;               
                 endif; 
 
-              //  if(preg_match('[G]', $formdata['CTYPE'])):
-                    $formdata = Clients::updateRenameKeys($formdata,($formdata['CTYPE']=='G')?'M':$formdata['CTYPE']);
-             //   endif;           
-
-                
-
+                Common::replace_key_function($formdata, 'theid', 'client_idno'); 
+                $formdata = Clients::updateRenameKeys($formdata,($formdata['CTYPE']=='G')?'M':$formdata['CTYPE']);
+                 
                 break;
            
            case 'M':

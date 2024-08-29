@@ -15,8 +15,11 @@ Class DataTable {
     Public static $fieldlist=array(); // AN EXTRA COLUMN MY BE DEFINED FOR THE PRIMARY KEY WHEN SPECIFYING FIELDS
     Public static $order ="";
     Public static $where_condition ="";
-    Public static $searchable = array();  
+    Public static $searchable = array(); 
+	private static $request;
+
     public static function getInstance() {
+	
 
         if (self::$_instance === null) {
             self::$_instance = new self;
@@ -33,18 +36,35 @@ Class DataTable {
 	public static function data_output ($data )
 	{
 		$out = array();
-		for ( $i=0, $ien=count($data) ; $i<$ien ; $i++ ) {
+		for ( $i=0, $ien = count($data) ; $i < $ien ; $i++ ) {
+			
 			$row = array();
-			for ( $j=0, $jen=count(self::$columns) ; $j<$jen ; $j++ ) {
+
+			for ( $j=0, $jen = (count(self::$columns)) ; $j < $jen ; $j++ ) { // add 1 because we want to add the checkbox column data
+
 				$column = self::$columns[$j];
-				// Is there a formatter?
-				if ( isset( $column['formatter'] ) ) {
-					$row[ $column['dt'] ] = $column['formatter']( $data[$i][ $column['db'] ], $data[$i] );
+
+				// checkbox first
+				// first position is taken
+				if ($j == 0) {
+					$formId = self::$request['frmid'];
+					$dataValue = $data[$i][self::$columns[$j]['db'] ?? ''];
+					$function = sprintf('getinfo("%s", "%s", "edit", "", "load.php")', $formId, $dataValue);
+				
+					$row[0] = sprintf(
+						'<input type="checkbox" class="row-checkbox" value="%s" onClick="%s">',
+						htmlspecialchars($dataValue, ENT_QUOTES),
+						htmlspecialchars($function, ENT_QUOTES)
+					);
 				}
-				else {
-					$row[ $column['dt'] ] = $data[$i][ (self::$columns[$j]['db']??'')]??'';
+				
+				if	( isset( $column['formatter'] ) ) { // Is there a formatter?
+					$row[ $column['dt']+1 ] = $column['formatter']( $data[$i][ $column['db'] ], $data[$i] );
+				}else {
+					$row[ $column['dt']+1 ] = $data[$i][ (self::$columns[$j]['db']??'')]??'';
 				}
 			}
+
 			$out[] = $row;
 		}
 		return $out;
@@ -104,6 +124,8 @@ Class DataTable {
 	static function limit ($request)
 	{
 		$limit = '';
+
+		self::$request = $request;
 		if ( isset($request['start']) && $request['length'] != -1 ) {
 			$limit = "LIMIT ".intval($request['start']).", ".intval($request['length']);
 		}
@@ -168,12 +190,13 @@ Class DataTable {
 			$str = $request['search']['value'];
 			for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
 				$requestColumn = $request['columns'][$i];
-				$columnIdx = array_search( $requestColumn['data'], $dtColumns );
+			//	$columnIdx = array_search( $requestColumn['data']??'', $dtColumns );// commented 
+				$columnIdx = 	$i;
 				$column = self::$columns[ $columnIdx ];
-				if ( $requestColumn['searchable'] == 'true' ) {
+			//	if ( $requestColumn['searchable'] == 'true' ) {
 					$binding = self::bind( $bindings, '%'.$str.'%', PDO::PARAM_STR );
 					$globalSearch[] = "`".$column['db']."` LIKE ".$binding;
-				}
+			//	}
 			}
 		}
                 
@@ -182,11 +205,10 @@ Class DataTable {
 		if ( isset( $request['columns'] ) ) {
 			for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
 				$requestColumn = $request['columns'][$i];
-				$columnIdx = array_search( $requestColumn['data'], $dtColumns );
+			//	$columnIdx = array_search( $requestColumn['data'], $dtColumns );
 				$column = self::$columns[ $columnIdx ];
-				$str = $requestColumn['search']['value'];
-				if ( $requestColumn['searchable'] == 'true' &&
-				 $str != '' ) {
+				$str = $request['search']['value'];
+				if (  $str != '' ) {
 					$binding = self::bind( $bindings, '%'.$str.'%', PDO::PARAM_STR );
 					$columnSearch[] = "`".$column['db']."` LIKE ".$binding;
 				}
@@ -197,33 +219,33 @@ Class DataTable {
 		if ( count( $globalSearch ) ) {
 			$where = '('.implode(' OR ', $globalSearch).')';
 		}
-		if ( count( $columnSearch ) ) {
-			$where = $where === '' ?
-				implode(' AND ', $columnSearch) :
-				$where .' AND '. implode(' AND ', $columnSearch);
-		}
+		// if ( count( $columnSearch ) ) {
+		// 	$where = $where === '' ?
+		// 		implode(' AND ', $columnSearch) :
+		// 		$where .' AND '. implode(' AND ', $columnSearch);
+		// }
 //		if ( $where !== '' ) {
 //			$where = 'WHERE '.$where;
 //		}
-                if ( $where !== '' ) {
+                // if ( $where !== '' ) {
                     
-                    if(count(self::$searchable)>0){
-                            if(self::$where_condition!=""):
-                                self::$where_condition.=" AND ";
-                            endif;
+                //     if(count(self::$searchable)>0){
+                //             if(self::$where_condition!=""):
+                //                 self::$where_condition.=" AND ";
+                //             endif;
                   
-                           self::$where_condition .= " (".implode(" LIKE '%".$request['search']['value']."%' OR ",self::$searchable)." LIKE '%".$request['search']['value']."%')";
+                //            self::$where_condition .= " (".implode(" LIKE '%".$request['search']['value']."%' OR ",self::$searchable)." LIKE '%".$request['search']['value']."%')";
                    
                         
-                    }
-                }
+                //     }
+                // }
                 
                 // CHECK IF THE WHERE CONDITION HAS BEEN PASSED
                 if(self::$where_condition!=''):
                   self::$where_condition = ' WHERE '.self::$where_condition;  
                 endif;
                 
-		//return $where;
+		return $where;
 	}
 //        
 //        
@@ -295,11 +317,14 @@ Class DataTable {
 		try {
             
 		$bindings = array();
+		
 //		$db = self::db( $conn );
+
 		// Build the SQL query string from the request
 		$limit = self::limit( $request, self::$columns );
 		$order = self::order( $request, self::$columns );
 		$where = self::filter( $request, $bindings);
+
 //		// Main query to actually get the data
 //		$data = self::sql_exec( $db, $bindings,
 //			"SELECT `".implode("`, `", self::pluck(self::$columns, 'db'))."`
@@ -327,7 +352,7 @@ Class DataTable {
              
                // $results_query = $this->Conn->SQLSelect($query); 
                 
-                self::$sSQL = "SELECT ".implode(",",self::$fieldlist)." ".self::$sSQL." ".self::$where_condition." ".self::$order." ".$limit." ; SELECT COUNT(*) AS reccount ".self::$sSQL." ".self::$where_condition.";";                    
+            self::$sSQL = "SELECT ".implode(",",self::$fieldlist)." ".self::$sSQL." ".self::$where_condition." ".self::$order." ".$limit." ; SELECT COUNT(*) AS reccount ".self::$sSQL." ".self::$where_condition.";";                    
              // echo self::$sSQL = "SELECT ".implode(",",self::$fieldlist)." ".self::$sSQL." ".self::$where_condition." ".self::$order." ".$limit." ; SELECT COUNT(".self::$keyfield.") AS reccount ".self::$sSQL." ".self::$where_condition.";";                    
 			// exit();
 			  $results_query = Common::$connObj->SQLSelect(self::$sSQL); 
@@ -350,23 +375,38 @@ Class DataTable {
                    
                    
                    $recordsFiltered = $recordsTotal;
-                
-		/*
-		 * Output
-		 */
+      
                    
 //                $columns = array(
-//                    array('title'=>'checkbox','title'=>'Surname','title'=>'Firstname','title'=>'Middlename')
+//                    array("sTitle": "<input type='checkbox' id='selectAll'></input>")
 //          
-//                );  
-                
+//                ); 
+		// $js_array = array_map(function($item) {
+		// 	return array(
+		// 		'title' => $item['db']
+		// 	);
+		// }, self::$columns);
+
+		$columarray = $request['columntitle'];
+
+		foreach ($columarray as $value) {
+			$js_array[] = ['title' => $value];
+		}
+
+		
+		//Add checkbox column title
+     	array_unshift($js_array,array("title"=> "<a href='#'>All</a>")) ;
+     	
+		//add checkbox columns
+		//	array_unshift(self::$columns,array('db'=>'checkbox','dt'=>'-1')) ;	
+
 		return array(
 			"draw"=> isset ( $request['draw'] ) ?
-				intval( $request['draw'] ) :0,
+				intval( $request['draw'] ) :1,
 			"recordsTotal"    => intval( $recordsTotal ),
 			"recordsFiltered" => intval( $recordsFiltered ),
 			"data"            => self::data_output($data),
-                        "columns"=>($columns??'')
+                        "columns"=>($js_array??'')
 		);
 
 		} catch (Exception $e) {			
