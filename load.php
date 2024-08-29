@@ -136,19 +136,9 @@ if ($_POST['action'] == 'search') {
         $newgrid->queryoptions['pageparams'] = $pageparams;
     }
    
-    switch ($pageparams) {
-        case 'GRP':
-        case 'IND':
-        case 'BUSS':
-
-            $elementID = $pageparams;
-            break;
-        default:
-            break;
-    }
-
+   
     // prepare links
-    $actionlinks = Common::prepareLinks($_POST['frmid'], $action, $elementID);
+    $actionlinks = Common::prepareLinks($_POST['frmid'], $action, $pageparams);
 
     // $newgrid->queryoptions['pageparams'] = $pageparams;
     // select client type
@@ -202,43 +192,63 @@ if ($_POST['action'] == 'search') {
         case 'GRPLOANSREP':
         case 'BUSLOANSREP':
             
-            // determine if user has used a search term
-            if(isset($_POST['searchterm']) || isset($_POST['search'])){
-                $searchterm =  filter_input(INPUT_POST, (isset($_POST['searchterm'])?'searchterm':'search'), FILTER_SANITIZE_SPECIAL_CHARS);
-            }else{
-                $searchterm =  filter_input(INPUT_GET, 'searchterm', FILTER_SANITIZE_SPECIAL_CHARS);
-            }
+            // determine if user has used a search term           
+            $searchterm =  (isset($_POST['searchterm'])?$_POST['searchterm']:$_POST['search']['value']??'');
+           
 
-          //  if (isset($searchterm)) {
-                // if($_GET['searchterm']!=""):
 
-                $newgrid->queryoptions['searchterm'] = $searchterm;
+                $sanitizedSearchTerm = htmlspecialchars($searchterm, ENT_QUOTES);
 
-                switch ($pageparams):
+                $newgrid->queryoptions['searchterm'] = htmlspecialchars($searchterm, ENT_QUOTES);
+
+               
+
+                switch ($pageparams) {
                     case 'MEMSAVACC':
-                        $cWhere = $cWhere . " AND (c.entity_idno LIKE '%" . $searchterm. "%' OR sa.product_prodid LIKE '%" . $searchterm. "%')";
+                        $conditions = [
+                            sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
                         break;
-
+                
                     case 'MEMSAVACC':
-                        $cWhere = $cWhere . " AND (c.entity_name LIKE '%" .$searchterm. "%' OR c.entity_idno LIKE '%" .$searchterm. "%' OR sa.product_prodid LIKE '%" .$searchterm. "%')";
+                        $conditions = [
+                            sprintf("c.entity_name LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
                         break;
-                        
+                
                     case 'ADDINDLOANS':
                     case 'IND':
-                        $cWhere = $cWhere . " AND (c.client_firstname LIKE '%" .$searchterm. "%' OR  c.client_surname LIKE '%" .$searchterm. "%'  OR c.client_idno LIKE '%" .$searchterm. "%' OR c.client_middlename LIKE '%" .$searchterm. "%')";
+                        $conditions = [
+                            sprintf("c.client_firstname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_surname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_middlename LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
                         break;
-
+                
                     case 'ADDGRPLOANS':
                     case 'GRPLOANSREP':
                     case 'GRP':
-                        $cWhere = $cWhere . " AND (c.entity_name LIKE '%" .$searchterm. "%' OR c.entity_idno LIKE '%" .$searchterm. "%')";
+                        $conditions = [
+                            sprintf("c.entity_name LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
                         break;
-
+                
                     default:
-                        $cWhere = $cWhere . " AND (c.client_firstname LIKE '%" .$searchterm. "%' OR  c.client_surname LIKE '%" .$searchterm. "%'  OR c.client_idno LIKE '%" .$searchterm. "%' OR c.client_middlename LIKE '%" .$searchterm. "%')";
+                        $conditions = [
+                            sprintf("c.client_firstname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_surname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_middlename LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
                         break;
-
-                endswitch;
+                }
+                
+                $cWhere .= " AND (" . implode(' OR ', $conditions) . ")";
                 // endif;
           //  }
 
@@ -249,56 +259,53 @@ if ($_POST['action'] == 'search') {
             break;
     }
     
-    switch ($_SESSION['P_LANG']) {
+    $languageMap = [
+        'EN' => [
+            'roles_name' => 'roles_name_eng',
+            'charges_name_fieldname' => 'charges_name_en',
+            'operations_description_lang' => 'operations_description_eng',
+            'Language' => 'translations_eng',
+        ],
+        'FR' => [
+            'roles_name' => 'roles_name_fr',
+            'charges_name_fieldname' => 'charges_name_fr',
+            'operations_description_lang' => 'operations_description_fr',
+            'Language' => 'translations_fr',
+        ],
+        'SWA' => [
+            'roles_name' => 'roles_name_sa',
+            'charges_name_fieldname' => 'charges_name_sa',
+            'operations_description_lang' => 'operations_description_sa',
+            'Language' => 'translations_sa',
+        ],
+        'JA' => [
+            'roles_name' => 'roles_name_ja',
+            'charges_name_fieldname' => 'charges_name_ja',
+            'operations_description_lang' => 'operations_description_ja',
+            'Language' => 'translations_ja',
+        ],
+        'SP' => [
+            'roles_name' => 'roles_name_sp',
+            'charges_name_fieldname' => 'charges_name_sp',
+            'operations_description_lang' => 'operations_description_sp',
+            'Language' => null, // Assuming no translation for SP
+        ],
+        'LUG' => [
+            'roles_name' => 'roles_name_lug',
+            'charges_name_fieldname' => 'charges_name_lug',
+            'operations_description_lang' => 'operations_description_lug',
+            'Language' => 'translations_lug',
+        ],
+    ];
+    
+    $lang = $_SESSION['P_LANG'] ?? 'EN'; // Default to 'EN' if not set
+    $settings = $languageMap[$lang] ?? $languageMap['EN']; // Fallback to 'EN' if language not found
+    
+    $roles_name = $settings['roles_name'];
+    $charges_name_fieldname = $settings['charges_name_fieldname'];
+    $operations_description_lang = $settings['operations_description_lang'];
+    $Language = $settings['Language'];
 
-        case 'EN':
-            $roles_name = 'roles_name_eng';
-            $charges_name_fieldname = 'charges_name_en';
-            $operations_description_lang = 'operations_description_eng';
-            $Language = 'translations_eng';
-            break;
-
-        case 'FR':
-            $roles_name = 'roles_name_fr';
-            $charges_name_fieldname = 'charges_name_fr';
-            $operations_description_lang = 'operations_description_fr';
-            $Language = 'translations_fr';
-            break;
-
-        case 'SWA':
-            $roles_name = 'roles_name_sa';
-            $charges_name_fieldname = 'charges_name_sa';
-            $operations_description_lang = 'operations_description_sa';
-            $Language = 'translations_sa';
-            break;
-
-        case 'JA':
-            $roles_name = 'roles_name_ja';
-            $charges_name_fieldname = 'charges_name_ja';
-            $operations_description_lang = 'operations_description_ja';
-            $Language = 'translations_ja';
-            break;
-
-        case 'SP':
-            $roles_name = 'roles_name_sp';
-            $operations_description_lang = 'operations_description_sp';
-            $charges_name_fieldname = 'charges_name_sp';
-            break;
-
-        case 'LUG':
-            $roles_name = 'roles_name_lug';
-            $charges_name_fieldname = 'charges_name_lug';
-            $operations_description_lang = 'operations_description_lug';
-            $Language = 'translations_lug';
-            break;
-
-        default:
-            $roles_name = 'roles_name_eng';
-            $charges_name_fieldname = 'charges_name_eng';
-            $operations_description_lang = 'operations_description_eng';
-            $Language = 'translations_eng';
-            break;
-    }
     // select query
     switch ($pageparams) {
 
@@ -649,7 +656,7 @@ if ($_POST['action'] == 'search') {
 
             Common::getlables("317,1524,306,299,289,297,1251,264,316,1208", "", "", $Conn);
 
-            $actionlinks = Common::prepareLinks($_POST['frmid'], 'reverse', $elementID);
+            $actionlinks = Common::prepareLinks($_POST['frmid'], 'reverse', $pageparams);
 
             $newgrid->Conn = $Conn;
             $newgrid->sp_code = 'GETTRAN';
@@ -782,9 +789,9 @@ if ($_POST['action'] == 'search') {
         case 'GRP': 
 
             if($pageparams=='GRP' || $pageparams=='ADDGRPLOANS'):
-                $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='G'";
+                $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='G' ".$cWhere;
             else:
-                $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='B'";
+                $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='B' ".$cWhere;
             endif;            
        
             Common::getlables("9,1093,1019,1665", "", "", $Conn);
@@ -798,9 +805,8 @@ if ($_POST['action'] == 'search') {
             NewGrid::$order =' ORDER BY c.entity_idno DESC ';
             NewGrid::$searchcatparam = $pageparams;
                      
-            echo NewGrid::getData();               
+            echo NewGrid::getData();            
        
- 
             exit();
 
         case 'IND':
@@ -823,63 +829,8 @@ if ($_POST['action'] == 'search') {
                echo NewGrid::generateDatatableHTML();
            endif;
 
-           exit();            
-                 
-            // NewGrid::$keyfield = "savaccounts_id";
-            // NewGrid::$grid_id = 'grid_panel';
-            // NewGrid::$request = $_POST;
-            // NewGrid::$sSQL = $query;
-            // NewGrid::$searchcatparam = $pageparams;
-            // NewGrid::$columntitle = array('', Common::$lablearray['296'], Common::$lablearray['9'], Common::$lablearray['1633']);
-            //      exit();   
-            // if (isset($_POST['grid_id'])):
-            //   //   print_r($_POST);                
-            //    echo NewGrid::getData();
-               
-            // else:
-            //    echo NewGrid::generateDatatableHTML();
-            // endif;
-            
-            // Common::getlables("9,1093,1019", "", "", $Conn);
-            
-            // DataTable::$where_condition =  $clienttype;
-            
-            // switch ($_POST['frmid']):
-            //     case 'frmsavaccounts':    
-            //         $actionlinks = "<a href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['272'] . "' data-balloon-pos='down'><img src='images/edit.png' border='0'></a>  <a href='#'  onClick=\"getinfo('" . $frmid . "',$( 'body').data( 'gridchk'),'add','','addedit.php')\" data-balloon='" . Common::$lablearray['730'] . "' data-balloon-pos='down'><img src='images/plus.gif' border='0'></a>";
-            //         DataTable::$where_condition .= ' AND c.client_idno NOT IN (SELECT sa.client_idno FROM ' . TABLE_SAVACCOUNTS . ' sa WHERE sa.client_idno=c.client_idno)';
-            //         break;
-                
-            //     case 'frmShares':
-            //         $actionlinks = "<a href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['272'] . "' data-balloon-pos='down'><img src='images/edit.png' border='0'></a>  <a href='#'  onClick=\"getinfo('" . $frmid . "',$( 'body').data( 'gridchk'),'loadform','','load.php')\" data-balloon='" . Common::$lablearray['730'] . "' data-balloon-pos='down'><img src='images/plus.gif' border='0'></a>";
-            //         DataTable::$where_condition .= ' AND c.client_idno NOT IN (SELECT sa.client_idno FROM ' . TABLE_SAVACCOUNTS . ' sa WHERE sa.client_idno=c.client_idno)';
-            //         break;
-                
-            //     default:
-            //         if (preg_match('/\)$/', $cWhere) == false):
-            //         // $cWhere.=')';
-            //         endif;
-            //         break;
-            // endswitch;
-
-            // Common::getlables("9,272,730,887,900", "", "", $Conn);
-            
-            // $btrue = false;
-            
-            // // CHECK SEE IF DATAGRID TABLE HAS BEEN SENT ALREADY
-            // if (isset($_POST['grid_id'])):
-                
-            //     // checkbox, Primary key,field list
-            //     DataTable::prepareFieldList(array('','client_idno', 'client_idno', 'client_surname', 'client_firstname','client_middlename','client_regdate'));
-            //     $btrue = true;
-
-            // endif;
-           
-
-            // NewGrid::$order =' ORDER BY client_idno,client_regdate DESC';
-            // NewGrid::$grid_id = 'grid_panel';     
-            // echo NewGrid::initDatatable($actionlinks, 'client_idno', array('',Common::$lablearray['1093'],Common::$lablearray['1093'],Common::$lablearray['887'],Common::$lablearray['900'],Common::$lablearray['1019']), $pageparams, " FROM " . TABLE_VCLIENTS . " c ", array("c.client_idno", "client_surname","client_firstname","client_middlename", "client_regdate"), array('client_idno', "client_surname", "client_middlename", "client_firstname"), $_POST, 'grid_' .($_POST['grid_id']??''), $btrue);
-
+            exit();            
+         
             break;
 
         case 'GIND':
