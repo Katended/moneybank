@@ -6,8 +6,10 @@ if(AuthenticateAccess('LOGIN')==0){
 }
 require_once(DIR_WS_INCLUDES . 'initmenu.php'); 
 ?>
+
 <form id="frmDash" name="frmDash">
-<div id="targetID2" style="z-index:5000;"></div>
+
+
 <div class="metroblock buysblock left ">
   <span class="icon fontawesome-briefcase left"></span>
   <span class="indicator" id="h_0">0</span>

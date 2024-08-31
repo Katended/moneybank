@@ -152,6 +152,24 @@ Class Clients extends ProductConfig {
         return $formdata;
     }
 
+     /**
+     * deleteClient
+     * 
+     * This function is used to update Time Deposit transactions
+     * @param array $formdata: Data from the form    
+     */
+    public static function deleteClient(&$formdata) {
+
+        if (preg_match('[G]', $_POST['theid']) || preg_match('[B]', $_POST['theid'])):
+        
+        endif;
+
+        // check of client has
+        $members_array = call_user_func_array('array_merge', Common::$connObj->SQLSelect("SELECT members_no FROM " . TABLE_MEMBERS . "  WHERE members_no='" . $value['MNO'] . "' AND entity_idno='".$value['CLIENTIDNO']."'")); 
+
+        
+    }
+
     /**
      * updateClient
      * 

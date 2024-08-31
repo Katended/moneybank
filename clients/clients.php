@@ -108,7 +108,7 @@ while ($lang = tep_db_fetch_array($Lang_results2)) {
 //session_start();
 // here you can perform all the checks you need on the user submited variables
 $_SESSION['security_number'] = rand(10000, 99999);
-getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,1640,208,1641,68,1243,1090,42,1244,1245,1095,885,585,1094,447,888,540,1093,1092,1091,1090,1069,224,225,260,20,1089,1017,886,1089,1086,1086,887,1015,1016,887,888,1016,1019,199,1018,316,1020,1021,1022,21,887,899,900,905,628,905,1049,1050,11,1052,1053,1054,1056,1057,1058,1060,1061,1062,1063,1064,1065,1066,1067,1068,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,888");
+getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,1640,208,1641,68,1243,1090,42,1244,1245,1095,885,585,1094,447,888,540,1093,1092,1091,1090,1069,224,225,260,20,1089,1017,886,1089,1086,1086,887,1015,1016,887,888,1016,1019,199,484,1018,316,1020,1021,1022,21,887,899,900,905,628,905,1049,1050,11,1052,1053,1054,1056,1057,1058,1060,1061,1062,1063,1064,1065,1066,1067,1068,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,888");
 ?>
 <script language="javascript">
     function newPage(cpar) {
@@ -336,7 +336,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                                 </tr>
                                 <tr>
                                     <td><?php echo $lablearray['208']; ?><?php echo $lablearray['1511'];?><br><?php echo tep_draw_input_field('client_kinname', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                    <td><?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}" onChange="client_regdate.constraints.min = arguments[0];"></td>
+                                    <td><?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}"></td>
                                     <td> </td>
                                     <td> </td>
                                 </tr>
@@ -344,7 +344,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                             </table>
                         </fieldset>
 
-                        <fieldset id="Grpfieldset" style="display:none;width:auto;padding:5px;height: auto;">
+                        <fieldset id="Grpfieldset" style="display:none; padding:5px;">
                             <legend><?php echo $lablearray['1020']; ?></legend>
                             <table width="100%" border="0" cellpadding="2" cellspacing="2">
                                 <tr>
@@ -353,8 +353,12 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                                         <?php echo tep_draw_input_field('entity_name', '', '', false, 'text', $retainvalues, '20'); ?>
                                     </td>
                                     <td>
-                                         <?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}" onChange="client_regdate.constraints.min = arguments[0];">
+                                         <?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
                                     </td>
+                                    <td>
+                                         <?php echo $lablearray['484']; ?><?php echo $lablearray['1511'];?><br><input type="us-date" id="entity_enddate" name="entity_enddate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
+                                    </td>
+                                    
                                     <td>
 
                                         <?php echo $lablearray['1733']; ?><?php echo $lablearray['1511'];?><br>
@@ -591,7 +595,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
 </form>
 <div id="wrapper" style="text-align: center">
-<table id="grid_toppanel" width="100%"></table>
+    <table id="grid_toppanel" width="100%"></table>
 </div>
 </div>
 
@@ -599,21 +603,6 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 <script type="text/javascript">
     var data = '';
 
-    // Read the row into an object
-    //                function GetRow(rowNum)
-    //                {
-    //                    var row = $('#table1 tbody tr').eq(rowNum);
-    //
-    //                    var myObject = {};
-    //
-    //                    myObject.ChangeType = row.find('td:eq(1)').text();
-    //                    myObject.UpdateType = row.find('td:eq(2)').text();
-    //                    myObject.CustomerPart = row.find('td:eq(3)').text();
-    //                    myObject.ApplyDate = row.find('td:eq(9)').text();
-    //                    myObject.Remarks = row.find('td:eq(10)').text();
-    //
-    //                    return myObject;
-    //                }
 
     $("#btnAddMemDocs").click(function() {
 
@@ -666,8 +655,9 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', theid).done(function() {
 
                 });
-            }
-
+            } 
+            
+            newPage(ctype)       
 
         });
 
@@ -676,33 +666,12 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
 
     $(document).ready(function() {
-        //
-        //
         w2utils.date(new Date());
 
         $('input[type=us-date]').w2field('date', {
             format: '<?php echo SETTING_DATE_FORMAT ?>'
         })
-        //
-        //
         var myTxt = dojo.byId("document_issuedate");
-        //
-        //
-        //                    $("#addCF").click(function () {
-        //                        $("#customFields").append('<tr valign="top" ><td></td><td><input type="hidden" id="custom_member_no" name="custom_member_no" value="' + $('#member_no').val() + '"/> ' + $('#member_no').val() + '</td><td><input type="hidden" id="custom_member_firstname" name="custom_member_firstname" value="' + $('#member_firstname').val() + '"/> ' + $('#member_firstname').val() + '</td><td><input type="hidden" id="custom_member_middlename" name="custom_member_middlename" value="' + $('#member_middlename').val() + '"/> ' + $('#member_middlename').val() + '</td><td><input type="hidden" id="custom_member_lastname" name="custom_member_lastname" value="' + $('#member_lastname').val() + '"/> ' + $('#member_lastname').val() + '</td><td><input type="hidden" id="custom_member_maritalstate" name="custom_member_maritalstate" value="' + $('#member_maritalstate').val() + '"/> ' + $('#member_maritalstate  option:selected').text() + '</td><td><input type="hidden" id="custom_member_startdate" name="custom_member_startdate" value="' + $('#member_startdate').val() + '"/> ' + $('#member_startdate').val() + '</td><td><input type="hidden" id="custom_member_enddate" name="custom_member_enddate" value="' + $('#member_enddate').val() + '"/>' + $('#member_enddate').val() + '</td><td><input type="hidden" id="custom_member_dependants" name="custom_member_dependants" value="' + $('#member_dependants').val() + '"/>' + $('#member_dependants').val() + '</td><td><input type="hidden" id="custom_member_children" name="custom_member_children" value="' + $('#member_children').val() + '"/>' + $('#member_children').val() + '</td><td><input type="hidden" id="custom_category1_id1" name="custom_category1_id1" value="' + $('#category1_id1').val() + '"/>' + $('#category1_id1 option:selected').text() + '</td><td><input type="hidden" id="custom_category1_id2" name="custom_category1_id2" value="' + $('#category1_id2').val() + '"/>' + $('#category1_id2 option:selected').text() + '</td><td><input type="hidden" id="custom_educationlevel_id" name="custom_educationlevel_id" value="' + $('#educationlevel_id ').val() + '"/>' + $('#educationlevel_id option:selected').text() + '</td><td><input type="hidden" id="custom_incomecategories_id" name="custom_incomecategories_id" value="' + $('#incomecategories_id').val() + '"/> ' + $('#incomecategories_id option:selected').text() + '</td><td><input type="hidden" id="custom_clientlanguages_id1" name="custom_clientlanguages_id1" value="' + $('#clientlanguages_id1').val() + '"/> ' + $('#clientlanguages_id1 option:selected').text() + '</td><td><input type="hidden" id="custom_clientlanguages_id2" name="custom_clientlanguages_id2" value="' + $('#clientlanguages_id2').val() + '"/> ' + $('#clientlanguages_id2 option:selected').text() + '</td><td><a href="javascript:void(0);" class="remCF">Remove</a></td></tr>');
-        //
-        //                        //auto number added rows  
-        //                        $('#customFields tbody tr').each(function (idx) {
-        //                            $(this).children("td:eq(0)").html(idx);
-        //                        });
-        //
-        //                    });
-        //
-        //                    $("#customFields").on('click', '.remCF', function () {
-        //                        $(this).parent().parent().remove();
-        //                    });
-        //
-        //
     });
 </script>
 </BODY>

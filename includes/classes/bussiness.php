@@ -790,7 +790,8 @@ class Bussiness {
 
                         $record->addAttribute('gid', $value['CLIENTIDNO']??'');
                         $record->addAttribute('ename', $value['ENAME']??'');
-                        $record->addAttribute('rdate', $value['RDATE']??'');
+                        $record->addAttribute('rdate', Common::changeDateFromPageToMySQLFormat($value['RDATE'])??'');
+                        $record->addAttribute('edate', Common::changeDateFromPageToMySQLFormat($value['EDATE'])??'');
                         $record->addAttribute('postad', $value['POSTAD']??'');
                         $record->addAttribute('city', $value['CITY']??'');
                         $record->addAttribute('pad', $value['PAD']??'');

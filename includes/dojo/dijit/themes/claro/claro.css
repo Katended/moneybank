@@ -769,7 +769,7 @@ body .dijitAlignClient {
   border-right: 1px solid #d3d3d3 !important;
 }
 .dijitContentPane {
-  display: block;
+  /* display: block; */
   overflow: auto;
 }
 .dijitContentPaneSingleChild {

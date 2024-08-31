@@ -214,15 +214,7 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                
                 
             var showValues  = function(frm, theid, action, pageparams, urlpage, keyparam,search) {
-        
-                globalParameterStorage.frm = frm;
-                globalParameterStorage.theid = theid;
-                globalParameterStorage.action = action;
-                globalParameterStorage.pageparams = pageparams;
-                globalParameterStorage.urlpage = urlpage;
-                globalParameterStorage.keyparam = keyparam;
-                globalParameterStorage.search.value = search;
-
+                        
                 var dfrd3 = jQuery.Deferred();
                 //console.log(JSON.stringify(w2ui['gridmem'].records));
 
@@ -232,20 +224,18 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                 // 
                 // i passed undefines string to force the execution inot the IF statement
                 // 1. Loan Refinance. 04/05/2017
-                if (typeof(pageparams) === 'undefined') {
-                   
-                    // check see if action is 'edit'
-                    if (action != 'edit') {
-
-                        if (frm != '') {
-                        
-                            pageparams = JSON.stringify($("#" + frm).serializeArray());
-                        } else {
-                          
-                            pageparams = JSON.stringify($("form").serializeArray());
-                        }
-                    }
+                if (typeof(pageparams) === 'undefined' && action !== 'edit') {
+                    const formToSerialize = frm ? $("#" + frm) : $("form");
+                    pageparams = JSON.stringify(formToSerialize.serializeArray());
                 }
+
+                globalParameterStorage.frm = frm;
+                globalParameterStorage.theid = theid;
+                globalParameterStorage.action = action;
+                globalParameterStorage.pageparams = pageparams;
+                globalParameterStorage.urlpage = urlpage;
+                globalParameterStorage.keyparam = keyparam;
+                globalParameterStorage.search.value = search;
 
 
                 if (urlpage == "" || typeof(urlpage) === 'undefined') {
@@ -1481,12 +1471,19 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
       
     </HEAD>
     <body class="claro">
+                                
+        <div id="wrapper" style="top:0px;position:relative;margin:0px;text-align:center;padding:0px;">
 
-        <div id="wrapper" style="top:0px;position:relative;margin:0px;text-align:center;padding:0px;"></div>  
+        </div>  
         <div  id="appLayout" class="demoLayout"  data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline'">
-            <div  style="background-image: url('images/logomain.jpg');" class="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">          
+        
+
+            <div  style="background-image: url('images/logomain.jpg');"  data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">  
+                
+                
+
                 <div style='float:right; color:#CCCCCC;text-shadow:none;padding:4px;width:100%;text-align:right;'><?php echo $lablearray['650']; ?>: <?php echo $_SESSION['user_username']; ?></div>  
-          
+                <div id="targetID2" style="z-index:9999;"></div>                    
 <?php
 // echo '<div style="float:right;margin:0px;width:100%;text-align:right;"><div ><h1 class="expirty">' . $numberDays . '</h1>' . $lablearray['1399'] . '</div></div>';
 ?>

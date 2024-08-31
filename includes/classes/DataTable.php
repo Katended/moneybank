@@ -17,6 +17,7 @@ Class DataTable {
     Public static $where_condition ="";
     Public static $searchable = array(); 
 	private static $request;
+	private static $actionlinks;
 
     public static function getInstance() {
 	
@@ -47,15 +48,19 @@ Class DataTable {
 				// checkbox first
 				// first position is taken
 				if ($j == 0) {
+
 					$formId = self::$request['frmid'];
 					$dataValue = $data[$i][self::$columns[$j]['db'] ?? ''];
 					$function = sprintf('getinfo("%s", "%s", "edit", "", "load.php")', $formId, $dataValue);
-				
+					
+					// usually the first column is the identit column
 					$row[0] = sprintf(
 						'<input type="checkbox" class="row-checkbox" value="%s" onClick="%s">',
 						htmlspecialchars($dataValue, ENT_QUOTES),
 						htmlspecialchars($function, ENT_QUOTES)
-					);
+					);				
+					
+
 				}
 				
 				if	( isset( $column['formatter'] ) ) { // Is there a formatter?
@@ -63,10 +68,18 @@ Class DataTable {
 				}else {
 					$row[ $column['dt']+1 ] = $data[$i][ (self::$columns[$j]['db']??'')]??'';
 				}
+
+				// add link 
+				if(count($row) > count(self::$columns) && isset(self::$actionlinks)){
+					$row[] =self::$actionlinks;
+				}
 			}
 
 			$out[] = $row;
+
+			
 		}
+	
 		return $out;
 	}
 //	/**
@@ -318,6 +331,8 @@ Class DataTable {
             
 		$bindings = array();
 		
+		self::$actionlinks = $request['actionlinks'];
+
 //		$db = self::db( $conn );
 
 		// Build the SQL query string from the request
@@ -396,6 +411,8 @@ Class DataTable {
 		
 		//Add checkbox column title
      	array_unshift($js_array,array("title"=> "<a href='#'>All</a>")) ;
+		// array_unshift($js_array,array("title"=> "<a href='#'>All</a>")) ;
+		 $js_array[]= array("title"=> "");
      	
 		//add checkbox columns
 		//	array_unshift(self::$columns,array('db'=>'checkbox','dt'=>'-1')) ;	
@@ -414,6 +431,7 @@ Class DataTable {
 		}
 
 	}
+
 //	/**
 //	 * The difference between this method and the `simple` one, is that you can
 //	 * apply additional `where` conditions to the SQL queries. These can be in

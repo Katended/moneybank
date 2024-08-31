@@ -390,7 +390,7 @@ label:hover ~ input[type=password] {
 
     ?>
    <p>    
-    <input type="text" name="captchcode" id="captchcode" size="20">
+    <input type="text" name="captchcode" id="captchcode" size="20" value="<?php echo $_SESSION['captcha']['code'];?>">
   </p>
   
    <div id="changepassword" style="display:none;"> 
@@ -402,7 +402,7 @@ label:hover ~ input[type=password] {
     </div>  
   </div>  
   <p class="p-container">
-    <a href="#" onClick="$('div#changepassword').show();"><?php echo $lablearray['646']; ?></a><p></p>
+    <a href="#" onClick="$('div#changepassword').show();"><?php echo $lablearray['646']; ?></a>
     <input type="reset" name="go" id="login" value="<?php echo $lablearray['1']; ?>">
     <input type="reset" name="reset" id="reset" value="<?php echo $lablearray['2']; ?>">
     
