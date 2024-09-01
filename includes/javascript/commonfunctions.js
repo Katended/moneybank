@@ -147,43 +147,6 @@ function validateDateFields(firstField, secondField, message){
 	return true;
 }
 
-
-
-//// This function is used to check clicked checkbox and uncheck the rest of the checkboxes
-//function checkunckeck(eID,ctrColor){
-//  	$("input.unckecked:checkbox").each(function(){
-//			//$(this).attr('id');
-//			
-//			
-//			
-//			if($(this).attr('id')!=eID){
-//				
-//				ctrColor ="";
-//			//	field.elements[i].checked=false;
-//				$(this).attr('checked', false);
-//				
-//				if($(this).attr('id')!="All"){
-//					
-//					SetBackgroundColor('RowId_'+eID.substr(14,eID.length),ctrColor,false);
-//				}
-//				
-//			}else{
-//							
-//				
-//				SetBackgroundColor('RowId_'+eID.substr(14,eID.length),ctrColor,false);
-//			}
-//			
-//		
-//		
-//	
-//	});
-//
-//
-//}
-
-
-
-
 var id='';	
 var theid='';
 

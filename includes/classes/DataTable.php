@@ -51,15 +51,14 @@ Class DataTable {
 
 					$formId = self::$request['frmid'];
 					$dataValue = $data[$i][self::$columns[$j]['db'] ?? ''];
-					$function = sprintf('getinfo("%s", "%s", "edit", "", "load.php")', $formId, $dataValue);
-					
+					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','','addedit.php')\"><img src='images/icons/trash.png' border=0 title='Delete' ></a>", $formId, $dataValue,'Delete');
+									
 					// usually the first column is the identit column
 					$row[0] = sprintf(
 						'<input type="checkbox" class="row-checkbox" value="%s" onClick="%s">',
 						htmlspecialchars($dataValue, ENT_QUOTES),
 						htmlspecialchars($function, ENT_QUOTES)
 					);				
-					
 
 				}
 				
@@ -70,8 +69,8 @@ Class DataTable {
 				}
 
 				// add link 
-				if(count($row) > count(self::$columns) && isset(self::$actionlinks)){
-					$row[] =self::$actionlinks;
+				if(count($row) > count(self::$columns)){
+					$row[] =$function??'';
 				}
 			}
 

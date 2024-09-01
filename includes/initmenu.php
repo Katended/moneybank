@@ -213,7 +213,7 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
             };
                
                 
-            var showValues  = function(frm, theid, action, pageparams, urlpage, keyparam,search) {
+            var showValues  = function(frm, theid, action, pageparams, urlpage, keyparam,search,callback) {
                         
                 var dfrd3 = jQuery.Deferred();
                 //console.log(JSON.stringify(w2ui['gridmem'].records));
@@ -236,7 +236,6 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                 globalParameterStorage.urlpage = urlpage;
                 globalParameterStorage.keyparam = keyparam;
                 globalParameterStorage.search.value = search;
-
 
                 if (urlpage == "" || typeof(urlpage) === 'undefined') {
                     //  displaymessage('',"page missing! The system will use  read/write mode",'warning');
@@ -319,7 +318,7 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                                 }
 
 
-                                const stringSet = ["Warning"];
+                                const stringSet = ["Warning","error"];
                                 const pattern = new RegExp(stringSet.join("|"));
                                 
                                 if(pattern.test(data)){
@@ -404,13 +403,7 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
 // DO NOT REFRESH TABLE WHEN LOADING CAHS ACCOUNTS
                                     
                                     if (data.includes("draw")) {
-//                                         if( $('#grid_'+theid).length)         // use this if you are using id to check
-//                                        {
-//                                           return; 
-//                                        }
-                                        
-//                                    
-                                     //  $("#" + theid).html(data).promise().done(function(){  
+
                                             const tabledata = JSON.parse(data);
 
                                             var table = $('#grid_'+theid).DataTable( {
@@ -435,88 +428,19 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                                                     "targets": "_all",
                                                     'width':'15px',
                                                     'targets': 0,
-                                                    
-                                                    // 'render': function(data, type, row, meta){
-                                                    //     data = '<input type="checkbox" class="dt-checkboxes">'
-                                                    //     if(row[3] === 'London'){
-                                                    //         data = '';
-                                                    //     }
-                                                    //     return data;
-                                                    // },
-                                                    // 'createdCell':  function (td, cellData, rowData, row, col){
-                                                    //     if(rowData[3] === 'London'){
-                                                    //         this.api().cell(td).checkboxes.disable();
-                                                    //     }
-                                                    // }
+                                                  
                                                 }
                                             ],
-                                             
-                                            //    'columnDefs': [{
-                                            //     'targets': 0,
-                                            //     'width':'10px',
-                                            //     'searchable':false,
-                                            //     'orderable':false,                                             
-                                            //     'render': function (data, type, full, meta){
-                                            //         return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
-                                            //     }
-                                            //     }],
+                                           
                                                 'orderable':false,
                                                 "pageLength": 20,
                                                 scrollCollapse: true,
                                                 "bDestroy": true,
-                                             //   stateSave: true,
-                                              //   dom: 'Bfrtip',
-                                            //    "sDom": "<'dt-toolbar'<'col-xs-6'f><'col-xs-6'<'toolbar'>>r>t<'dt-toolbar-footer'<'col-xs-6'i><'col-xs-6'p>>", 
-                                                                                               
-                                                  
-                                                // "ajax": {
-                                                //         "url": "./load.php",
-                                                //         "type": "POST",
-                                                //         "data" : function(d) {
-                                                //             d.pageparams = $('#CODE').val();
-                                                //             d.action ='search';
-                                                //             d.grid_id = 'grid_'+theid;
-                                                //             d.tdstate = '1';
-                                                //             d.keyparam = keyparam;
-                                                //             d.frmid = frm;
-                                                //             d.pagevars = $("form").serializeArray(); 
-                                                //             }                                                        
-                                                //         }
+                                           
 
                                            } );
 
-                                            // table.on( 'init', function () {
-                                           
-                                            //   //  table.buttons().container().appendTo(table.table().container());                                       
-                                            //    table.buttons().container().insertBefore(table.table().container()); 
-                                               
-                                            //    table.buttons().container().appendTo($('#test'));
-                                            // } );
-                                            
-                                          
-                                        //    table.MakeCellsEditable({
-                                        //         "onUpdate": myCallbackFunction,
-                                        //         "inputCss":'my-input-class',
-                                        //         "columns": [2],
-                                        //         "allowNulls": {
-                                        //             "columns": [1],
-                                        //             "errorClass": 'error'
-                                        //         },
-                                        //         "confirmationButton": { 
-                                        //             "confirmCss": 'my-confirm-class',
-                                        //             "cancelCss": 'my-cancel-class'
-                                        //         }
-                                        //     });
-                                        
-
-                                            /*$(".dataTables_filter input").keyUp( function (e) {
-                                                if (e.keyCode == 13) {
-                                                 table.edit(this, {
-                                                        submitOnReturn: false
-                                                    });
-                                                }
-                                            });*/
-
+                                                                                
                                      
                                              // Grab the datatables input box and alter how it is bound to events
                                          $(".dataTables_filter").unbind() // Unbind previous default bindings
@@ -581,30 +505,7 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                                                     .draw();
                                             });
                                                 
-//                                            $(".dataTables_filter input").keyup( function (e) {
-//                                                if (e.keyCode == 13) {
-//                                                table.search(this.value).draw();
-//                                                }
-// //                                            });
-//                                            function myCallbackFunction (updatedCell, updatedRow, oldValue) {
-//                                             updatedCell.data();
-//   //  console.log("The new value for the cell is: " + updatedCell.data());
-//    // console.log("The old value for that cell was: " + oldValue);
-//    // console.log("The values for each cell in that row are: " + updatedRow.data());
-//                                             }
-
-//                                             function destroyTable() {
-// //                                                if ($.fn.DataTable.isDataTable('#myAdvancedTable')) {
-// //                                                    table.destroy();
-// //                                                    table.MakeCellsEditable("destroy");
-// //                                                }
-//                                             }
-                                             // $("div.toolbar").html('<b>Custom tool bar! Text/images etc.</b>');
-                                       
-                                      
-                                         //   alert('html call back')
-                                    //    }); 
-                                        
+                                 
                                      
                                         
                                     }else{
@@ -625,10 +526,10 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                             }
 
                          return  dfrd3.resolve();
-                            //});
+                          
 
                         });
-                //
+              
                 return dfrd3.promise();
             }
 

@@ -155,19 +155,29 @@ Class Clients extends ProductConfig {
      /**
      * deleteClient
      * 
-     * This function is used to update Time Deposit transactions
-     * @param array $formdata: Data from the form    
+     * This function is used to delete a client
+     * @param array $theid: Data from the form    
      */
-    public static function deleteClient(&$formdata) {
-
-        if (preg_match('[G]', $_POST['theid']) || preg_match('[B]', $_POST['theid'])):
-        
-        endif;
-
-        // check of client has
-        $members_array = call_user_func_array('array_merge', Common::$connObj->SQLSelect("SELECT members_no FROM " . TABLE_MEMBERS . "  WHERE members_no='" . $value['MNO'] . "' AND entity_idno='".$value['CLIENTIDNO']."'")); 
-
-        
+    public static function deleteClient($theid) {
+     
+        $result_array = Common::$connObj->SQLSelect("
+                SELECT entity_idno FROM " . TABLE_MEMBERS . " WHERE entity_idno = '" . $theid . "'
+                UNION ALL               
+                SELECT client_idno FROM " . TABLE_LOAN . " WHERE client_idno = '" . $theid . "'
+                UNION ALL
+                 SELECT client_idno FROM " . TABLE_SAVACCOUNTS. " WHERE client_idno = '" . $theid . "'
+            ");      
+     
+        if(isset($result_array[0]['1'])) {
+            Common::$connObj->SQLSelect("
+                DELETE FROM " . TABLE_ENTITY . " WHERE entity_idno = '".$theid."';                     
+                DELETE FROM " . TABLE_MEMBERS . " WHERE entity_idno = '" .$theid."';                             
+            ");            
+            return true;
+        } else {     
+            return false;
+        }
+              
     }
 
     /**

@@ -796,17 +796,15 @@ if ($_POST['action'] == 'search') {
        
             Common::getlables("9,1093,1019,484,1665", "", "", $Conn);
             NewGrid::$columntitle = array( Common::$lablearray['1093'],Common::$lablearray['9'], Common::$lablearray['1019'], Common::$lablearray['484']);
-          //  NewGrid::$keyfield ='entity_idno';
+          
             NewGrid::$fieldlist = array('entity_idno','entity_name','entity_regdate','entity_enddate');
-            NewGrid::$actionlinks = "<a href='#' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'delete','','load.php')\"><img src='images/icons/trash.png' border=0></a>";
+           
             NewGrid::$grid_id = 'grid_'.($_POST['theid']??'');
             NewGrid::$request = $_POST;
             NewGrid::$sSQL = $query;       
             NewGrid::$order =' ORDER BY c.entity_idno DESC ';
             NewGrid::$searchcatparam = $pageparams;
 
-//            "<a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='small'><img src='images/icons/pencil.png' border='0'></span>";
-                     
             echo NewGrid::getData();            
        
             exit();

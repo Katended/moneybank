@@ -3,6 +3,7 @@ require_once('includes/application_top.php');
 require_once('includes/classes/GibberishAES.php');
 require_once('includes/classes/productconfig.php');
 require_once('includes/classes/financial_class.php');
+require_once('includes/classes/Clients.php');
 error_reporting(E_ALL ^ E_NOTICE);
 
 //// Require the bundled autoload file - the path may need to change
@@ -85,6 +86,7 @@ switch ($_POST['frmid']) {
 case 'frmmanagetransactions':
 break;
 default:
+
     if (isset($_POST['pageparams'])) {
          $objects = (array) json_decodeData($_POST['pageparams'], true);
 
@@ -97,9 +99,6 @@ default:
         }
 
         if ($_POST['action'] == 'SERIALIZE') {
-
-            //$results = Bussiness::$Conn->SQLGenerateReport('');
-            //   
 
             $arr = $objects['pageinfo'];
 
@@ -3946,13 +3945,28 @@ Common::$lablearray['E01'] = '';
         break;
 
     case 'frmClients':
+       
+        if(strtoupper($_POST['action'])=='DELETE') {
+            if(Clients::deleteClient($_POST['theid'])) {
+                // Information saved
+                Common::getlables("218", "", "", $Conn);
+                echo "MSG " .Common::$lablearray['218'];
+            } else {
+                // Client can not be deleted until other records are removed
+                Common::getlables("1750", "", "", $Conn);
+                echo "MSG " .Common::$lablearray['1750'];
+            }
+
+            exit();
+        }    
+             
         Common::getlables("969,1732,1561,1019,1635,186,1639,291,186,1679,1749,1680", "", "", $Conn);
-       
-        Common::replace_key_function($formdata, 'action', 'ACTION');
+
+        Common::replace_key_function($formdata, 'action', 'ACTION');   
         
-       
-        
-        switch($formdata['client_type']):
+        Common::replace_key_function($formdata, 'client_type', 'CTYPE');  
+               
+        switch($formdata['CTYPE']):
         case 'I':        
                       
              if ($formdata['client_regdate'] == '' &&  $formdata['client_idno']==''):        
@@ -3963,8 +3977,7 @@ Common::$lablearray['E01'] = '';
             if($formdata['client_firstname']=='' ||  $formdata['client_surname']==""):            
                 echo "MSG." .Common::$lablearray['1561'];
                 exit();         
-            endif;
-            
+            endif;            
          
             Common::replace_key_function($formdata, 'client_regdate', 'RDATE');
             break;
@@ -3975,18 +3988,13 @@ Common::$lablearray['E01'] = '';
             if($formdata['entity_name']==''):               
                 echo "MSG." .Common::$lablearray['1561'];
                 exit();         
+            endif;            
+          
+            if ($formdata['client_regdate'] == ''):        
+                echo "MSG.".Common::$lablearray['1639'];
+                exit();
             endif;
-            
-           // if(preg_match('[B]', $formdata['client_type'])):
-                if ($formdata['client_regdate'] == ''):        
-                    echo "MSG.".Common::$lablearray['1639'];
-                    exit();
-                endif;
-
-          //      Common::replace_key_function($formdata, 'client_regdate', 'RDATE');
-
-            //    $formdata['RDATE'] = common::changeDateFromPageToMySQLFormat($formdata['RDATE']);
-            // endif;
+        
             break;
             
         case 'M':
@@ -4009,12 +4017,11 @@ Common::$lablearray['E01'] = '';
             endif;
             
             break;
+
         default:
             break;        
         endswitch;
-         
-        Common::replace_key_function($formdata, 'client_type', 'CTYPE');        
-        
+       
         
         if($formdata['ACTION']=='edit'):
             if($formdata['theid']==""):
@@ -4026,8 +4033,7 @@ Common::$lablearray['E01'] = '';
             
             case 'G':
             case 'I':
-            case 'B':
-              //  $formdata = Clients::updateRenameKeys($formdata,$formdata['CTYPE']);               
+            case 'B':                   
                 
                 if(preg_match('[I]', $formdata['CTYPE'])):
                     if($formdata['client_bday']!=""):
