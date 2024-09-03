@@ -167,6 +167,7 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                 switch (state.toUpperCase()) {
                     case 'MSG':
                     case 'S':
+                    case 'OK':
                         cssClass = 'success information';
                         break;
                     case 'INFO':
@@ -252,9 +253,10 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
         })
         .always(data => {
 
-            $("#ajaxSpinnerImage").hide();
+            
 
             try {
+
                 if (typeof data === 'object' && data.status === '500') {
                     window.location = "<?php echo HTTP_SERVER; ?>"; // Redirect on server error
                     return;
@@ -266,6 +268,8 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
                 if (canInvokeCallback) {
                     showValues(frm, ajaxdatadiv, action, pageparams, 'load.php', keyparam, search);
                 }
+
+                $("#ajaxSpinnerImage").hide();
                
             } catch (e) {
                 console.error('Invalid JSON:', e);
@@ -283,34 +287,37 @@ const processResponseData = (data, frm, action, ajaxdatadiv, dfrd3) => {
 
     try {
 
-        if(isValidJsonString(trimmedData)) {
-   
-            const jsonObj = jQuery.parseJSON(trimmedData);
+        const jsonObj =  isValidJsonString(trimmedData);
 
-            handleFormActions(action, frm, jsonObj, trimmedData, ajaxdatadiv);
+        switch (jsonObj.status) {
+            case 'data':
+                // Handle table data
+                handleDataTable(jsonObj.table, ajaxdatadiv);
+                break;
 
-        } else {
+            case 'ok':
+                // Display success message
+                displayMessage(frm, "<?php echo $labelArray['218']; ?>", jsonObj.status);
+                break;
 
-            const stat = containsError(trimmedData);
+            case 'form':
+                // Load form
+                handleFormActions(action, frm, jsonObj, ajaxdatadiv);
+                break;
 
-            if (trimmedData === '1111111') {
+            case 'err':
+                // Display error message
+                displayMessage(frm, jsonObj.message, jsonObj.status);
+                break;
 
-                if ($.contains(document.body, document.getElementById(ajaxdatadiv))) {
-                    resetForm();
-                }
+            default:
+                // Handle unexpected status
+                console.log('Unexpected status:', jsonObj.status);
+                break;
+        }
 
-                displaymessage(frm, "<?php echo $lablearray['218'] ?>", stat);
-                handleAction(action, frm, dfrd3);
-                callback();
-                return;
-            }
-            
-            if (stat) {
-                displaymessage(frm, trimmedData,stat);
-                dfrd3.resolve();
-                return;
-            }
-        }   
+        dfrd3.resolve();
+         
         
     } catch (e) {
         console.log('Parsing error:', e);
@@ -320,42 +327,24 @@ const processResponseData = (data, frm, action, ajaxdatadiv, dfrd3) => {
 
 function isValidJsonString(str) {
     if (typeof str !== "string") {
-        return false; // Not a string
+        return null; // Not a string
     }
     
     try {
-        JSON.parse(str);
-        return true; // Valid JSON
-    } catch (e) {
-        return false; // Invalid JSON
+        return JSON.parse(str);       
+    } catch (error) {
+        return null;
     }
 };
 
-const containsError = (data) => {
-    return /^(ERR|WAR|INFO|MSG|SQLSTATE|error):?/.test(data);
-};
 
-const handleAction = (action, frm, dfrd3) => {
-    switch (action) {
-        case 'reverse':
-            dfrd3.resolve();
-            break;
-        default:
-            $("#" + frm).trigger("reset");
-            dfrd3.resolve();
-            break;
-    }
-};
 
-const handleFormActions = (action, frm, jsonObj, data, ajaxdatadiv) => {
+
+const handleFormActions = (action, frm, jsonObj, ajaxdatadiv) => {
     switch (action) {
         case "loadform":
         case "edit":
-        case "add":
-            if (!data) {
-                displaymessage('', "<?php echo $lablearray['1166'] ?>", 'fail', 'ERROR');
-                return;
-            }
+        case "add":           
             if (data.includes("formObj")) {
                 eval(data);
             } else {
@@ -373,9 +362,9 @@ const handleFormActions = (action, frm, jsonObj, data, ajaxdatadiv) => {
     }
 };
 
-const handleDataTable = (data, ajaxdatadiv) => {
-    if (data.includes("draw")) {
-        const tabledata = JSON.parse(data);
+const handleDataTable = (tableData, ajaxdatadiv) => {
+    if (tableData instanceof Object && tableData !== null) {
+      //  const tabledata = JSON.parse(data);
         const table = $('#grid_' + ajaxdatadiv).DataTable({
             fixedHeader: true,
             buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
@@ -385,8 +374,8 @@ const handleDataTable = (data, ajaxdatadiv) => {
             scrollX: true,
             order: 3,
             scrollY: 100,
-            data: tabledata.data,
-            columns: tabledata.columns,
+            data: tableData.data,
+            columns: tableData.columns,
             scroller: {
                 loadingIndicator: true
             },
@@ -405,8 +394,9 @@ const handleDataTable = (data, ajaxdatadiv) => {
         configureDataTableSearch(table);
         configureRowSelection(table, ajaxdatadiv);
     } else {
-        $("#" + ajaxdatadiv).html(data);
+        $("#" + ajaxdatadiv).html(tableData);
     }
+
 };
 
             const configureDataTableSearch = (table) => {

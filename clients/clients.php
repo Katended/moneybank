@@ -628,7 +628,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
     });
 
-    $("#btnSave").click(function(event) {
+    $("#btnSave , #btnAddMem").click(function(event) {
 
 
         var tags = document.getElementsByName('client_type');
@@ -643,38 +643,20 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 }
             }
         }
-
-        var ctype = TXTPAGE;
+        
         var action = $('#action').val(); 
         showValues('frmClients', '', action).done(function() {
 
-            w2utils.date(new Date());
-            const client_idno = document.getElementById("client_idno").value;
-            if (ctype == 'GMEM') {
-
-             //   $('#client_idno').val(ajaxdatadiv);
-
-            const client_idno = document.getElementById("client_idno").value;
-                showValues('frmClients', 'grdgrpMembers', action, 'GMEM', 'load.php', client_idno)
-            } 
+        w2utils.date(new Date());
+        //   $('#client_idno').val(ajaxdatadiv);
+        const client_idno = document.getElementById("client_idno").value;
+        showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', client_idno)
+           
 
             
-            newPage(ctype)       
+// newPage(ctype)       
 
         });
-    });
-
-    $("#btnAddMem").click(function(event) {
-        const ctype = 'M';
-        const client_idno = document.getElementById("client_idno").value;
-        const actionValue = document.getElementById("action").value;
-        
-        try {
-            showValues('frmClients', 'grdgrpMembers', actionValue, 'GMEM', 'load.php', client_idno, true);
-            newPage(ctype);
-        } catch (error) {
-            console.log('Error:', error);
-        }
     });
 
     $(document).ready(function() {

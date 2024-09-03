@@ -819,7 +819,7 @@ class Bussiness {
                         $record->addAttribute('child', $value['CHILD']);
                         $record->addAttribute('cat1', $value['CAT1']);
                         $record->addAttribute('cat2', $value['CAT2']);
-                        $record->addAttribute('lang', $value['LANG']);
+                        $record->addAttribute('lang', $value['LANG']??'0');
                         $record->addAttribute('educ', $value['EDUC']);
                         $record->addAttribute('income', $value['INCOME']);
                         $record->addAttribute('lang1', $value['LANG1']);
@@ -1208,7 +1208,7 @@ class Bussiness {
 
             //catch exception
         } catch (Exception $e) {
-            Self::$lablearray['E01'] = $e->getMessage();
+            Common::$lablearray['E01'] = $e->getMessage();
         }
     }
 

@@ -250,7 +250,7 @@ Class Clients extends ProductConfig {
                             // GET MEMBER IDs
                             
                             $value['MID'] = Common::generateID($value['BRCODE'].'/'.$value['CTYPE'],'M','MEMBER',$value['CLIENTIDNO']);
-                            $value['MNO'] = Common::generateID($value['BRCODE'].'/M','M','MEMBERNO',$value['CLIENTIDNO']);
+                            $value['MNO'] = Common::generateID($value['BRCODE'],'M','MEMBERNO',$value['CLIENTIDNO']);
                             
                         endif;
                         

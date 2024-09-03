@@ -804,9 +804,11 @@ if ($_POST['action'] == 'search') {
             NewGrid::$sSQL = $query;       
             NewGrid::$order =' ORDER BY c.entity_idno DESC ';
             NewGrid::$searchcatparam = $pageparams;
-            
-            echo NewGrid::getData();            
-       
+
+            $data = NewGrid::getData();       
+
+            echo Common::createResponse('data','',$data);
+
             exit();
 
         case 'IND':
@@ -1229,7 +1231,10 @@ if ($_POST['action'] == 'search') {
 
     $newgrid->lablesarray = $lables_array;
 
-    echo $newgrid->getdata($query . $where, $fieldlist, $gridcolumnnames, $actionlinks, $onclick, $chkname);
+    $data =  $newgrid->getdata($query . $where, $fieldlist, $gridcolumnnames, $actionlinks, $onclick, $chkname);
+   
+    echo Common::createResponse('data','',$data);               
+   
     exit();
 }
 
@@ -1591,9 +1596,9 @@ switch ($_POST['frmid']) {
 
                 Common::push_element_into_array($main_array, 'action', 'update');
 
-                $jason = json_encode(array('data' => $main_array));
-                $jason = str_replace("\\\\", '', $jason);
-                echo $jason;
+               // $jason = json_encode(array('data' => $main_array));
+               // $jason = str_replace("\\\\", '', $jason);
+                echo Common::createResponse('form','',[],$main_array);
                 break 2;
 
             default:

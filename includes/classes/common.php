@@ -25,6 +25,27 @@ class Common {
         return substr(bin2hex($bytes), 0, $lenght);
     }
 
+     public static function createResponse($status, $message='', $table = [],$data = null) {
+    //     // Validate status
+        if (!in_array(strtoupper($status), ['ERR','WAR','INFO','MSG','SQLSTATE','OK','DATA','DATA','FORM'])) {
+            throw new InvalidArgumentException('Status must be "success" or "failure".');
+        }
+    
+        // Create the response array
+        $response = [
+            "status" => $status,
+            "message" =>($status=='OK'?'Information Saved':$message),
+            "table" => $table,
+            "data" => $data
+        ];
+        
+        $jason =json_encode($response);
+
+        $jason = str_replace("\\\\", '', $jason);
+        
+        return $jason;
+     }
+
     # function checks if date is a MySQl date
     public static function validateMySQLDate($date ='') {
         try {

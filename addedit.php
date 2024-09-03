@@ -4106,12 +4106,11 @@ Common::$lablearray['E01'] = '';
         endswitch;
 
         if(Common::$lablearray['E01']!=""):
-            echo "MSG.".Common::$lablearray['E01'];      
+            echo Common::createResponse('err',Common::$lablearray['E01']);  
          else:
-            echo "1111111";
-            exit();    
+            echo Common::createResponse('ok','');               
         endif;
-        
+        exit();        
         break;
  
     case 'frmlogin':

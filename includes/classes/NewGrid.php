@@ -95,7 +95,7 @@ class NewGrid {
         self::$request['columns']= self::$fieldlist;
         self::$request['actionlinks']= self::$actionlinks;
    
-        $json = json_encode(Datatable::simple(self::$request));
+        $json = Datatable::simple(self::$request);
 
         return $json ;
     }
