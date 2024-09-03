@@ -195,7 +195,13 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
             searchterm = $("input[type=search]").val();
         }
 
-        showValues('frmClients', 'toppanel', 'search', TXTPAGE, 'load.php?searchterm=' + searchterm, TXTPAGE);
+        showValues('frmClients', 'toppanel', 'search', TXTPAGE, 'load.php?searchterm=' + searchterm, TXTPAGE).done(function(){
+            if(TXTPAGE=='G'){
+                showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', $('#client_idno').val());                
+            }
+
+        });
+        
         $('#toppanel').css({
             top: '30%',
             left: '50%',
@@ -206,26 +212,25 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
     }
 
-    function getinfo(frm_id, theid, action, pagedata, urlpage, element) {
+    function getinfo(frm_id, ajaxdatadiv, action, pagedata, urlpage, element) {
 
         $("#toppanel").hide();
+        
         if (element == 'GMEM') {
-            showValues('frmClients', theid, 'edit', '', 'load.php', 'GMEM').done(function() {
+            showValues('frmClients', ajaxdatadiv, 'edit', '', 'load.php', 'GMEM').done(function() {
 
             });
             return;
         }
 
-        showValues(frm_id, theid, action, pagedata, urlpage, element).done(function() {
+        showValues(frm_id, ajaxdatadiv, action, pagedata, urlpage, element).done(function() {
             $(function() {
 
-                if (element == 'GRP' || element == 'GMEM') {
+                // if (element == 'GRP' || element == 'GMEM') {
 
 
-                    showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', theid).done(function() {
-
-                    });
-                }
+                //     showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', $('#client_idno').val());
+                // }
 
 
                 //  populateForm(frm_id, jsonObj['data']);
@@ -265,7 +270,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 <?php require('../' . DIR_WS_INCLUDES . 'pageheader.php'); ?>
 <form id="frmClients" name="frmClients" style="width:auto;margin:auto;">
     <input id="action" name="action" type="hidden" value='add' />
-    <input id="theid" name="theid" type="hidden" value='' />
+    <input id="ajaxdatadiv" name="ajaxdatadiv" type="hidden" value='' />
    
     <table width="100%" border="0" cellpadding='0'>
         <tr> 
@@ -476,7 +481,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                                                     <tr>
                                                         <td colspan="5" align="center">
                                                             <p align='center'><a name="btnAddMem" class="s10"  id="btnAddMem" name="btnAddMem" alt="Add member"><?php echo $lablearray['730']; ?></a></p>
-                                                            <div id='grdgrpMembers' style="width:auto;height:100%;display:block;margin:0px;padding:5px;overflow:scroll;font-size:8pt;">
+                                                            <div id='grdgrpMembers' style="width:auto;height:100%;display:block;margin:0px;padding:5px;overflow:scroll;">
 
                                                             </div>
                                                         </td>
@@ -615,7 +620,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
 
         pageparams = JSON.stringify(doccsarray);
-        //frm, theid, action, pageparams
+        //frm, ajaxdatadiv, action, pageparams
 
         showValues('frmClients', '', $('#action').val(), pageparams).done(function() {
             $("#lgdocs").click();
@@ -623,7 +628,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
     });
 
-    $("#btnSave,#btnAddMem").click(function(event) {
+    $("#btnSave").click(function(event) {
 
 
         var tags = document.getElementsByName('client_type');
@@ -640,30 +645,37 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
         }
 
         var ctype = TXTPAGE;
-
-
-        var theid = $('#client_idno').val();
-
-        showValues('frmClients', '', $('#action').val()).done(function() {
+        var action = $('#action').val(); 
+        showValues('frmClients', '', action).done(function() {
 
             w2utils.date(new Date());
+            const client_idno = document.getElementById("client_idno").value;
+            if (ctype == 'GMEM') {
 
-            if (ctype == 'M') {
+             //   $('#client_idno').val(ajaxdatadiv);
 
-                $('#client_idno').val(theid);
-
-                showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', theid).done(function() {
-
-                });
+            const client_idno = document.getElementById("client_idno").value;
+                showValues('frmClients', 'grdgrpMembers', action, 'GMEM', 'load.php', client_idno)
             } 
+
             
             newPage(ctype)       
 
         });
-
-
     });
 
+    $("#btnAddMem").click(function(event) {
+        const ctype = 'M';
+        const client_idno = document.getElementById("client_idno").value;
+        const actionValue = document.getElementById("action").value;
+        
+        try {
+            showValues('frmClients', 'grdgrpMembers', actionValue, 'GMEM', 'load.php', client_idno, true);
+            newPage(ctype);
+        } catch (error) {
+            console.log('Error:', error);
+        }
+    });
 
     $(document).ready(function() {
         w2utils.date(new Date());

@@ -36,7 +36,7 @@ if (isset($_GET['page'])) {
     $newgrid->queryoptions['start'] = 0;
     $newgrid->queryoptions['page'] = 1;
     $newgrid->queryoptions['sortorder'] = 'ASC';
-    $newgrid->queryoptions['container'] = isset($_POST['theid'])?$_POST['theid']:'';
+    $newgrid->queryoptions['container'] = isset($_POST['keyparam'])?$_POST['keyparam']:'';
     $newgrid->queryoptions['searchterm'] = isset($_POST['searchterm'])?$_POST['searchterm']:'';
 }
 
@@ -332,7 +332,7 @@ if ($_POST['action'] == 'search') {
         case 'USERS': // Users
             $actionlinks = "<a href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$('body').data('gridchk'),'eval','','addedit.php')\" ><img src='images/edit.png' border='0'></a><a href='#'  onClick=\"getinfo('" . $frmid . "',$('body').data('gridchk'),'delete','','addedit.php')\"><img src='images/delete.png' border='0'></a>";
 
-            // $onclick = "$('#theid').val($(this).val());";
+            // $onclick = "$('#keyparam').val($(this).val());";
             $newgrid->cPage = 'USERS';
 
             if (isset($_GET['searchterm'])) {
@@ -439,7 +439,7 @@ if ($_POST['action'] == 'search') {
 
         case 'LOANFEES': // Loans for Approval
             Common::getlables("272", "", "", $Conn);
-            $actionlinks = "<a href='#'  onClick=\"showValues('" . $frmid . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" title ='" . Common::$lablearray['272'] . "'><img src='images/plus.gif' border='0'></a>";
+            $actionlinks = "<a href='#'  onClick=\"showValues('" . $frmid . "','','edit','','load.php',$( 'body').data( 'gridchk'))\" title ='" . Common::$lablearray['272'] . "'><img src='images/plus.gif' border='0'></a>";
 
             $onclick = "checkunckeck(this.value);";
             if (isset($_GET['searchterm'])) {
@@ -457,7 +457,7 @@ if ($_POST['action'] == 'search') {
         case 'LOANAPPROVE': // Loans for Approval
 
             $actionlinks = "";
-            $onclick = "$('#theid').val($(this).val());";
+            $onclick = "$('#keyparam').val($(this).val());";
             $newgrid->cPage = 'LOANAPPROVE';
 
             if (isset($_GET['searchterm'])) {
@@ -477,7 +477,7 @@ if ($_POST['action'] == 'search') {
 //        case 'LOANAPPROVE': // Loans for Approval
 //            // $actionlinks = "<a href='#'  onClick=\"getinfo('".$_POST['frmid']."',bvar.data('gridchk'),'edit','','load.php')\" title ='".$grid_lables_lablearray['272']."'><img src='images/edit.png' border='0'></a><a href='#'  onClick=\"getinfo('".$frmid."',bvar.data('gridchk'),'delete','','addedit.php')\" title ='".$grid_lables_lablearray['272']."'><img src='images/delete.png' border='0'></a>";
 //            $actionlinks = "";
-//            $onclick = "$('#theid').val($(this).val());";
+//            $onclick = "$('#keyparam').val($(this).val());";
 //            $newgrid->cPage = 'LOANAPPROVE';
 //
 //            if (isset($_GET['searchterm'])) {
@@ -545,7 +545,7 @@ if ($_POST['action'] == 'search') {
         case 'CURRENCYDENO':
             Common::getlables("1693", "", "", $Conn);
 
-            if ($_POST['theid'] == 'savdata'):
+            if ($_POST['keyparam'] == 'savdata'):
                 echo "MSG " . Common::$lablearray['1199'];
                 exit();
             endif;
@@ -557,7 +557,7 @@ if ($_POST['action'] == 'search') {
             NewGrid::$fieldlist = array('currencydeno_id','currencydeno_id', 'currencydeno_deno','currencies_id');
             NewGrid::$sSQL = " FROM " . TABLE_CURRENCYDENO; 
             NewGrid::$searchcatparam = $pageparams;
-            NewGrid::$grid_id = 'grid_' . $_POST['theid'];
+            NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
             NewGrid::$request = $_POST;
             
            // if(isset($_POST['keyparam'])):
@@ -585,7 +585,7 @@ if ($_POST['action'] == 'search') {
 
             Common::getlables("9,654,657,658,272", "", "", $Conn);
 
-            if ($_POST['theid'] == 'savdata'):
+            if ($_POST['keyparam'] == 'savdata'):
                 echo "MSG " . Common::$lablearray['1199'];
                 exit();
             endif;
@@ -597,7 +597,7 @@ if ($_POST['action'] == 'search') {
             NewGrid::$fieldlist = array('currencies_id','currencies_id', 'currencies_name', 'currencies_code', 'currencies_decimalplaces', 'currencies_isbase');
             NewGrid::$sSQL = " FROM " . TABLE_CURRENCIES; 
             NewGrid::$searchcatparam = $pageparams;
-            NewGrid::$grid_id = 'grid_' . $_POST['theid'];
+            NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
 
             NewGrid::$request = $_POST;
 
@@ -702,7 +702,7 @@ if ($_POST['action'] == 'search') {
 
                 common::getlables("21,1143,300,20,1144,1145,1688,1688,1105,1181,1160,1687,1686", "", "", Common::$connObj);
 
-                $dues_results = $Conn->SQLSelect("SELECT d.due_id theid,d.due_date ddate,d.due_principal principal,d.due_interest interest,d.due_penalty penalty,d.due_commission commission,members_idno FROM " . TABLE_DUES . " d WHERE d.loan_number='".$loan::$cLnr."'");
+                $dues_results = $Conn->SQLSelect("SELECT d.due_id keyparam,d.due_date ddate,d.due_principal principal,d.due_interest interest,d.due_penalty penalty,d.due_commission commission,members_idno FROM " . TABLE_DUES . " d WHERE d.loan_number='".$loan::$cLnr."'");
 
                 $html = "<p align='right'>" . common::$lablearray['21'] . " <input id='txtsearchterm' name='txtsearchterm' value='' size=50 placeholder='Loan Number'></p>";
 
@@ -729,7 +729,7 @@ if ($_POST['action'] == 'search') {
                         $html .= "<tr><td colspan='7'>member Name</td></tr>";
                     endif;
 
-                    $html .= "<tr><td><input class='chkgrd' type='checkbox' id='ID_" . $thevalue['due_id'] . "' name='due_id[]' value='" . $thevalue['due_id'] . "'></td><td><input size='12' type='us-date' data-dojo-type='dijit/form/DateTextBox' id='DATE_" . $thevalue['theid'] . "' name='DATE_" . $thevalue['theid'] . "' value='" . Common::changeMySQLDateToPageFormat($thevalue['ddate']) . "'></td><td><input type='hidden' id='rowid_" . $thevalue['theid'] . "' name='rowid' value='" . $thevalue['theid'] . "'><input size='15' class='princ' type='text' id='PRINC_" . $thevalue['theid'] . "' name='PRINC_" . $thevalue['theid'] . "' value='" . $thevalue['principal'] . "'></td><td><input size='15' type='text' id='INT_" . $thevalue['theid'] . "' name='INT_" . $thevalue['theid'] . "' value='" . $thevalue['interest'] . "'></td><td><input size='15' type='text' id='COMM_" . $thevalue['theid'] . "' name='COMM_" . $thevalue['theid'] . "' value='" . $thevalue['commission'] . "'></td><td><input size='15' type='text' id='PEN_" . $thevalue['theid'] . "' name='PEN_" . $thevalue['theid'] . "' value='" . $thevalue['penalty'] . "'></td><td><input type='text' size='4' id='OTH_" . $thevalue['theid'] . "' name='OTH_" . $thevalue['theid'] . "' value='0.0'></td></tr>";
+                    $html .= "<tr><td><input class='chkgrd' type='checkbox' id='ID_" . $thevalue['due_id'] . "' name='due_id[]' value='" . $thevalue['due_id'] . "'></td><td><input size='12' type='us-date' data-dojo-type='dijit/form/DateTextBox' id='DATE_" . $thevalue['keyparam'] . "' name='DATE_" . $thevalue['keyparam'] . "' value='" . Common::changeMySQLDateToPageFormat($thevalue['ddate']) . "'></td><td><input type='hidden' id='rowid_" . $thevalue['keyparam'] . "' name='rowid' value='" . $thevalue['keyparam'] . "'><input size='15' class='princ' type='text' id='PRINC_" . $thevalue['keyparam'] . "' name='PRINC_" . $thevalue['keyparam'] . "' value='" . $thevalue['principal'] . "'></td><td><input size='15' type='text' id='INT_" . $thevalue['keyparam'] . "' name='INT_" . $thevalue['keyparam'] . "' value='" . $thevalue['interest'] . "'></td><td><input size='15' type='text' id='COMM_" . $thevalue['keyparam'] . "' name='COMM_" . $thevalue['keyparam'] . "' value='" . $thevalue['commission'] . "'></td><td><input size='15' type='text' id='PEN_" . $thevalue['keyparam'] . "' name='PEN_" . $thevalue['keyparam'] . "' value='" . $thevalue['penalty'] . "'></td><td><input type='text' size='4' id='OTH_" . $thevalue['keyparam'] . "' name='OTH_" . $thevalue['keyparam'] . "' value='0.0'></td></tr>";
                     
                     $prevmemno = $thevalue['members_idno'];
 
@@ -799,12 +799,12 @@ if ($_POST['action'] == 'search') {
           
             NewGrid::$fieldlist = array('entity_idno','entity_name','entity_regdate','entity_enddate');
            
-            NewGrid::$grid_id = 'grid_'.($_POST['theid']??'');
+            NewGrid::$grid_id = 'grid_'.($_POST['keyparam']??'');
             NewGrid::$request = $_POST;
             NewGrid::$sSQL = $query;       
             NewGrid::$order =' ORDER BY c.entity_idno DESC ';
             NewGrid::$searchcatparam = $pageparams;
-
+            
             echo NewGrid::getData();            
        
             exit();
@@ -816,7 +816,7 @@ if ($_POST['action'] == 'search') {
             $query = Savings::getClientDetails($pageparams, "", $cWhere);
          
             NewGrid::$actionlinks = "<a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='small'><img src='images/icons/pencil.png' border='0'></span>";
-            NewGrid::$grid_id = 'grid_'.($_POST['theid']??'');
+            NewGrid::$grid_id = 'grid_'.($_POST['keyparam']??'');
             NewGrid::$request = $_POST;
             NewGrid::$sSQL = $query;       
             NewGrid::$order =' ORDER BY c.client_idno DESC ';
@@ -856,7 +856,7 @@ if ($_POST['action'] == 'search') {
 
         case 'CDOCS':
 
-            $query = "SELECT d.document_id,d.document_serial,documenttypes_name_en documenttype,d.document_issuedate,d.document_docexpiry,d.document_issueauthority FROM " .TABLE_DOCUMENT . " d, ".TABLE_DOCUMENTTYPES." t WHERE d.clientcode='".$_POST['theid']."' AND t.documenttypes_id=d.documenttypes_id";
+            $query = "SELECT d.document_id,d.document_serial,documenttypes_name_en documenttype,d.document_issuedate,d.document_docexpiry,d.document_issueauthority FROM " .TABLE_DOCUMENT . " d, ".TABLE_DOCUMENTTYPES." t WHERE d.clientcode='".$_POST['keyparam']."' AND t.documenttypes_id=d.documenttypes_id";
             $fieldlist = array('documenttype', 'document_serial', 'document_issuedate','document_docexpiry', 'document_issueauthority');
             $newgrid->keyfield = 'document_id';
             Common::getlables("1734,277,905,1062,628", "", "", $Conn);
@@ -878,7 +878,7 @@ if ($_POST['action'] == 'search') {
             NewGrid::$fieldlist = array('transactioncode', 'transactioncode', 'tday', 'noofshares', 'norminalval', 'sharevalue');
             NewGrid::$sSQL = " FROM " . TABLE_SHATRANSACTIONS; //." WHERE savaccounts_account='".$_GET['account']."' AND product_prodid='".$_GET['product_prodid']."' AND members_idno='".Common::replaces_underscores($_GET['memid'])."'";
             NewGrid::$searchcatparam = $pageparams;
-            NewGrid::$grid_id = 'grid_' . $_POST['theid'];
+            NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
 
             NewGrid::$request = $_POST;
 
@@ -896,7 +896,7 @@ if ($_POST['action'] == 'search') {
             
             Common::getlables("317,301,1208,271,1287,1265,1287,249,1199", "", "", $Conn);
 
-//            if ($_POST['theid'] == 'savdata'):
+//            if ($_POST['keyparam'] == 'savdata'):
 //                echo "MSG " . Common::$lablearray['1199'];
 //                exit();
 //            endif;
@@ -931,7 +931,7 @@ if ($_POST['action'] == 'search') {
             NewGrid::$fieldlist = array('transactioncode', 'transactioncode', 'savtransactions_tday', 'transactiontypes_code', 'savtransactions_amount', 'savtransactions_balance', 'cheqs_no');
             NewGrid::$sSQL = " FROM " . TABLE_SAVTRANSACTIONS; //." WHERE savaccounts_account='".$_GET['account']."' AND product_prodid='".$_GET['product_prodid']."' AND members_idno='".Common::replaces_underscores($_GET['memid'])."'";
             NewGrid::$searchcatparam = $pageparams;
-            NewGrid::$grid_id = 'grid_' . $_POST['theid'];
+            NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
 
             NewGrid::$request = $_POST;
 
@@ -995,7 +995,7 @@ if ($_POST['action'] == 'search') {
             NewGrid::$sSQL = $query;
             NewGrid::$searchcatparam = $pageparams;
             NewGrid::$columntitle = array('', Common::$lablearray['296'], Common::$lablearray['9'], Common::$lablearray['1633']);
-            NewGrid::$grid_id = 'grid_' . $_POST['theid'];
+            NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
 
             if (isset($_POST['grid_id'])):
               //   print_r($_POST);                
@@ -1239,9 +1239,9 @@ switch ($_POST['frmid']) {
     case 'frmsms':
         switch ($_POST['action']) {
             case 'edit':
-                $message_results = $Conn->SQLSelect("SELECT * FROM " . TABLE_DEVICEMESSAGE . " WHERE devicemessage_id='" . $_POST['theid'] . "'");
+                $message_results = $Conn->SQLSelect("SELECT * FROM " . TABLE_DEVICEMESSAGE . " WHERE devicemessage_id='" . $_POST['keyparam'] . "'");
                 Common::push_element_into_array($main_array, 'action', 'add');
-                Common::push_element_into_array($main_array, 'theid', $message_results[0]['devicemessage_id']);
+                Common::push_element_into_array($main_array, 'keyparam', $message_results[0]['devicemessage_id']);
                 Common::push_element_into_array($main_array, 'txtDateCreated', $message_results[0]['devicemessage_date']);
                 Common::push_element_into_array($main_array, 'txtNumber', $message_results[0]['tel']);
                 Common::push_element_into_array($main_array, 'txtMessage', $message_results[0]['devicemessage_msg']);
@@ -1287,10 +1287,10 @@ switch ($_POST['frmid']) {
     case 'frmmodemsettings':
         switch ($_POST['action']) {
             case 'edit':
-                $modem_results = $Conn->SQLSelect("SELECT * FROM " . TABLE_MODEM . " WHERE modem_id='" . $_POST['theid'] . "'");
+                $modem_results = $Conn->SQLSelect("SELECT * FROM " . TABLE_MODEM . " WHERE modem_id='" . $_POST['keyparam'] . "'");
 
                 Common::push_element_into_array($main_array, 'action', 'update');
-                Common::push_element_into_array($main_array, 'theid', $modem_results[0]['modem_id']);
+                Common::push_element_into_array($main_array, 'keyparam', $modem_results[0]['modem_id']);
                 Common::push_element_into_array($main_array, 'txtDevice', $modem_results[0]['modem_name']);
                 Common::push_element_into_array($main_array, 'cmbBitsPerSecond', $modem_results[0]['modem_bitrate']);
                 Common::push_element_into_array($main_array, 'txtPort', $modem_results[0]['modem_port']);
@@ -1306,7 +1306,7 @@ switch ($_POST['frmid']) {
     case 'frmuserroles':
         switch ($_POST['action']) {
             case 'edit':
-                $userroles_results = $Conn->SQLSelect("SELECT user_id, user_username,concat(user_username,' ',user_firstname,' ',user_lastname) as Name,user_email_address,last_login FROM " . TABLE_USERS . " WHERE user_id='" . $_POST['theid'] . "'");
+                $userroles_results = $Conn->SQLSelect("SELECT user_id, user_username,concat(user_username,' ',user_firstname,' ',user_lastname) as Name,user_email_address,last_login FROM " . TABLE_USERS . " WHERE user_id='" . $_POST['keyparam'] . "'");
 
                 Common::push_element_into_array($main_array, 'action', 'update');
                 Common::push_element_into_array($main_array, 'user_id', $userroles_results[0]['user_id']);
@@ -1315,7 +1315,7 @@ switch ($_POST['frmid']) {
                 Common::push_element_into_array($main_array, 'user_email_address', $userroles_results[0]['user_email_address']);
                 Common::push_element_into_array($main_array, 'last_login', $userroles_results[0]['last_login']);
 
-                $roles_array = $Conn->SQLSelect("SELECT r.roles_id,COALESCE(u.user_id,'')user_id FROM " . TABLE_ROLES . ' r LEFT JOIN ' . TABLE_USERROLES . " u ON u.roles_id=r.roles_id AND  u.user_id='" . $_POST['theid'] . "'");
+                $roles_array = $Conn->SQLSelect("SELECT r.roles_id,COALESCE(u.user_id,'')user_id FROM " . TABLE_ROLES . ' r LEFT JOIN ' . TABLE_USERROLES . " u ON u.roles_id=r.roles_id AND  u.user_id='" . $_POST['keyparam'] . "'");
 
                 foreach ($roles_array as $key => $val):
                     if ($val['user_id'] != ""):
@@ -1338,7 +1338,7 @@ switch ($_POST['frmid']) {
 
         switch ($_POST['action']) {
             case 'edit':
-//                $roles_results = $Conn->SQLSelect("SELECT roles_id,".$roles_name." as roles_name FROM " . TABLE_ROLES . " WHERE  roles_id='" . tep_db_prepare_input($_POST['theid']) . "'");
+//                $roles_results = $Conn->SQLSelect("SELECT roles_id,".$roles_name." as roles_name FROM " . TABLE_ROLES . " WHERE  roles_id='" . tep_db_prepare_input($_POST['keyparam']) . "'");
                 Common::push_element_into_array($main_array, 'roles_id', $roles_results[0]['roles_id']);
                 Common::push_element_into_array($main_array, 'roles_name', $roles_results[0]['roles_name']);
                 Common::push_element_into_array($main_array, 'action', 'update');
@@ -1383,7 +1383,7 @@ switch ($_POST['frmid']) {
 
     case 'frmfees':
 
-        $loan_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT loan_number,client_idno FROM " . TABLE_LOAN . "  WHERE loan_number='" . tep_db_prepare_input($_POST['theid']) . "'"));
+        $loan_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT loan_number,client_idno FROM " . TABLE_LOAN . "  WHERE loan_number='" . tep_db_prepare_input($_POST['keyparam']) . "'"));
         Common::push_element_into_array($main_array, 'txtlnr', $loan_array['loan_number']);
         Common::push_element_into_array($main_array, 'client_idno', $loan_array['client_idno']);
         $jason = json_encode(array('data' => $main_array));
@@ -1395,7 +1395,7 @@ switch ($_POST['frmid']) {
 
         switch ($_POST['action']) {
             case 'edit':
-                $client_array = $Conn->SQLSelect("SELECT client_idno,savaccounts_account,product_prodid FROM " . TABLE_SAVACCOUNTS . "  WHERE savaccounts_id='" . tep_db_prepare_input($_POST['theid']) . "'");
+                $client_array = $Conn->SQLSelect("SELECT client_idno,savaccounts_account,product_prodid FROM " . TABLE_SAVACCOUNTS . "  WHERE savaccounts_id='" . tep_db_prepare_input($_POST['keyparam']) . "'");
 
                 Common::push_element_into_array($main_array, 'client_idno',$client_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'savaccounts_account', $client_array[0]['savaccounts_account']);
@@ -1465,7 +1465,7 @@ switch ($_POST['frmid']) {
 
     case 'frmLoanapp3':
 
-        $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT client_idno FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['theid']) . "'"));
+        $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT client_idno FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'"));
 
         switch ($_POST['keyparam']) {
             case 'LOANDISBURSE':
@@ -1497,13 +1497,13 @@ switch ($_POST['frmid']) {
 
             case 'edit':
 
-                if (preg_match('[G]', $_POST['theid']) || preg_match('[B]', $_POST['theid'])):
+                if (preg_match('[G]', $_POST['keyparam']) || preg_match('[B]', $_POST['keyparam'])):
 
-                    $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT * FROM " . TABLE_ENTITY . "  WHERE entity_idno='" . tep_db_prepare_input($_POST['theid']) . "'"));
+                    $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT * FROM " . TABLE_ENTITY . "  WHERE entity_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'"));
                     Common::push_element_into_array($main_array, 'client_idno', $client_array['entity_idno']);
                     Common::push_element_into_array($main_array, 'client_regdate', Common::changeMySQLDateToPageFormat($client_array['entity_regdate']));
                     Common::push_element_into_array($main_array, 'div_name', $client_array['entity_name']);
-                    Common::push_element_into_array($main_array, 'theid', $_POST['theid']);
+                    Common::push_element_into_array($main_array, 'keyparam', $_POST['keyparam']);
                     Common::push_element_into_array($main_array, 'entity_name', $client_array['entity_name']);
                     Common::push_element_into_array($main_array, 'client_postad', $client_array['entity_postad']);
                     Common::push_element_into_array($main_array, 'client_city', $client_array['entity_city']);
@@ -1516,13 +1516,13 @@ switch ($_POST['frmid']) {
                     Common::push_element_into_array($main_array, 'branch_code', $client_array['branch_code']);
                     Common::push_element_into_array($main_array, 'costcenters_code', $client_array['costcenters_code']);
                     
-                elseif (preg_match('[I]', $_POST['theid'])):
+                elseif (preg_match('[I]', $_POST['keyparam'])):
 
-                    $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT * FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['theid']) . "'"));
+                    $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT * FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'"));
                     Common::push_element_into_array($main_array, 'branch_code', $client_array['branch_code']);
                     Common::push_element_into_array($main_array, 'clientcode', $client_array['clientcode']);
                     Common::push_element_into_array($main_array, 'client_idno', $client_array['client_idno']);
-                    Common::push_element_into_array($main_array, 'theid', $client_array['client_idno']);
+                    Common::push_element_into_array($main_array, 'keyparam', $client_array['client_idno']);
                     Common::push_element_into_array($main_array, 'div_name', $client_array['client_surname'] . ' ' . $client_array['client_middlename'] . ' ' . $client_array['client_firstname'] . '<br>' . $client_array['client_idno']);
                     Common::push_element_into_array($main_array, 'branch_code', $client_array['branch_code']);
                     Common::push_element_into_array($main_array, 'client_firstname', $client_array['client_firstname']);
@@ -1555,12 +1555,12 @@ switch ($_POST['frmid']) {
                
                   
 
-                elseif (preg_match('[M]', $_POST['theid'])):
+                elseif (preg_match('[M]', $_POST['keyparam'])):
 
-                    $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT * FROM " . TABLE_MEMBERS . "  WHERE members_idno='" . $_POST['theid'] . "'"));
+                    $client_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT * FROM " . TABLE_MEMBERS . "  WHERE members_idno='" . $_POST['keyparam'] . "'"));
 
                     Common::push_element_into_array($main_array, 'branch_code', $client_array['branch_code']);
-                    Common::push_element_into_array($main_array, 'theid', $client_array['entity_idno']);
+                    Common::push_element_into_array($main_array, 'keyparam', $client_array['entity_idno']);
                     Common::push_element_into_array($main_array, 'client_idno', $client_array['entity_idno']);
                     Common::push_element_into_array($main_array, 'members_idno', $client_array['members_idno']);
                     Common::push_element_into_array($main_array, 'member_no', $client_array['members_no']);
@@ -1605,18 +1605,18 @@ switch ($_POST['frmid']) {
         switch ($_POST['action']) {
             case 'edit':
             case 'eval':
-                $rolesmodule_results = $Conn->SQLSelect("SELECT modules_id FROM " . TABLE_ROLESMODULES . " WHERE roles_id='" . $_POST['theid'] . "'");
+                $rolesmodule_results = $Conn->SQLSelect("SELECT modules_id FROM " . TABLE_ROLESMODULES . " WHERE roles_id='" . $_POST['keyparam'] . "'");
 
                 // Common::push_element_into_array($main_array, 'action', $_POST['action']);
                 $main_array = array();
-                Common::push_element_into_array($main_array, 'theid', $_POST['theid']);
-                Common::push_element_into_array($main_array, 'roles_id', $_POST['theid']);
+                Common::push_element_into_array($main_array, 'keyparam', $_POST['keyparam']);
+                Common::push_element_into_array($main_array, 'roles_id', $_POST['keyparam']);
 
                 foreach ($rolesmodule_results as $key => $val):
                     Common::push_element_into_array($main_array, 'Modules' . $val['modules_id'], $val['modules_id']);
                 endforeach;
 
-                $cashacc_results = $Conn->SQLSelect("SELECT chartofaccounts_accountcode FROM " . TABLE_ROLESCASHACCOUNTS . " WHERE roles_id='" . $_POST['theid'] . "'");
+                $cashacc_results = $Conn->SQLSelect("SELECT chartofaccounts_accountcode FROM " . TABLE_ROLESCASHACCOUNTS . " WHERE roles_id='" . $_POST['keyparam'] . "'");
 
 
                 foreach ($cashacc_results as $key => $val):
@@ -1637,7 +1637,7 @@ switch ($_POST['frmid']) {
         switch ($_POST['action']) {
 
             case 'eval':
-                $data_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT  c.flag,cc.currencies_id,c.flag,c.currencies_code,cc.cashaccounts_id, cc.cashaccounts_name,cc.chartofaccounts_accountcode FROM " . TABLE_CASHACCOUNTS . " cc LEFT JOIN " . TABLE_CURRENCIES . " c ON c.currencies_id=cc.currencies_id WHERE cashaccounts_id='" . $_POST['theid'] . "'"));
+                $data_array = call_user_func_array('array_merge', $Conn->SQLSelect("SELECT  c.flag,cc.currencies_id,c.flag,c.currencies_code,cc.cashaccounts_id, cc.cashaccounts_name,cc.chartofaccounts_accountcode FROM " . TABLE_CASHACCOUNTS . " cc LEFT JOIN " . TABLE_CURRENCIES . " c ON c.currencies_id=cc.currencies_id WHERE cashaccounts_id='" . $_POST['keyparam'] . "'"));
                 echo "formObj.action.value = 'update';\n";
                 echo "formObj.cashaccounts_id.value = '" . $data_array['cashaccounts_id'] . "';\n";
                 echo "formObj.cashaccounts_name.value = '" . $data_array['cashaccounts_name'] . "';\n";
@@ -1738,12 +1738,12 @@ switch ($_POST['frmid']) {
 
             case 'loadform':
 
-                $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['theid']) . "'", TRUE);
+                $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);
                 // $savacc_array = tep_db_fetch_array($savacc_query);
                 Common::push_element_into_array($main_array, 'client_idno', $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'infoBox', $savacc_array[0]['Name'] . " : " . $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'action', 'add');
-              //  Common::push_element_into_array($main_array, 'theid', '');
+              //  Common::push_element_into_array($main_array, 'keyparam', '');
               //  Common::push_element_into_array($main_array, 'product_prodid', '');
               //  Common::push_element_into_array($main_array, 'txtOpenDate', '');
                // Common::push_element_into_array($main_array, 'txtsavaccount', '');
@@ -1753,11 +1753,11 @@ switch ($_POST['frmid']) {
                 break;
 
             default:
-//                $savacc_query = tep_db_query("SELECT CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name,s.savaccounts_id,s.client_idno,savaccounts_account,s.product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_VCLIENTS . " c LEFT OUTER JOIN  " . TABLE_SAVACCOUNTS . " s ON c.client_idno=s.client_idno AND  s.savaccounts_id='" . tep_db_prepare_input($_POST['theid']) . "'");
+//                $savacc_query = tep_db_query("SELECT CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name,s.savaccounts_id,s.client_idno,savaccounts_account,s.product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_VCLIENTS . " c LEFT OUTER JOIN  " . TABLE_SAVACCOUNTS . " s ON c.client_idno=s.client_idno AND  s.savaccounts_id='" . tep_db_prepare_input($_POST['keyparam']) . "'");
 //                $savacc_array = tep_db_fetch_array($savacc_query);
 //                Common::push_element_into_array($main_array, 'client_idno', $savacc_array['client_idno']);
 //                Common::push_element_into_array($main_array, 'action', 'update');
-//                Common::push_element_into_array($main_array, 'theid', $savacc_array['savaccounts_id']);
+//                Common::push_element_into_array($main_array, 'keyparam', $savacc_array['savaccounts_id']);
 //                Common::push_element_into_array($main_array, 'InfoBox', $savacc_array['Name'] . " : " . $savacc_array['client_idno']);
 //                Common::push_element_into_array($main_array, 'product_prodid', $savacc_array['product_prodid']);
 //                Common::push_element_into_array($main_array, 'txtOpenDate', Common::changeMySQLDateToPageFormat($savacc_array['savaccounts_opendate']));
@@ -1774,12 +1774,12 @@ switch ($_POST['frmid']) {
            
             case 'loadform':
             case 'edit':    
-                $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['theid']) . "'", TRUE);
+                $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);
                 // $savacc_array = tep_db_fetch_array($savacc_query);
                 Common::push_element_into_array($main_array, 'client_idno', $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'InfoBox', $savacc_array[0]['Name'] . " : " . $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'action', 'add');
-                Common::push_element_into_array($main_array, 'theid', '');
+                Common::push_element_into_array($main_array, 'keyparam', '');
                 Common::push_element_into_array($main_array, 'product_prodid', '');
                 Common::push_element_into_array($main_array, 'txtOpenDate', '');
                 Common::push_element_into_array($main_array, 'txtsavaccount', '');
@@ -1789,11 +1789,11 @@ switch ($_POST['frmid']) {
                 break;
 
             default:
-                $savacc_query = tep_db_query("SELECT CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name,s.savaccounts_id,c.client_idno,savaccounts_account,s.product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_VCLIENTS . " c LEFT OUTER JOIN  " . TABLE_SAVACCOUNTS . " s ON c.client_idno=s.client_idno AND  s.client_idno='" . tep_db_prepare_input($_POST['theid']) . "'");
+                $savacc_query = tep_db_query("SELECT CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name,s.savaccounts_id,c.client_idno,savaccounts_account,s.product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_VCLIENTS . " c LEFT OUTER JOIN  " . TABLE_SAVACCOUNTS . " s ON c.client_idno=s.client_idno AND  s.client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'");
                 $savacc_array = tep_db_fetch_array($savacc_query);
                 Common::push_element_into_array($main_array, 'client_idno', $savacc_array['client_idno']);
                 Common::push_element_into_array($main_array, 'action', 'update');
-                Common::push_element_into_array($main_array, 'theid', $savacc_array['savaccounts_id']);
+                Common::push_element_into_array($main_array, 'keyparam', $savacc_array['savaccounts_id']);
                 Common::push_element_into_array($main_array, 'InfoBox', $savacc_array['Name'] . " : " . $savacc_array['client_idno']);
                 Common::push_element_into_array($main_array, 'product_prodid', $savacc_array['product_prodid']);
                 Common::push_element_into_array($main_array, 'txtOpenDate', Common::changeMySQLDateToPageFormat($savacc_array['savaccounts_opendate']));
@@ -1811,7 +1811,7 @@ switch ($_POST['frmid']) {
         switch ($_POST['action']) {
 
             case 'loadform':
-                $results = $Conn->SQLSelect("SELECT IF(ISNULL(SUM(generalledger_debit)),0,SUM(generalledger_debit))-IF(ISNULL(SUM(generalledger_credit)),0,SUM(generalledger_credit)) as bal FROM " . TABLE_GENERALLEDGER . "  WHERE  chartofaccounts_accountcode='" . $_POST['theid'] . "'");
+                $results = $Conn->SQLSelect("SELECT IF(ISNULL(SUM(generalledger_debit)),0,SUM(generalledger_debit))-IF(ISNULL(SUM(generalledger_credit)),0,SUM(generalledger_credit)) as bal FROM " . TABLE_GENERALLEDGER . "  WHERE  chartofaccounts_accountcode='" . $_POST['keyparam'] . "'");
                 Common::push_element_into_array($main_array, 'txtBalance', $results[0]['bal']);
                 $jason = json_encode(array('data' => $main_array));
                 $jason = str_replace("\\\\", '', $jason);
@@ -1859,13 +1859,13 @@ switch ($_POST['frmid']) {
             case 'add':
                 Common::getlables("1664,1694,1199,470", "", "", $Conn);
 
-                if (!isset($_POST['theid'])):
+                if (!isset($_POST['keyparam'])):
                     echo "MSG " . Common::$lablearray['1199'];
                     exit();
                 endif;
 
                 Savings::$asatdate = '';
-                Savings::$savaccid = Common::tep_db_prepare_input($_POST['theid']);
+                Savings::$savaccid = Common::tep_db_prepare_input($_POST['keyparam']);
 
 
                 Savings::getSavingsBalance();
@@ -1875,7 +1875,7 @@ switch ($_POST['frmid']) {
 
                     Common::push_element_into_array($main_array, 'client_idno', $balarray['client_idno']);
                     Common::push_element_into_array($main_array, 'action', 'add');
-                    Common::push_element_into_array($main_array, 'theid', Savings::$savaccid);
+                    Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
                     Common::push_element_into_array($main_array, 'product_prodid', $balarray['product_prodid']);
                     Common::push_element_into_array($main_array, 'div_name', $balarray['name']);
 
@@ -1888,7 +1888,7 @@ switch ($_POST['frmid']) {
 
                     Common::push_element_into_array($main_array, 'client_idno', $balarray[0]['client_idno']);
                     Common::push_element_into_array($main_array, 'action', 'add');
-                    Common::push_element_into_array($main_array, 'theid', Savings::$savaccid);
+                    Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
                     Common::push_element_into_array($main_array, 'product_prodid', $balarray[0]['product_prodid']);
                     Common::push_element_into_array($main_array, 'div_name', $balarray[0]['name']);
 
@@ -2029,17 +2029,17 @@ switch ($_POST['frmid']) {
             case 'edit':
             case 'loadform':
                 // check see if a transaction is selected
-                if ($_POST['theid'] == ''):
+                if ($_POST['keyparam'] == ''):
                     Common::getlables("1339", "", "", Common::$connObj);
                     echo "MSG " . Common::$lablearray['1339'];
                     exit();
                 endif;
 
-                Tdeposit::$transactioncode = Common::tep_db_prepare_input($_POST['theid']);
+                Tdeposit::$transactioncode = Common::tep_db_prepare_input($_POST['keyparam']);
 
                 $tdeposit_array = Tdeposit::getTimeDeposit();
 
-                // $tdeposit_array = $Conn->SQLSelect("SELECT timedeposit_status FROM " . TABLE_TDEPOSITTRANS . " tr,".TABLE_TDEPOSIT." t WHERE  tr.timedeposit_number=t.timedeposit_number  AND tr.transactioncode='" .$theid."'");
+                // $tdeposit_array = $Conn->SQLSelect("SELECT timedeposit_status FROM " . TABLE_TDEPOSITTRANS . " tr,".TABLE_TDEPOSIT." t WHERE  tr.timedeposit_number=t.timedeposit_number  AND tr.transactioncode='" .$keyparam."'");
 
                 if ($tdeposit_array[0]['timedeposit_status'] == 'TW'):
                     Common::getlables("1612", "", "", Common::$connObj);
@@ -2055,7 +2055,7 @@ switch ($_POST['frmid']) {
 //                endif;
 //                               
                 // get time deposit details
-                //  $tdeposit_array = $Conn->SQLSelect("SELECT t.product_prodid, tr.timedeposit_number,tr.timedeposit_interestrate,tr.timedeposit_intamt,tr.timedeposit_amount,tr.timedeposit_period,tr.timedeposit_instype,tr.timedeposit_freq,tr.timedeposit_matval,tr.timedeposit_matdate,tr.timedeposit_intcapital,tr.timedeposit_status FROM " . TABLE_TDEPOSITTRANS . " tr,".TABLE_TDEPOSIT." t WHERE  tr.timedeposit_number=t.timedeposit_number  AND tr.transactioncode='" .$theid."'");
+                //  $tdeposit_array = $Conn->SQLSelect("SELECT t.product_prodid, tr.timedeposit_number,tr.timedeposit_interestrate,tr.timedeposit_intamt,tr.timedeposit_amount,tr.timedeposit_period,tr.timedeposit_instype,tr.timedeposit_freq,tr.timedeposit_matval,tr.timedeposit_matdate,tr.timedeposit_intcapital,tr.timedeposit_status FROM " . TABLE_TDEPOSITTRANS . " tr,".TABLE_TDEPOSIT." t WHERE  tr.timedeposit_number=t.timedeposit_number  AND tr.transactioncode='" .$keyparam."'");
                 //   $matdate = Tdeposit::$tdeposit_array[0]['timedeposit_matdate'];
                 //    $curdate = Common::getcurrentDateTime('D');
                 // check if time deposit is withdrawn
@@ -2071,7 +2071,7 @@ switch ($_POST['frmid']) {
 //                
 //                endif;
                 Common::push_element_into_array($main_array, 'action', 'update');
-                Common::push_element_into_array($main_array, 'theid', $_POST['theid']);
+                Common::push_element_into_array($main_array, 'keyparam', $_POST['keyparam']);
                 Common::push_element_into_array($main_array, 'client_idno', $tdeposit_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'txtmatvalue', $tdeposit_array[0]['timedeposit_matval']);
                 Common::push_element_into_array($main_array, 'txtmDate', Common::changeMySQLDateToPageFormat($tdeposit_array[0]['timedeposit_matdate']));
@@ -2129,12 +2129,12 @@ switch ($_POST['frmid']) {
             // case 'edit':
             case 'add':
 
-                $_POST['theid'] = Common::tep_db_prepare_input($_POST['theid']);
+                $_POST['keyparam'] = Common::tep_db_prepare_input($_POST['keyparam']);
 
 
-                if (preg_match('[G]', $_POST['theid'])):
+                if (preg_match('[G]', $_POST['keyparam'])):
 
-                    Clients::$clientid = Common::tep_db_prepare_input($_POST['theid']);
+                    Clients::$clientid = Common::tep_db_prepare_input($_POST['keyparam']);
 
                     Clients::getClientDetails(Clients::$clientid);
 
@@ -2158,13 +2158,13 @@ switch ($_POST['frmid']) {
 
                     Common::push_element_into_array($main_array, 'tab2', $mems);
                     Common::push_element_into_array($main_array, 'client_idno', Clients::$client_array[0]['entity_idno']);
-                // Common::push_element_into_array($main_array, 'theid', Clients::$client_array[0]['entity_idno']); 
+                // Common::push_element_into_array($main_array, 'keyparam', Clients::$client_array[0]['entity_idno']); 
 
                 else:
 
-                    Clients::$clientid = Common::tep_db_prepare_input($_POST['theid']);
+                    Clients::$clientid = Common::tep_db_prepare_input($_POST['keyparam']);
                     Clients::getClientDetails(Clients::$clientid);
-                    Common::push_element_into_array($main_array, 'theid', $_POST['theid']);
+                    Common::push_element_into_array($main_array, 'keyparam', $_POST['keyparam']);
                     Common::push_element_into_array($main_array, 'client_idno', Clients::$client_array[0]['client_idno']);
 
                 endif;
@@ -2235,12 +2235,12 @@ switch ($_POST['frmid']) {
                 // $formdata = array_flatten(objectToArray($objects['pageinfo']));
                 $formdata = Common::decodeSerialisedPagedata($_POST['pageparams']);
 
-                $theid = Common::tep_db_prepare_input($_POST['theid']);
+                $keyparam = Common::tep_db_prepare_input($_POST['keyparam']);
 
                Common::getlables("1348,1349,1589,1694", "", "", Common::$connObj);
                 // $lablearray = getlables("1348,1349,1589,");
 
-                if ($theid == "") :
+                if ($keyparam == "") :
                     echo 'INFO.' . Common::$lablearray['1348'];
                     exit();
                 endif;
@@ -2250,10 +2250,10 @@ switch ($_POST['frmid']) {
                     exit();
                 }
 
-                $loan = new Loan(array(), $theid);
+                $loan = new Loan(array(), $keyparam);
                 $loan::$paydate = Common::changeDateFromPageToMySQLFormat($formdata['txtpayDate'], true);
 
-                $loan::$cLnr = $theid;
+                $loan::$cLnr = $keyparam;
                 $loan::$clienttype = Common::getClientType($loan::$loanappdetails['client_idno']);
 
                 $loan::getDisbursements();
@@ -2486,12 +2486,12 @@ switch ($_POST['frmid']) {
     case 'frmLoanapp1':
 
         if ($_POST['keyparam'] == 'REFINANCE') {
-            $loan_array = $Conn->SQLSelect("SELECT loan_tint,loan_number,loan_noofinst FROM " . TABLE_LOAN . " WHERE loan_number='" . $_POST['theid'] . "'");
+            $loan_array = $Conn->SQLSelect("SELECT loan_tint,loan_number,loan_noofinst FROM " . TABLE_LOAN . " WHERE loan_number='" . $_POST['keyparam'] . "'");
             Common::push_element_into_array($main_array, 'action', 'update');
             Common::push_element_into_array($main_array, 'loan_number', $loan_array[0]['loan_number']);
             Common::push_element_into_array($main_array, 'txtintrate', $loan_array[0]['loan_tint']);
             Common::push_element_into_array($main_array, 'txtloan_noofinst', $loan_array[0]['loan_noofinst']);
-            Common::push_element_into_array($main_array, 'InfoBox', '' . $loan_array[0]['Name'] . ' ' . $_POST['theid'] );
+            Common::push_element_into_array($main_array, 'InfoBox', '' . $loan_array[0]['Name'] . ' ' . $_POST['keyparam'] );
             $jason = json_encode(array('data' => $main_array));
             $jason = str_replace("\\\\", '', $jason);
             echo $jason;
@@ -2499,7 +2499,7 @@ switch ($_POST['frmid']) {
         }
 
         if ($_POST['keyparam'] == 'LOANDISBURSE') {
-            $loan_array = $Conn->SQLSelect("SELECT loan_amount FROM " . TABLE_LOAN . " WHERE loan_number='" . $_POST['theid'] . "'");
+            $loan_array = $Conn->SQLSelect("SELECT loan_amount FROM " . TABLE_LOAN . " WHERE loan_number='" . $_POST['keyparam'] . "'");
             Common::push_element_into_array($main_array, 'txtAmount', $loan_array[0]['loan_amount']);
             Common::push_element_into_array($main_array, 'startDate', Common::getcurrentDateTime('D'));
             $jason = json_encode(array('data' => $main_array));
@@ -2509,11 +2509,11 @@ switch ($_POST['frmid']) {
         }
 
         if ($_POST['keyparam'] == 'CLIENTDETAILS') {
-            $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name FROM " . TABLE_VCLIENTS . " c WHERE  c.client_idno='" . tep_db_prepare_input($_POST['theid']) . "'");
+            $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name FROM " . TABLE_VCLIENTS . " c WHERE  c.client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'");
 
             Common::push_element_into_array($main_array, 'client_idno', $savacc_array[0]['client_idno']);
             Common::push_element_into_array($main_array, 'action', 'add');
-            Common::push_element_into_array($main_array, 'theid', $savacc_array[0]['client_idno']);
+            Common::push_element_into_array($main_array, 'keyparam', $savacc_array[0]['client_idno']);
             Common::push_element_into_array($main_array, 'InfoBox', $savacc_array[0]['Name']);
             $jason = json_encode(array('data' => $main_array));
             $jason = str_replace("\\\\", '', $jason);
@@ -2523,7 +2523,7 @@ switch ($_POST['frmid']) {
 
         if ($_POST['keyparam'] == 'MEM') {
             $main_array = array();
-            Clients::$clientid = $_POST['theid'];
+            Clients::$clientid = $_POST['keyparam'];
             Clients::getClientDetails();
             if (count(Clients::$members_array) > 0):
 
@@ -2578,7 +2578,7 @@ switch ($_POST['frmid']) {
 
             case 'grid':
 
-                //$ar = $Conn->SQLSelect("SELECT * FROM ".TABLE_DUES." WHERE loan_number='".tep_db_prepare_input($_POST['theid'])."'");
+                //$ar = $Conn->SQLSelect("SELECT * FROM ".TABLE_DUES." WHERE loan_number='".tep_db_prepare_input($_POST['keyparam'])."'");
                 //print_r($ar);
                 //echo json_encode(array("page"=>1,'records'=>$ar));
                 break 2;
@@ -2588,15 +2588,15 @@ switch ($_POST['frmid']) {
                 $main_array = array();
 
                 // CHECK SEE IF WE ARE PPLYING FOR ALOAN-CLIENT CODE IS SENT 
-                if (preg_match('[B]', $_POST['theid']) || preg_match('[G]', $_POST['theid']) || preg_match('[I]', $_POST['theid']) || preg_match('[M]', $_POST['theid'])):
-                    Clients::$clientid = $_POST['theid'];
+                if (preg_match('[B]', $_POST['keyparam']) || preg_match('[G]', $_POST['keyparam']) || preg_match('[I]', $_POST['keyparam']) || preg_match('[M]', $_POST['keyparam'])):
+                    Clients::$clientid = $_POST['keyparam'];
                     Clients::getClientDetails();
                     Common::push_element_into_array($main_array, 'action','data');
-                    Common::push_element_into_array($main_array, 'theid', $_POST['theid']);
+                    Common::push_element_into_array($main_array, 'keyparam', $_POST['keyparam']);
                     Common::push_element_into_array($main_array, 'div_name', Clients::$client_array[0]['name'] . ' ' . Clients::$client_array[0]['client_idno']);
                     $jason = json_encode(array('data' => $main_array));
                 else:
-                    $loan_query = tep_db_query("SELECT * FROM " . TABLE_LOAN . " WHERE loan_number='" . tep_db_prepare_input($_POST['theid']) . "'");
+                    $loan_query = tep_db_query("SELECT * FROM " . TABLE_LOAN . " WHERE loan_number='" . tep_db_prepare_input($_POST['keyparam']) . "'");
                     $client_array = tep_db_fetch_array($loan_query);
                 endif;
 
@@ -2652,7 +2652,7 @@ switch ($_POST['frmid']) {
                         $i++;
                     }
 
-                    $ar = $Conn->SQLSelect("SELECT due_id as item_id,due_date as date,due_principal as principal,due_interest as interest,due_commission as commission,due_penalty as penalty,members_idno as memid  FROM " . TABLE_DUES . " WHERE loan_number='" . tep_db_prepare_input($_POST['theid']) . "'");
+                    $ar = $Conn->SQLSelect("SELECT due_id as item_id,due_date as date,due_principal as principal,due_interest as interest,due_commission as commission,due_penalty as penalty,members_idno as memid  FROM " . TABLE_DUES . " WHERE loan_number='" . tep_db_prepare_input($_POST['keyparam']) . "'");
                     //$jason = json_encode(array($main_array,$ar));
                     $jason = json_encode(array('data' => $main_array, 'gridinfo' => $ar));
                 //$jason = json_encode($ar);

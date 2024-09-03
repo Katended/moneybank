@@ -53,7 +53,8 @@ a:focus {
 }
 
 .selected-row {
-  background-color: #d1e7dd; /* Light green color */
+  background-color: #bee9d5; /* Light green color */
+  color:#012715
 }
 
 .selected-row tr:hover {

@@ -195,345 +195,263 @@ array_walk_recursive($modules_array, function($v, $k) use($key, &$modules) {
             }
 
 
-            //theid: Id of the lement to be loaded
+            //keyparam: Id of the lement to be loaded
             //frm: the form form which the data is coming from
             //pageparams: f there is predefined page data
             // urlpage; URL to execute
             
             var globalParameterStorage = {
                 frm: null,
-                theid: null,
+                keyparam: null,
                 action: null,
                 pageparams: null,
                 urlpage: null,
                 keyparam: null,
                 search: {
                     value: ''
-                }
+                },
+                ajaxdatadiv:null
             };
                
                 
-            var showValues  = function(frm, theid, action, pageparams, urlpage, keyparam,search,callback) {
-                        
-                var dfrd3 = jQuery.Deferred();
-                //console.log(JSON.stringify(w2ui['gridmem'].records));
+    const showValues = (frm, ajaxdatadiv, action, pageparams, urlpage, keyparam, search,canInvokeCallback) => {
+        const dfrd3 = jQuery.Deferred();
 
+        // Set default page parameters
+        if (typeof pageparams === 'undefined' && action !== 'edit') {
+            const formToSerialize = frm ? $("#" + frm) : $("form");
+            pageparams = JSON.stringify(formToSerialize.serializeArray());
+        }
 
-                //$( document ).ready(function(){
-                // var gridmem= JSON.stringify(w2ui['gridmem'].records);
-                // 
-                // i passed undefines string to force the execution inot the IF statement
-                // 1. Loan Refinance. 04/05/2017
-                if (typeof(pageparams) === 'undefined' && action !== 'edit') {
-                    const formToSerialize = frm ? $("#" + frm) : $("form");
-                    pageparams = JSON.stringify(formToSerialize.serializeArray());
+        // Store global parameters
+        Object.assign(globalParameterStorage, {
+            frm: frm,                // Replace with new frm value
+            ajaxdatadiv: ajaxdatadiv, // Replace with new ajaxdatadiv value
+            action: action,          // Replace with new action value
+            pageparams: pageparams,  // Replace with new pageparams value
+            urlpage: urlpage,        // Replace with new urlpage value
+            keyparam: keyparam,      // Replace with new keyparam value
+            search: search// Replace with new search value
+            });
+
+        // Default URL page
+        if (!urlpage) {
+            urlpage = 'addedit.php';
+        }
+
+        $("#ajaxSpinnerImage").show();
+
+        $.post(urlpage, {
+            frm: globalParameterStorage.frm,
+            pageparams: globalParameterStorage.pageparams,
+            keyparam: globalParameterStorage.keyparam,
+            frmid: globalParameterStorage.frm,
+            action: globalParameterStorage.action,
+            ajaxdatadiv: globalParameterStorage.ajaxdatadiv,
+            search: globalParameterStorage.search
+        })
+        .always(data => {
+
+            $("#ajaxSpinnerImage").hide();
+
+            try {
+                if (typeof data === 'object' && data.status === '500') {
+                    window.location = "<?php echo HTTP_SERVER; ?>"; // Redirect on server error
+                    return;
                 }
 
-                globalParameterStorage.frm = frm;
-                globalParameterStorage.theid = theid;
-                globalParameterStorage.action = action;
-                globalParameterStorage.pageparams = pageparams;
-                globalParameterStorage.urlpage = urlpage;
-                globalParameterStorage.keyparam = keyparam;
-                globalParameterStorage.search.value = search;
+                processResponseData(data, frm, action, ajaxdatadiv, dfrd3);
 
-                if (urlpage == "" || typeof(urlpage) === 'undefined') {
-                    //  displaymessage('',"page missing! The system will use  read/write mode",'warning');
-                    //  alert('page missing! The system will use  read/write mode'); 
-                    urlpage = 'addedit.php'
-
+                // Call showValues again if action is 'edit' or 'add'
+                if (canInvokeCallback) {
+                    showValues(frm, ajaxdatadiv, action, pageparams, 'load.php', keyparam, search);
                 }
-                
-                $("#ajaxSpinnerImage").show();
-                
-                var data;
-                
                
-                $.post(urlpage, {
-                     'pageparams': globalParameterStorage.pageparams,
-                     'theid': globalParameterStorage.theid,
-                     'frmid': globalParameterStorage.frm,
-                     'action': globalParameterStorage.action,
-                     'keyparam': globalParameterStorage.keyparam,
-                     'search':globalParameterStorage.search})
-                        .always(function (data) {
-
-                            $("#ajaxSpinnerImage").hide();
-                    
-                            // check see of string is jason
-                            try {
-                                if (Object.prototype.toString.call(data) === '[object Object]') {
-
-                                    if (data.hasOwnProperty('status')) {
-                                        if (data.status == '500') {
-                                            window.location = "<?php echo HTTP_SERVER; ?>";//FILENAME_LOGIN
-                                        }
-                                    }
-                                }
-                                    
-                               if(typeof(data) === 'object'){
-                                if($.contains(document.body,document.getElementById("theid"))){           
-                                                                
-                                       resetForm();
-                                                                
-                                 }
-                                   displaymessage(frm, "<?php echo $lablearray['218'] ?>", 'success'); 
-                                                                      
-                                    return;
-                                }  
-                                
-                                data = data.replace(/(^\s+|\s+$)/g,'');
-                                
-                                
-                              // When data is returned from the Database it may contain a number 504
-                              //TODO: get a better way to validate error 504  
-                             //   if (data == '1111111' || data.includes("504")) {
-                                if (data == '1111111'){
-                                 
-                                    if($.contains(document.body,document.getElementById("theid"))){           
-                                                                
-                                        resetForm();
-                                        
-                                    }
-                                  
-                                    displaymessage(frm, "<?php echo $lablearray['218'] ?>", 'success');
-                                    
-                                    // IN SOME SITUATIONS WE DONT NEED TO RESET THE FORM.
-                                    switch(action){
-                                    case 'reverse':
-                                        dfrd3.resolve();
-                                        return dfrd3.promise();
-                                        break;
-                                        
-                                    default:
-                                      
-                                       dfrd3.resolve();
-                                       return dfrd3.promise();  
-                                        $("#" + frm).trigger("reset");
-                                       break;
-                                       
-                                     }
-                                   
-                                 
-                                }
-
-
-                                const stringSet = ["Warning","error"];
-                                const pattern = new RegExp(stringSet.join("|"));
-                                
-                                if(pattern.test(data)){
-                                    displaymessage(frm, data, 'ERR');
-                                    dfrd3.resolve();
-                                    return dfrd3.promise();
-                                }
-
-                                 if (data.substr(0, 3).trim() == 'ERR' || data.indexOf('ERR:') != -1) {
-                                    displaymessage(frm, data.substr(3, data.length), 'ERR');
-                                    dfrd3.resolve();
-                                    return dfrd3.promise();
-                                }
-                                if (data.substr(0, 4).trim() == 'INFO' || data.indexOf('INFO:') != -1) {
-                                    displaymessage(frm, data.substr(4, data.length), 'INFO');
-                                    dfrd3.resolve();
-                                    return dfrd3.promise();
-                                }
-                                if (data.substr(0, 3).trim() == 'WAR' || data.indexOf('WAR:') != -1) {
-                                    displaymessage(frm, data.substr(3, data.length), 'WARN');
-                                    dfrd3.resolve();
-                                    return dfrd3.promise();
-                                }
-                                if (data.substr(0, 3).trim() == 'MSG' || data.indexOf('MSG:') != -1) {
-
-                                    displaymessage(frm, data.substr(3, data.length),data.substr(0, 3));
-                                    dfrd3.resolve();
-                                    return dfrd3.promise();
-                                }
-
-
-                                if (data.includes("SQLSTATE") || data.includes("Warning: Illegal")|| data.includes("xdebug-error")|| data.includes("504") || data.includes("Fatal error") || data.includes("PDOException")) {
-                                    displaymessage('', data, 'ERR');
-
-                                }
-                              
-                                //Note. trim is necessary. There is some Jason that at times comes with training spaces
-                                jsonObj = jQuery.parseJSON(data.replace(/(^\s+|\s+$)/g,''));
-                                //  response.setHeader("Content-Type", "application/json; charset=ISO-8859-1");
-                            } catch (e) {
-                                //alert('Invalid jason');	
-                            }
-
-                            switch (action) {
-                                case "loadform":
-                                case "edit":
-                                case "add":
-                                    
-                                    if (data === "") {
-                                        displaymessage('', "<?php echo $lablearray['1166'] ?>", 'fail', 'ERROR');
-                                        // alert("<?php echo $lablearray['1166'] ?>");
-                                        break;
-                                    }else{
-                                            if (data.includes("formObj")){
-                                                var formObj =  document.getElementById(frm);
-                                               
-                                                eval(data);
-                                            }else{
-                                             
-                                                jsonObj = jQuery.parseJSON(data.replace(/(^\s+|\s+$)/g,''));
-                                                populateForm(frm, jsonObj['data']);   
-                                            }
-                                     
-                                    }
-                                    break;
-                                    
-                                case "eval":
-                                    //var formObj = document.forms[frm];
-                                    var formObj =  document.getElementById(frm);
-                                    eval(data);
-                                    break;                             
-
-                                case "search":
-                                case "loadelement":
-                                default:
-
-// PS.
-// First an HTML table without data rows is loaded.
-// Call back returns actual data for the table
-
-                                        
-// DO NOT REFRESH TABLE WHEN LOADING CAHS ACCOUNTS
-                                    
-                                    if (data.includes("draw")) {
-
-                                            const tabledata = JSON.parse(data);
-
-                                            var table = $('#grid_'+theid).DataTable( {
-                                                fixedHeader: true,
-                                                buttons: [ 'copy','csv' ,'excel', 'pdf','print'],
-                                                responsive: true,                                                
-                                                scrollResize: true,                                                                                            
-                                               "searchDelay": 100,
-                                              
-                                                scrollX: true,
-                                                order: 3 ,                                                                                               
-                                                scrollY: 100,
-                                                data:tabledata.data,
-                                                columns:tabledata.columns,
-                                                scroller: {
-                                                    loadingIndicator: true
-                                                },
-
-                                                'columnDefs': [
-                                                {
-                                                    "defaultContent": "-",
-                                                    "targets": "_all",
-                                                    'width':'15px',
-                                                    'targets': 0,
-                                                  
-                                                }
-                                            ],
-                                           
-                                                'orderable':false,
-                                                "pageLength": 20,
-                                                scrollCollapse: true,
-                                                "bDestroy": true,
-                                           
-
-                                           } );
-
-                                                                                
-                                     
-                                             // Grab the datatables input box and alter how it is bound to events
-                                         $(".dataTables_filter").unbind() // Unbind previous default bindings
-                                            .bind("keyup", function(e,key) { // Bind our desired behavior
-                                                // If the length is 3 or more characters, or the user pressed ENTER, search
-                                                // alert(e.keyCode );
-                                                e.preventDefault();
-                                               
-                                                   //     submitOnReturn: false
-                                                   
-
-                                                if(e.keyCode == 13) {
-                                                    // Call the API search function
-                                                 //   table.search(this.value).draw();
-                                                    
-                                                    globalParameterStorage.search.value = this.querySelector('input').value;
-                                                    
-                                                     // call the server again
-                                                    showValues(
-                                                    globalParameterStorage.frm, 
-                                                    globalParameterStorage.theid, 
-                                                    globalParameterStorage.action, 
-                                                    globalParameterStorage.pageparams, 
-                                                    globalParameterStorage.urlpage, 
-                                                    globalParameterStorage.keyparam,
-                                                    globalParameterStorage.search.value
-                                                    );
-
-                                                   
-
-
-                                                }
-                                        
-                                                return false;
-                                            });
-
-                                            $('#grid_'+theid+' tbody').on('click', 'tr', function(event) {
-                                                // Check if the target clicked is not the checkbox
-                                                if (!$(event.target).is('.row-checkbox')) {
-                                                    // Find the checkbox in the clicked row
-                                                    var checkbox = $(this).find('.row-checkbox');                                              
-
-                                                    // Toggle the checkbox state
-                                                  //  checkbox.prop('checked', !checkbox.prop('checked'));
-
-                                                    // Toggle the row color class based on the checkbox state
-                                                    $(this).toggleClass('selected-row', checkbox.prop('checked'));
-
-                                                    checkbox.trigger('click');
-
-                                  
-
-                                                }
-                                            });
-
-
-                                            // Filter event handler
-                                            $(table.table().container()).on('keyup', 'tfoot input', function () {
-                                                table
-                                                    .column($(this).data('index'))
-                                                    .search(this.value)
-                                                    .draw();
-                                            });
-                                                
-                                 
-                                     
-                                        
-                                    }else{
-                                        
-                                      if (data.substr(0, 3).trim()!= 'ERR' && theid!=''){                                       
-                                            $("#" + theid).html(data); 
-                                            
-                                            $(document).find('input[type=us-date]').each(function () {
-                                                w2utils.date(new Date());
-                                                
-                                                // $('input[type=us-date]').w2field('date', {format: '<?php echo SETTING_DATE_FORMAT ?>'});                                             
-                                            });
-                                      }
-                              
-                                    }
-                               
-                                    break;
-                            }
-
-                         return  dfrd3.resolve();
-                          
-
-                        });
-              
-                return dfrd3.promise();
+            } catch (e) {
+                console.error('Invalid JSON:', e);
             }
 
+            return dfrd3.resolve();
+        });
 
+        return dfrd3.promise();
+    };
+
+const processResponseData = (data, frm, action, ajaxdatadiv, dfrd3) => {
+
+    const trimmedData = data.trim();   
+
+    try {
+
+        if(isValidJsonString(trimmedData)) {
+   
+            const jsonObj = jQuery.parseJSON(trimmedData);
+
+            handleFormActions(action, frm, jsonObj, trimmedData, ajaxdatadiv);
+
+        } else {
+
+            const stat = containsError(trimmedData);
+
+            if (trimmedData === '1111111') {
+
+                if ($.contains(document.body, document.getElementById(ajaxdatadiv))) {
+                    resetForm();
+                }
+
+                displaymessage(frm, "<?php echo $lablearray['218'] ?>", stat);
+                handleAction(action, frm, dfrd3);
+                callback();
+                return;
+            }
+            
+            if (stat) {
+                displaymessage(frm, trimmedData,stat);
+                dfrd3.resolve();
+                return;
+            }
+        }   
+        
+    } catch (e) {
+        console.log('Parsing error:', e);
+    }    
+};
+
+
+function isValidJsonString(str) {
+    if (typeof str !== "string") {
+        return false; // Not a string
+    }
+    
+    try {
+        JSON.parse(str);
+        return true; // Valid JSON
+    } catch (e) {
+        return false; // Invalid JSON
+    }
+};
+
+const containsError = (data) => {
+    return /^(ERR|WAR|INFO|MSG|SQLSTATE|error):?/.test(data);
+};
+
+const handleAction = (action, frm, dfrd3) => {
+    switch (action) {
+        case 'reverse':
+            dfrd3.resolve();
+            break;
+        default:
+            $("#" + frm).trigger("reset");
+            dfrd3.resolve();
+            break;
+    }
+};
+
+const handleFormActions = (action, frm, jsonObj, data, ajaxdatadiv) => {
+    switch (action) {
+        case "loadform":
+        case "edit":
+        case "add":
+            if (!data) {
+                displaymessage('', "<?php echo $lablearray['1166'] ?>", 'fail', 'ERROR');
+                return;
+            }
+            if (data.includes("formObj")) {
+                eval(data);
+            } else {
+                populateForm(frm, jsonObj.data);
+            }
+            break;
+        case "eval":
+            eval(data);
+            break;
+        case "search":
+        case "loadelement":
+        default:
+            handleDataTable(data, ajaxdatadiv);
+            break;
+    }
+};
+
+const handleDataTable = (data, ajaxdatadiv) => {
+    if (data.includes("draw")) {
+        const tabledata = JSON.parse(data);
+        const table = $('#grid_' + ajaxdatadiv).DataTable({
+            fixedHeader: true,
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+            responsive: true,
+            scrollResize: true,
+            searchDelay: 100,
+            scrollX: true,
+            order: 3,
+            scrollY: 100,
+            data: tabledata.data,
+            columns: tabledata.columns,
+            scroller: {
+                loadingIndicator: true
+            },
+            columnDefs: [{
+                defaultContent: "-",
+                targets: "_all",
+                width: '15px',
+                targets: 0,
+            }],
+            orderable: false,
+            pageLength: 20,
+            scrollCollapse: true,
+            bDestroy: true,
+        });
+
+        configureDataTableSearch(table);
+        configureRowSelection(table, ajaxdatadiv);
+    } else {
+        $("#" + ajaxdatadiv).html(data);
+    }
+};
+
+            const configureDataTableSearch = (table) => {
+                $(".dataTables_filter").unbind().bind("keyup", function (e) {
+                    e.preventDefault();
+                    if (e.keyCode === 13) {
+                        globalParameterStorage.search.value = this.querySelector('input').value;
+                        showValues(
+                            globalParameterStorage.frm,
+                            globalParameterStorage.ajaxdatadiv,
+                            globalParameterStorage.action,
+                            globalParameterStorage.pageparams,
+                            globalParameterStorage.urlpage,
+                            globalParameterStorage.keyparam,
+                            globalParameterStorage.search
+                        );
+                    }
+                    return false;
+                });
+
+                $(table.table().container()).on('keyup', 'tfoot input', function () {
+                    table.column($(this).data('index')).search(this.value).draw();
+                });
+            };
+
+            const configureRowSelection = (table, ajaxdatadiv) => {
+                const tbody = $(`#grid_${ajaxdatadiv} tbody`);
+
+                tbody.on('click', 'tr', function (event) {
+                    const target = $(event.target);
+
+                    // Check if the target is not the checkbox itself
+                    if (!target.is('.row-checkbox')) {
+                        const checkbox = $(this).find('.row-checkbox');
+
+                        if (checkbox.length) {
+                            // Toggle the class based on the checkbox's checked state
+                            $(this).addClass('selected-row');
+                            checkbox.trigger('click');
+                            checkbox.checked = true;
+
+                        }
+                    }
+                });
+            };
 
             function SelectItemInList(elementid, selectedText) {
                 var list = document.getElementById(elementid);

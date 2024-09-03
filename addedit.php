@@ -162,7 +162,7 @@ Common::$lablearray['E01'] = '';
            
            break;
         case 'delete':
-             $Conn->SQLDelete(TABLE_DEVICEMESSAGE, 'devicemessage_id', $formdata['theid'],$formdata['modems']);
+             $Conn->SQLDelete(TABLE_DEVICEMESSAGE, 'devicemessage_id', $formdata['keyparam'],$formdata['modems']);
             break;
         case 'add': 
             
@@ -173,7 +173,7 @@ Common::$lablearray['E01'] = '';
             
             $device_results = Common::$connObj->SQLSelect("SELECT modem_id FROM " .TABLE_MODEM. " WHERE modem_port='".$formdata['modems']."'");
            
-            if (Sms::send($formdata['txtNumber'],$formdata['txtMessage'],$formdata['theid'],$formdata['modems'])):
+            if (Sms::send($formdata['txtNumber'],$formdata['txtMessage'],$formdata['keyparam'],$formdata['modems'])):
                 
                 Bussiness::PrepareData(true);
 
@@ -258,7 +258,7 @@ Common::$lablearray['E01'] = '';
         switch($_POST['action']){
         case 'reverse':
             
-            $theid = Common::tep_db_prepare_input($_POST['theid']);
+            $theid = Common::tep_db_prepare_input($_POST['keyparam']);
 
             if ($theid == "") {
                 getlables("1339");
@@ -495,7 +495,7 @@ Common::$lablearray['E01'] = '';
               
         endif;
 
-        Common::replace_key_function($formdata, 'theid', 'MID');
+        Common::replace_key_function($formdata, 'keyparam', 'MID');
         Common::replace_key_function($formdata, 'txtDevice', 'DNAME');
         Common::replace_key_function($formdata, 'txtPort', 'PORT');
         Common::replace_key_function($formdata, 'cmbBitsPerSecond', 'BPS');
@@ -1899,7 +1899,7 @@ Common::$lablearray['E01'] = '';
            
            Common::replace_key_function($formdata, 'action', 'ACTION');
            
-           Common::replace_key_function($formdata, 'theid', 'OPCODE');
+           Common::replace_key_function($formdata, 'keyparam', 'OPCODE');
                       
            $form_data[]= $formdata;
            
@@ -2159,7 +2159,7 @@ Common::$lablearray['E01'] = '';
                 Common::addKeyValueToArray($formdata, 'STATUS','TW');            
                 Common::replace_key_function($formdata, 'txtDate', 'DATE'); // for other option
                 Common::replace_key_function($formdata, 'txtvoucher','VOUCHER');
-                Common::addKeyValueToArray($formdata, 'THEID',$_POST['theid']);
+                Common::addKeyValueToArray($formdata, 'keyparam',$_POST['keyparam']);
                 Common::addKeyValueToArray($formdata, 'INTTYPE',$tdeposit_array[0]['timedeposit_instype']);
                 Common::replace_key_function($formdata, 'product_prodid', 'PRODUCT_PRODID');
                 $formdata['PRODUCT_PRODID'] = $tdeposit_array[0]['product_prodid'];
@@ -2242,7 +2242,7 @@ Common::$lablearray['E01'] = '';
              
             case 'REVERSE':
 
-                $theid = Common::tep_db_prepare_input($_POST['theid']);
+                $theid = Common::tep_db_prepare_input($_POST['keyparam']);
 
                 if ($theid == "") {
                     getlables("1339");
@@ -2509,7 +2509,7 @@ Common::$lablearray['E01'] = '';
         switch ($_POST['action']) {
             case 'reverse':
                 
-                $theid = Common::tep_db_prepare_input($_POST['theid']);
+                $theid = Common::tep_db_prepare_input($_POST['keyparam']);
 
                 if ($theid == "") {
                     getlables("1339");
@@ -2587,7 +2587,7 @@ Common::$lablearray['E01'] = '';
                     $nTotwithdraw = $formdata['txtamount'] + $formdata['CHARGE'];
                    
                 
-                    Savings::$savaccid = $formdata['theid'];
+                    Savings::$savaccid = $formdata['keyparam'];
                 
                  
                    // Savings::$prodid = $formdata['product_prodid'];
@@ -2815,7 +2815,7 @@ Common::$lablearray['E01'] = '';
                 exit();
                 break 2;
             case 'reverse':
-               Common::reverseTransaction($_POST['theid'],'S', $_SESSION['user_id'], Common::$connObj);
+               Common::reverseTransaction($_POST['keyparam'],'S', $_SESSION['user_id'], Common::$connObj);
                echo 'INFO.' . Common::$lablearray['E01'];
                exit();
                break 2;
@@ -3251,7 +3251,7 @@ Common::$lablearray['E01'] = '';
     case 'frmloanproductsettings1':
     case 'frmtimedepositsettings1':    
         $formdata = Common::decodeSerialisedPagedata($_POST['pageparams']);
-        $parameters['productprodid'] = $_POST['theid'];
+        $parameters['productprodid'] = $_POST['keyparam'];
         $parameters['currencies_id'] = $formdata['CURRENCIES_ID'];
         $parameters['branchcode'] = $formdata['branch_code'];
         
@@ -3947,9 +3947,10 @@ Common::$lablearray['E01'] = '';
     case 'frmClients':
        
         if(strtoupper($_POST['action'])=='DELETE') {
-            if(Clients::deleteClient($_POST['theid'])) {
+            if(Clients::deleteClient($_POST['keyparam'])) {
                 // Information saved
                 Common::getlables("218", "", "", $Conn);
+              //  echo informationUpdate("fail", $lablearray['673'], ''); 
                 echo "MSG " .Common::$lablearray['218'];
             } else {
                 // Client can not be deleted until other records are removed
@@ -4024,7 +4025,7 @@ Common::$lablearray['E01'] = '';
        
         
         if($formdata['ACTION']=='edit'):
-            if($formdata['theid']==""):
+            if($formdata['keyparam']==""):
                  echo "MSG." .Common::$lablearray['1635'];
                 exit();
             endif;              
@@ -4041,7 +4042,7 @@ Common::$lablearray['E01'] = '';
                     endif;               
                 endif; 
 
-                Common::replace_key_function($formdata, 'theid', 'client_idno'); 
+                Common::replace_key_function($formdata, 'keyparam', 'client_idno'); 
                 $formdata = Clients::updateRenameKeys($formdata,($formdata['CTYPE']=='G')?'M':$formdata['CTYPE']);
                  
                 break;
@@ -4107,7 +4108,8 @@ Common::$lablearray['E01'] = '';
         if(Common::$lablearray['E01']!=""):
             echo "MSG.".Common::$lablearray['E01'];      
          else:
-            echo "1111111";     
+            echo "1111111";
+            exit();    
         endif;
         
         break;
@@ -4389,7 +4391,7 @@ Common::$lablearray['E01'] = '';
                 break;
 
             case 'edit':  // Edit				 
-                $currency = Bussiness::$Conn->SQLSelect("SELECT currencies_id,currencydeno_id,currencydeno_deno FROM " . TABLE_CURRENCYDENO . " WHERE currencydeno_id='" . tep_db_prepare_input($_POST['theid']) . "'");
+                $currency = Bussiness::$Conn->SQLSelect("SELECT currencies_id,currencydeno_id,currencydeno_deno FROM " . TABLE_CURRENCYDENO . " WHERE currencydeno_id='" . tep_db_prepare_input($_POST['keyparam']) . "'");
 
                 echo "formObj.action.value = 'update';\n";
                  echo "SelectItemInList(\"CURRENCIES_ID\",\"" . $currency[0]['currencies_id'] . "\");\n";
@@ -4447,7 +4449,7 @@ Common::$lablearray['E01'] = '';
                 break;
 
             case 'edit':  // Edit				 
-                $currency = Bussiness::$Conn->SQLSelect("SELECT currencies_id,currencies_name,currencies_code,currencies_symbolleft,currencies_symbolright,currencies_decimalplaces,currencies_decimalplaces ,chartofaccounts_accountcode,flag FROM " . TABLE_CURRENCIES . " WHERE currencies_id='" . tep_db_prepare_input($_POST['theid']) . "'");
+                $currency = Bussiness::$Conn->SQLSelect("SELECT currencies_id,currencies_name,currencies_code,currencies_symbolleft,currencies_symbolright,currencies_decimalplaces,currencies_decimalplaces ,chartofaccounts_accountcode,flag FROM " . TABLE_CURRENCIES . " WHERE currencies_id='" . tep_db_prepare_input($_POST['keyparam']) . "'");
 
                 echo "formObj.action.value = 'update';\n";
                 echo "formObj.currencies_id.value = '" . $currency[0]["currencies_id"] . "';\n";
@@ -4494,7 +4496,7 @@ Common::$lablearray['E01'] = '';
         switch ($_POST['action']) {
              case 'delete':  // delete
                 Common::getlables("218", "", "", $Conn);
-                 Bussiness::$Conn->SQLDelete(TABLE_USERS,'user_id', $_POST['theid']);
+                 Bussiness::$Conn->SQLDelete(TABLE_USERS,'user_id', $_POST['keyparam']);
                  echo 'INFO.'.Common::$lablearray['218']; 
                  exit();
                 break;
@@ -4626,7 +4628,7 @@ Common::$lablearray['E01'] = '';
 
             case 'edit': // edit
             case 'eval': // edit    
-                $user_results = Bussiness::$Conn->SQLSelect("SELECT * FROM " . TABLE_USERS . " WHERE user_id='" . $_POST['theid'] . "'");
+                $user_results = Bussiness::$Conn->SQLSelect("SELECT * FROM " . TABLE_USERS . " WHERE user_id='" . $_POST['keyparam'] . "'");
                 echo "formObj.action.value = 'update';\n";
                 echo "formObj.user_id.value = '" . $user_results[0]["user_id"] . "';\n";
                 echo "formObj.usercode.value = '" . $user_results[0]["user_usercode"] . "';\n";
@@ -7579,7 +7581,7 @@ Common::$lablearray['E01'] = '';
                 endif;
                 
                 Common::addKeyValueToArray($formdata, 'TABLE',TABLE_USERROLES);
-                Common::addKeyValueToArray($formdata, 'UID',$_POST['theid']);
+                Common::addKeyValueToArray($formdata, 'UID',$_POST['keyparam']);
                 Common::addKeyValueToArray($formdata, 'ROLEID','');
                 Common::replace_key_function($formdata, 'action', 'ACTION');
                
@@ -7969,7 +7971,7 @@ Common::$lablearray['E01'] = '';
                     Common::replace_key_function($formdata, 'currencies_id', 'CURRENCIES_ID');
                     Common::replace_key_function($formdata, 'chartofaccounts_revalue', 'RVAL');
                     Common::replace_key_function($formdata, 'chartofaccounts_description','DESC');
-                    Common::addKeyValueToArray($formdata, 'id',$_POST['theid']);
+                    Common::addKeyValueToArray($formdata, 'id',$_POST['keyparam']);
                     Common::addKeyValueToArray($formdata, 'action',$formdata['action']);
                     Common::addKeyValueToArray($formdata, 'BITEM',$bitem);
                     

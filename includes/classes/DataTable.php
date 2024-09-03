@@ -18,6 +18,7 @@ Class DataTable {
     Public static $searchable = array(); 
 	private static $request;
 	private static $actionlinks;
+	public static $_instance;
 
     public static function getInstance() {
 	
@@ -51,14 +52,20 @@ Class DataTable {
 
 					$formId = self::$request['frmid'];
 					$dataValue = $data[$i][self::$columns[$j]['db'] ?? ''];
-					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','','addedit.php')\"><img src='images/icons/trash.png' border=0 title='Delete' ></a>", $formId, $dataValue,'Delete');
-									
+					$ajaxDataDiv = self::$request['ajaxdatadiv'];
+
+					$function  = sprintf("showValues('%s','%s','%s','','load.php','%s','',false)", $formId, $ajaxDataDiv, 'edit',$dataValue);
+					
+					// $callback  =				
+					
 					// usually the first column is the identit column
 					$row[0] = sprintf(
 						'<input type="checkbox" class="row-checkbox" value="%s" onClick="%s">',
 						htmlspecialchars($dataValue, ENT_QUOTES),
 						htmlspecialchars($function, ENT_QUOTES)
-					);				
+					);	
+					
+					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','','load.php','%s','',true)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $ajaxDataDiv,'Delete',$dataValue);					
 
 				}
 				

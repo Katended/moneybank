@@ -4263,7 +4263,10 @@ function get_licenceInfo(){
 	
 	}
 	
-	
+	function informationUpdate($status, $msg,$callback =''){
+
+	}
+
 	function printOptions($data='',$param='') {	
 				
             $printctr = '<div class="print-options-container"><div><input type="radio" name="cfimb_5" id="id_cfimb_5_4" value="PDF">
