@@ -88,7 +88,13 @@ class ConnectionFactory {
     }
 
     public function execute() {
-        return $this->stmt->execute();
+
+        try {
+            $results  = $this->stmt->execute();
+            return $results;
+        } catch (Exception $ex) {
+            throw $ex;
+        }
     }
 
     // get column names of table
@@ -186,7 +192,7 @@ class ConnectionFactory {
             } while ($status);
 
         } catch (Exception $ex) {
-            throw new Exception($ex->getMessage());
+            throw $ex;
         }
 
         if(!isset($allrows)){
@@ -324,7 +330,6 @@ class ConnectionFactory {
         } catch (Exception $ex) {
             //throw new Exception($ex->getMessage());
             $this->stmt->closeCursor();
-
             self::$error = $ex->getMessage();
             Common::$lablearray['E01'] = self::$error;
         }
@@ -501,7 +506,7 @@ class ConnectionFactory {
                     $this->stmt->closeCursor();
                 }
             } catch (Exception $e) {
-                throw new Exception($e->getMessage());
+                throw $e;
             }
         }
     
@@ -918,9 +923,8 @@ class ConnectionFactory {
             } else {
                 $this->stmt->execute();
             }
-        } catch (Exception $e) {
-            // print_r($e);
-            throw new Exception($e->getMessage());
+        } catch (Exception $e) {           
+            throw $e;
         }
     }
 

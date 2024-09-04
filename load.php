@@ -805,9 +805,9 @@ if ($_POST['action'] == 'search') {
             NewGrid::$order =' ORDER BY c.entity_idno DESC ';
             NewGrid::$searchcatparam = $pageparams;
 
-            $data = NewGrid::getData();       
+            $data = NewGrid::getData();
 
-            echo Common::createResponse('data','',$data);
+            echo $data;
 
             exit();
 
@@ -847,13 +847,33 @@ if ($_POST['action'] == 'search') {
         case 'GGRP':
         case 'GMEM':
 
-            $query = "SELECT members_idno, members_no,CONCAT(members_firstname,' ',members_middlename,' ',members_lastname) name,members_maritalstate,members_regdate,members_enddate,members_dependants,members_children,members_cat1,(SELECT category1_name FROM " . TABLE_CATEGORY1 . " WHERE category1_id=members_cat1) cat1,(SELECT category2_name FROM " . TABLE_CATEGORY2 . " WHERE category2_id=members_cat2) cat2,members_cat2,members_educ,(SELECT incomecategories_bracket FROM " . TABLE_INCOMECATEGORIES . " WHERE incomecategories_id=m.incomecategories_id) incomecategories,incomecategories_id,(SELECT clientlanguages_name FROM " . TABLE_CLIENTLAGUAGES . " WHERE clientlanguages_id=members_lang1) clientlanguages1,members_lang1,(SELECT clientlanguages_name FROM " . TABLE_CLIENTLAGUAGES . " WHERE clientlanguages_id=m.members_lang2) clientlanguages2,members_lang2 FROM " . TABLE_MEMBERS . " m WHERE m.entity_idno='" . Common::tep_db_prepare_input($_POST['keyparam']) . "'";
-            $fieldlist = array('name', 'members_no', 'members_regdate', 'members_enddate');
-            $newgrid->keyfield = 'members_idno';
-            Common::getlables("9,1241,1019,1084", "", "", $Conn);
-            $gridcolumnnames = array(Common::$lablearray['9'], Common::$lablearray['1241'], Common::$lablearray['1019'], Common::$lablearray['1084']);
-            $actionlinks = "<a href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$('body').data('gridchk'),'edit','','load.php','M')\" title ='" . $grid_lables_lablearray['272'] . "'><img src='images/edit.png' border='0'></a>";
+            // $query = "SELECT members_idno, members_no,CONCAT(members_firstname,' ',members_middlename,' ',members_lastname) name,members_maritalstate,members_regdate,members_enddate,members_dependants,members_children,members_cat1,(SELECT category1_name FROM " . TABLE_CATEGORY1 . " WHERE category1_id=members_cat1) cat1,(SELECT category2_name FROM " . TABLE_CATEGORY2 . " WHERE category2_id=members_cat2) cat2,members_cat2,members_educ,(SELECT incomecategories_bracket FROM " . TABLE_INCOMECATEGORIES . " WHERE incomecategories_id=m.incomecategories_id) incomecategories,incomecategories_id,(SELECT clientlanguages_name FROM " . TABLE_CLIENTLAGUAGES . " WHERE clientlanguages_id=members_lang1) clientlanguages1,members_lang1,(SELECT clientlanguages_name FROM " . TABLE_CLIENTLAGUAGES . " WHERE clientlanguages_id=m.members_lang2) clientlanguages2,members_lang2 FROM " . TABLE_MEMBERS . " m WHERE m.entity_idno='" . Common::tep_db_prepare_input($_POST['keyparam']) . "'";
+            // $fieldlist = array('name', 'members_no', 'members_regdate', 'members_enddate');
+            // $newgrid->keyfield = 'members_idno';
+            // Common::getlables("9,1241,1019,1084", "", "", $Conn);
+            // $gridcolumnnames = array(Common::$lablearray['9'], Common::$lablearray['1241'], Common::$lablearray['1019'], Common::$lablearray['1084']);
+            // $actionlinks = "<a href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$('body').data('gridchk'),'edit','','load.php','M')\" title ='" . $grid_lables_lablearray['272'] . "'><img src='images/edit.png' border='0'></a>";
+            $clientId = $_POST['keyparam'];
+            $searchValue = $_POST['search']['value'];
 
+            $query = sprintf(" FROM " . TABLE_MEMBERS . " WHERE  entity_idno ='%s' AND (members_no LIKE'%%%s%%'  OR members_firstname LIKE'%%%s%%' OR members_lastname LIKE'%%%s%%')", $clientId, $searchValue, $searchValue, $searchValue);
+            Common::getlables("9,1093,1019,484,1665", "", "", $Conn);
+            NewGrid::$columntitle = array(Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9']);
+
+            NewGrid::$fieldlist = array('members_idno', 'members_no', 'members_firstname', 'members_lastname', 'members_regdate', 'members_enddate');
+
+            NewGrid::$grid_id = 'grid_' . ($_POST['keyparam'] ?? '');
+            NewGrid::$request = $_POST;
+            NewGrid::$sSQL = $query;
+            NewGrid::$order = ' ORDER BY members_idno ';
+            NewGrid::$searchcatparam = $pageparams;
+
+            $data = NewGrid::getData();
+
+            echo  $data;
+
+            exit();
+            
             break;
 
         case 'CDOCS':
@@ -1232,8 +1252,8 @@ if ($_POST['action'] == 'search') {
     $newgrid->lablesarray = $lables_array;
 
     $data =  $newgrid->getdata($query . $where, $fieldlist, $gridcolumnnames, $actionlinks, $onclick, $chkname);
-   
-    echo Common::createResponse('data','',$data);               
+
+    echo $data;               
    
     exit();
 }

@@ -25,10 +25,11 @@ class Common {
         return substr(bin2hex($bytes), 0, $lenght);
     }
 
-     public static function createResponse($status, $message='', $table = [],$data = null) {
+    public static function createResponse($status, $message = '', $table = [], $data = null)
+    {
     //     // Validate status
         if (!in_array(strtoupper($status), ['ERR','WAR','INFO','MSG','SQLSTATE','OK','DATA','DATA','FORM'])) {
-            throw new InvalidArgumentException('Status must be "success" or "failure".');
+            throw ('Status must be "success" or "failure".');
         }
     
         // Create the response array

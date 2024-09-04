@@ -431,9 +431,8 @@ Class DataTable {
 			"data"            => self::data_output($data),
                         "columns"=>($js_array??'')
 		);
-
-		} catch (Exception $e) {			
-			Common::$lablearray['E01'] = $e->getMessage();
+		} catch (Exception $e) {
+			throw $e;
 		}
 
 	}
