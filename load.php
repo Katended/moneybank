@@ -812,24 +812,36 @@ if ($_POST['action'] == 'search') {
             exit();
 
         case 'IND':
-            
-            Common::getlables("9,1093,1019,1665", "", "", $Conn);
 
-            $query = Savings::getClientDetails($pageparams, "", $cWhere);
-         
-            NewGrid::$actionlinks = "<a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='small'><img src='images/icons/pencil.png' border='0'></span>";
+            Common::getlables("1018,1019,1093,240,484,1665,887", "", "", $Conn);
+
+            //  $query = Savings::getClientDetails($pageparams, "", $cWhere);
+            $query = " FROM " . TABLE_CLIENTS . " c " . " WHERE 1=1 " . $cWhere;
+
+            NewGrid::$columntitle = array(
+                Common::$lablearray['1093'],
+                Common::$lablearray['1018'],
+                Common::$lablearray['887'],
+                Common::$lablearray['1019'],
+                Common::$lablearray['484']
+            );
+            NewGrid::$fieldlist = array(
+                'client_idno',
+                'client_surname',
+                'client_firstname',
+                'client_regdate',
+                'client_enddate'
+            );
+                
             NewGrid::$grid_id = 'grid_'.($_POST['keyparam']??'');
             NewGrid::$request = $_POST;
-            NewGrid::$sSQL = $query;       
-            NewGrid::$order =' ORDER BY c.client_idno DESC ';
+            NewGrid::$sSQL = $query;
+            NewGrid::$order = ' ORDER BY client_idno DESC ';
             NewGrid::$searchcatparam = $pageparams;
-            NewGrid::$columntitle = array('', Common::$lablearray['1093'], Common::$lablearray['9'], Common::$lablearray['1019']);
-        
-           if (isset($_POST['grid_id'])):                          
-               echo NewGrid::getData();               
-            else:
-               echo NewGrid::generateDatatableHTML();
-           endif;
+
+            $data = NewGrid::getData();
+
+            echo $data;
 
             exit();            
          
@@ -857,10 +869,24 @@ if ($_POST['action'] == 'search') {
             $searchValue = $_POST['search']['value'];
 
             $query = sprintf(" FROM " . TABLE_MEMBERS . " WHERE  entity_idno ='%s' AND (members_no LIKE'%%%s%%'  OR members_firstname LIKE'%%%s%%' OR members_lastname LIKE'%%%s%%')", $clientId, $searchValue, $searchValue, $searchValue);
-            Common::getlables("9,1093,1019,484,1665", "", "", $Conn);
-            NewGrid::$columntitle = array(Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9'], Common::$lablearray['9']);
+            Common::getlables("1159,1241,887,900,1019,1071", "", "", $Conn);
+            NewGrid::$columntitle = array(
+                Common::$lablearray['1159'],
+                Common::$lablearray['1241'],
+                Common::$lablearray['887'],
+                Common::$lablearray['900'],
+                Common::$lablearray['1019'],
+                Common::$lablearray['1071']
+            );
 
-            NewGrid::$fieldlist = array('members_idno', 'members_no', 'members_firstname', 'members_lastname', 'members_regdate', 'members_enddate');
+            NewGrid::$fieldlist = array(
+                'members_idno',
+                'members_no',
+                'members_firstname',
+                'members_lastname',
+                'members_regdate',
+                'members_enddate'
+            );
 
             NewGrid::$grid_id = 'grid_' . ($_POST['keyparam'] ?? '');
             NewGrid::$request = $_POST;
@@ -1616,9 +1642,9 @@ switch ($_POST['frmid']) {
 
                 Common::push_element_into_array($main_array, 'action', 'update');
 
-               // $jason = json_encode(array('data' => $main_array));
-               // $jason = str_replace("\\\\", '', $jason);
-                echo Common::createResponse('form','',[],$main_array);
+                // $jason = json_encode(array('data' => $main_array));
+                // $jason = str_replace("\\\\", '', $jason);
+                echo Common::createResponse('form', '', [], $main_array);
                 break 2;
 
             default:

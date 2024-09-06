@@ -114,6 +114,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
     function newPage(cpar) {
 
         var tags = document.getElementsByName('client_type');
+        var ajaxdatadiv = '';
 
         for (var i = 0; i < tags.length; ++i) {
             if (tags[i].checked) {
@@ -133,8 +134,15 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                     display: "none"
                 });
 
+                // dojo.style(dijit.byId("mem_details").controlButton.domNode, {
+                //     display: "inline-block"
+                // });
+
+                $("#mem_details").children().prop('disabled', true);
+
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
                 TXTPAGE = 'IND';
+                ajaxdatadiv = 'individuals';
                 break;
 
             case 'G':
@@ -147,6 +155,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
                 $("#Indfieldset").hide();
                 TXTPAGE = 'GRP';
+                ajaxdatadiv = 'groups';
                 break;
 
             case 'B':
@@ -157,6 +166,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
                 //   dojo.style(dijit.byId("mem_details").controlButton.domNode,{display:"none"});       
                 TXTPAGE = 'BUSS';
+                ajaxdatadiv = 'business';
                 break;
 
             case 'M':
@@ -171,6 +181,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 $("#Grpfieldset").hide();
                 $("#Indfieldset").hide();
                 TXTPAGE = 'GRP';
+                ajaxdatadiv = 'members';
                 // displaymessage('', "<?php echo $lablearray['1635']; ?>", 'INFO');          
                 break;
 
@@ -194,31 +205,23 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
             searchterm = $("input[type=search]").val();
         }
 
-        loadValues(searchterm).done(() => {
-            $('#toppanel').css({
-                top: '30%',
-                left: '50%',
-                margin: '-' + ($('#myDialogId1').height() / 5) + 'px 0 0 -' + ($('#toppanel').width() / 2) + 'px'
-            });
-
-            $('#toppanel').show();
-        });
+        loadValues(searchterm, ajaxdatadiv);
 
     }
 
-    function loadValues(searchterm) {
-        return showValues('frmClients', 'toppanel', 'search', TXTPAGE, `load.php?searchterm=${searchterm}`);
+    function loadValues(searchterm, ajaxdatadiv) {
+        return showValues('frmClients', ajaxdatadiv, 'search', TXTPAGE, `load.php?searchterm=${searchterm}`);
     }
 
     function loadGroupMembers(client_idno) {
 
-        showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', client_idno ?? $('#client_idno').val());
+        showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', client_idno ?? $('#client_idno').val());
 
     }
 
     function getinfo(frm_id, ajaxdatadiv, action, pagedata, urlpage, element) {
 
-        $("#toppanel").hide();
+        // $("#toppanel").hide();
 
         if (element == 'GMEM') {
             showValues('frmClients', ajaxdatadiv, 'edit', '', 'load.php', 'GMEM').done(function() {
@@ -233,7 +236,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 // if (element == 'GRP' || element == 'GMEM') {
 
 
-                //     showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', $('#client_idno').val());
+                //     showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', $('#client_idno').val());
                 // }
 
 
@@ -275,9 +278,13 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
     document.addEventListener('click', function(event) {
         // Check if the clicked element is a checkbox with the class 'row-checkbox'
         if (event.target.matches('input[type="checkbox"].row-checkbox')) {
-            //  console.log('Checkbox clicked!', event.target);
-            loadGroupMembers(event.target.value)
-            // alert(event.target.value);
+            $('#memdetails').removeAttr('disabled');
+            dojo.style(dijit.byId("mem_details").controlButton.domNode, {
+                display: "inline-block"
+            });
+
+            dijit.byId('regtabs').selectChild(dijit.byId('mem_details'));
+            !event.target.value.includes('M') && loadGroupMembers(event.target.value);
         }
     });
 </script>
@@ -288,13 +295,22 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
     <table width="100%" border="0" cellpadding='0'>
         <tr>
-            <td>
+
+            <td colspan="2" align="center">
+
+                <?php echo Common::clientOptions("C"); ?>
+
+            </td>
+
+        </tr>
+        <tr>
+            <td align="center">
                 <?php echo $lablearray['316']; ?><?php echo DrawComboFromArray('branch_code', 'branch_code', '', 'operatorbranches', '', ''); ?>
 
             </td>
             <td>
 
-                <?php echo Common::clientOptions("C"); ?>
+
                 <div class="indicator" id='div_name'></div>
             </td>
 
@@ -494,15 +510,18 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                                                     </tr>
                                                     <tr>
                                                         <td colspan="5" align="center">
-                                                            
-                                                            <p align='center'><a name="btnAddMem" class="s10" id="btnAddMem" name="btnAddMem" alt="Add member"><?php echo $lablearray['730']; ?></a></p>
-                                                            <!-- <div id='grdgrpMembers' style="width:auto;height:100%;display:block;margin:0px;padding:5px;overflow:scroll;">
 
-                                                            </div> -->
+                                                            <p align='center'><a name="btnAddMem" class="s10" id="btnAddMem" name="btnAddMem" alt="Add member"><?php echo $lablearray['730']; ?></a></p>
+
                                                         </td>
                                                     </tr>
                                                 </table>
                                             </div>
+                                            <div id="wrapper" style="text-align:center">
+                                                <table id="grid_members" width="100%;"></table>
+                                            </div>
+
+                                           
                                         </fieldset>
                                     </div>
                                     <div id='iddocs' style="width:auto;display:none;">
@@ -615,8 +634,11 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
 </form>
 <div id="wrapper" style="text-align: center">
-    <table id="grid_toppanel" width="100%"></table>
+    <table id="grid_groups" width="100%"></table>
 </div>
+<div id="wrapper" style="text-align:center">
+    <table id="grid_individuals" width="100%;"></table>
+ </div>
 </div>
 
 
@@ -665,7 +687,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
             w2utils.date(new Date());
             //   $('#client_idno').val(ajaxdatadiv);
             const client_idno = document.getElementById("client_idno").value;
-            showValues('frmClients', 'grdgrpMembers', 'search', 'GMEM', 'load.php', client_idno)
+            showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', client_idno)
 
 
 

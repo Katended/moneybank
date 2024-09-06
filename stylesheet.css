@@ -50,6 +50,7 @@ a:focus {
 
 .s10 {
   color: #070bf5;
+  cursor: pointer;  
 }
 
 .selected-row {
@@ -63,6 +64,7 @@ a:focus {
 
 .s10:hover {
   color: #990000;
+  cursor: pointer;
 }
 
 #appLayout {
@@ -152,7 +154,7 @@ legend {
 input[type="checkbox"] {
   margin: 0px;
   padding: 3px;
-  cursor: pointer;
+ c
   color: #ffffff;
 }
 

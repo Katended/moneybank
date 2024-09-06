@@ -3950,12 +3950,14 @@ Common::$lablearray['E01'] = '';
             if(Clients::deleteClient($_POST['keyparam'])) {
                 // Information saved
                 Common::getlables("218", "", "", $Conn);
-              //  echo informationUpdate("fail", $lablearray['673'], ''); 
-                echo "MSG " .Common::$lablearray['218'];
+                //  echo informationUpdate("fail", $lablearray['673'], ''); 
+                // echo "MSG " .Common::$lablearray['218'];
+                echo Common::createResponse('ok', Common::$lablearray['218']); 
             } else {
                 // Client can not be deleted until other records are removed
                 Common::getlables("1750", "", "", $Conn);
-                echo "MSG " .Common::$lablearray['1750'];
+                //   echo "MSG " .Common::$lablearray['1750'];
+                echo Common::createResponse('war', Common::$lablearray['1750']); 
             }
 
             exit();
@@ -3968,15 +3970,15 @@ Common::$lablearray['E01'] = '';
         Common::replace_key_function($formdata, 'client_type', 'CTYPE');  
                
         switch($formdata['CTYPE']):
-        case 'I':        
-                      
-             if ($formdata['client_regdate'] == '' &&  $formdata['client_idno']==''):        
-                echo "MSG " .Common::$lablearray['1639'];
+        case 'I': if ($formdata['client_regdate'] == '' &&  $formdata['client_idno'] == ''):
+                    //  echo "MSG " .Common::$lablearray['1639'];
+                    echo Common::createResponse('war', Common::$lablearray['1639']); 
                 exit();
             endif;
-            
-            if($formdata['client_firstname']=='' ||  $formdata['client_surname']==""):            
-                echo "MSG." .Common::$lablearray['1561'];
+
+                if ($formdata['client_firstname'] == '' ||  $formdata['client_surname'] == ""):
+                    //   echo "MSG." .Common::$lablearray['1561'];
+                    echo Common::createResponse('war', Common::$lablearray['1561']); 
                 exit();         
             endif;            
          
@@ -3986,13 +3988,15 @@ Common::$lablearray['E01'] = '';
         case 'G':
         case 'B':
 
-            if($formdata['entity_name']==''):               
-                echo "MSG." .Common::$lablearray['1561'];
+                if ($formdata['entity_name'] == ''):
+                    //  echo "MSG." .Common::$lablearray['1561'];
+                    echo Common::createResponse('war', Common::$lablearray['1561']); 
                 exit();         
-            endif;            
-          
-            if ($formdata['client_regdate'] == ''):        
-                echo "MSG.".Common::$lablearray['1639'];
+            endif;
+
+                if ($formdata['client_regdate'] == ''):
+                    //  echo "MSG.".Common::$lablearray['1639'];
+                    echo Common::createResponse('war', Common::$lablearray['1639']); 
                 exit();
             endif;
         
@@ -4003,17 +4007,21 @@ Common::$lablearray['E01'] = '';
             $results = Common::getClientDetails($formdata['client_idno']);
            
             if(!isset($results[0]['client_idno'])){
-                echo "MSG." .Common::$lablearray['1749'];
+                    //  echo "MSG." .Common::$lablearray['1749'];
+                    echo Common::createResponse('war', Common::$lablearray['1749']); 
                 exit();
-            }                
-                      
-            if($formdata['member_regdate'] == '' && $formdata['member_no']==''):                                       
-                echo "MSG." .Common::$lablearray['1679'];
+            }
+
+                if ($formdata['member_regdate'] == '' && $formdata['member_no'] == ''):
+                    //  echo "MSG." .Common::$lablearray['1679'];
+                    echo Common::createResponse('war', Common::$lablearray['1679']); 
+
                 exit();
             endif;
-            
-             if ($formdata['member_regstatus'] == ''):                                       
-                echo "MSG " .Common::$lablearray['1680'];
+
+                if ($formdata['member_regstatus'] == ''):
+                    //  echo "MSG " .Common::$lablearray['1680'];
+                    echo Common::createResponse('war', Common::$lablearray['1680']); 
                 exit();
             endif;
             
@@ -4026,7 +4034,8 @@ Common::$lablearray['E01'] = '';
         
         if($formdata['ACTION']=='edit'):
             if($formdata['keyparam']==""):
-                 echo "MSG." .Common::$lablearray['1635'];
+                //  echo "MSG." .Common::$lablearray['1635'];
+                echo Common::createResponse('war', Common::$lablearray['1635']); 
                 exit();
             endif;              
         endif;
@@ -4051,7 +4060,8 @@ Common::$lablearray['E01'] = '';
 
                  // check registration date
                 if($formdata['member_regdate']==""):
-                    echo "MSG." .Common::$lablearray['1732'];
+                    //  echo "MSG." .Common::$lablearray['1732'];
+                    echo Common::createResponse('war', Common::$lablearray['1732']); 
                     exit();
                 endif;
                 
@@ -4068,12 +4078,14 @@ Common::$lablearray['E01'] = '';
                 $formdata = Document::updateRenameKeys($formdata);
 
                 if($formdata['IDATE']==""):
-                    echo "MSG." .Common::$lablearray['1732'];
+                    //  echo "MSG." .Common::$lablearray['1732'];
+                    echo Common::createResponse('war', Common::$lablearray['1732']); 
                     exit();
                 endif;
 
                 if($formdata['SERIAL']==""):
-                    echo "MSG." .Common::$lablearray['1732'];
+                    // echo "MSG." .Common::$lablearray['1732'];
+                    echo Common::createResponse('war', Common::$lablearray['1732']); 
                     exit();
                  endif;               
                 
@@ -4091,26 +4103,25 @@ Common::$lablearray['E01'] = '';
         case 'I':
         case 'B':
         case 'M':
-            if($formdata['BRCODE']==''):       
-                echo "MSG." .Common::$lablearray['969'];
+                if ($formdata['BRCODE'] == ''):
+                    echo Common::createResponse('war', Common::$lablearray['969']);               
                 exit();         
             endif;
 
-            Clients::updateClient($form_data);
+                $response = Clients::updateClient($form_data);
             break;
         case 'D':
-            Document::updateDocument($form_data);
-            break;    
+                $response = Document::updateDocument($form_data);
+                break;
         default:
-            break;    
+                break;   
+            
         endswitch;
 
-        if(Common::$lablearray['E01']!=""):
-            echo Common::createResponse('err',Common::$lablearray['E01']);  
-         else:
-            echo Common::createResponse('ok','');               
-        endif;
-        exit();        
+        echo $response;
+
+        exit();   
+
         break;
  
     case 'frmlogin':

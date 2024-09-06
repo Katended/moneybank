@@ -139,14 +139,19 @@ Class Clients extends ProductConfig {
         $dateFields = ['RDATE', 'EDATE', 'BDAY', 'MRDATE', 'MEDATE'];
         
         foreach ($formdata as $key => $value) {
-            if (array_key_exists($key, $replacements)) {
+
+            if (isset($replacements[$key])):
                 $formdata[$replacements[$key]] = $value;
+
+                if (in_array($replacements[$key], $dateFields)) {
+                    $formdata[$replacements[$key]] = !empty($formdata[$replacements[$key]])
+                        ? Common::changeDateFromPageToMySQLFormat($value)
+                        : '';
+                }
                 unset($formdata[$key]);
-            } elseif (in_array($key, $dateFields)) {
-                $formdata[$key] = !empty($formdata[$key])
-                    ? Common::changeDateFromPageToMySQLFormat($formdata[$key])
-                    : null;
-            }
+
+            endif;
+
         }
 
         return $formdata;
@@ -302,14 +307,18 @@ Class Clients extends ProductConfig {
 
             if (Common::$lablearray['E01'] != "") {
                 Bussiness::$Conn->cancelTransaction();
-                throw new Exception(Common::$lablearray['E01']);
+                throw Common::$lablearray['E01'];
             }
 
             Bussiness::$Conn->endTransaction();
-            
+
+            return Common::createResponse('ok', '');
+
         } catch (Exception $e) {
             Bussiness::$Conn->cancelTransaction();
             Common::$lablearray['E01'] = $e->getMessage();
+            return Common::createResponse('err', $e->getMessage());
+
         }
     }
 

@@ -1209,6 +1209,7 @@ class Bussiness {
             //catch exception
         } catch (Exception $e) {
             Common::$lablearray['E01'] = $e->getMessage();
+            throw $e->getMessage();
         }
     }
 
@@ -1315,8 +1316,8 @@ class Bussiness {
 
                         $datetime = getcurrentDateTime();
 
-                        $val['DEBIT'] = abs($val['DEBIT']);
-                        $val['CREDIT'] = abs($val['CREDIT']);
+                        $val['DEBIT'] = abs($tran_array['DEBIT']);
+                        $val['CREDIT'] = abs($tran_array['CREDIT']);
 
 
                         $tran_array['generalledger_voucher'] = (isset($tran_array['voucher']) ? $tran_array['voucher'] : '' );
@@ -1391,8 +1392,8 @@ class Bussiness {
                         // check if its an internal transfer
                         // use savings accounts that have been passed
                         if ($tran_array['transactiontypes_code'] == 'IT') {
-                            self::$data['savaccounts_account'] = $val['SAVACC'];
-                            self::$data['savtransactions_amount'] = $val['AMOUNT'];
+                            self::$data['savaccounts_account'] = $tran_array['SAVACC'];
+                            self::$data['savtransactions_amount'] = $tran_array['AMOUNT'];
                         } else {
                             self::$data['savaccounts_account'] = $tran_array['savaccounts_account'];
                             self::$data['savtransactions_amount'] = $tran_array['savtransactions_amount'];
@@ -1436,10 +1437,13 @@ class Bussiness {
 
                 endif;
             }
+
+            return Common::createResponse('ok', '');
+
         } catch (Exception $e) {
             self::$Conn->cancelTransaction();
             Common::$lablearray['E01'] = $e->getMessage();
-            throw new Exception($e->getMessage());
+            throw $e->getMessage();
         }
     }
 

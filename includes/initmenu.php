@@ -6,7 +6,7 @@ if (dirname(__FILE__) == DIR_FS_DOCUMENT_ROOT || $_parent == 'dashboard.php') {
 
     $fpath = '../';
 }
-$lablearray = getlables("218,1166");
+$lablearray = getlables("218,1166,650");
 
 $modules_array = $_SESSION['modules'];
 $modules = array();
@@ -275,12 +275,13 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                         }
 
                         $("#ajaxSpinnerImage").hide();
-
+                        return dfrd3.resolve();
                     } catch (e) {
+                        return dfrd3.resolve();
                         console.error('Invalid JSON:', e);
                     }
 
-                    return dfrd3.resolve();
+
                 });
 
             return dfrd3.promise();
@@ -291,7 +292,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             var trimmedData = data.trim();
 
             try {
-
+                debugger;
                 var jsonObj = isValidJsonString(trimmedData);
 
                 switch (jsonObj.status) {
@@ -302,7 +303,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     case 'ok':
                         // Display success message
-                        displaymessage(frm, "<?php echo $labelArray['218']; ?>", jsonObj.status);
+                        displaymessage(frm, "<?php echo $lablearray['218']; ?>", jsonObj.status);
                         break;
 
                     case 'form':
@@ -311,9 +312,11 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                         break;
 
                     case 'err':
+                    case 'war':
                         // Display error message
                         displaymessage(frm, jsonObj.message, jsonObj.status);
                         break;
+
 
                     default:
                         // Handle unexpected status
