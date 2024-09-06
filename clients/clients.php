@@ -116,6 +116,8 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
         var tags = document.getElementsByName('client_type');
         var ajaxdatadiv = '';
 
+        destroyDataTable();
+
         for (var i = 0; i < tags.length; ++i) {
             if (tags[i].checked) {
                 TXTPAGE = tags[i].value;
@@ -521,7 +523,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                                                 <table id="grid_members" width="100%;"></table>
                                             </div>
 
-                                           
+
                                         </fieldset>
                                     </div>
                                     <div id='iddocs' style="width:auto;display:none;">
@@ -638,7 +640,10 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 </div>
 <div id="wrapper" style="text-align:center">
     <table id="grid_individuals" width="100%;"></table>
- </div>
+</div>
+<div id="wrapper" style="text-align:center">
+    <table id="grid_business" width="100%;"></table>
+</div>
 </div>
 
 

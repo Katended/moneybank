@@ -370,10 +370,12 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             }
         };
 
+        let dataTableInstance; // Declare a variable to hold the DataTable instance
+
         const handleDataTable = (tableData, ajaxdatadiv) => {
             if (tableData instanceof Object && tableData !== null) {
-                //  const tabledata = JSON.parse(data);
-                const table = $('#grid_' + ajaxdatadiv).DataTable({
+                // Initialize the DataTable and store the instance
+                dataTableInstance = $('#grid_' + ajaxdatadiv).DataTable({
                     fixedHeader: true,
                     buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
                     responsive: true,
@@ -399,14 +401,34 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     bDestroy: true,
                 });
 
-                configureDataTableSearch(table);
-                configureRowSelection(table, ajaxdatadiv);
+                configureDataTableSearch(dataTableInstance);
+                configureRowSelection(dataTableInstance, ajaxdatadiv);
             } else {
                 $("#" + ajaxdatadiv).html(tableData);
             }
-
         };
 
+        // Function to clear the DataTable
+        const clearDataTable = () => {
+            if (dataTableInstance) {
+                dataTableInstance.clear().draw(); // Clear the data and redraw the table
+            }
+        };
+
+        const destroyDataTable = () => {
+            if (dataTableInstance) {
+                const tableNode = dataTableInstance.table().node(); // Get the table node
+                const tableId = $(tableNode).attr('id'); // Get the ID of the table
+
+                dataTableInstance.destroy(); // Destroy the DataTable instance
+                dataTableInstance = null; // Clear the reference
+
+                // Clear the table body and optionally reset headers
+                $(tableNode).empty(); // Clear the table
+                $(tableNode).append('<thead></thead><tbody></tbody>'); // Optionally reset headers
+            }
+        };
+        
         const configureDataTableSearch = (table) => {
             $(".dataTables_filter").unbind().bind("keyup", function(e) {
                 e.preventDefault();
