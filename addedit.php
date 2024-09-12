@@ -177,11 +177,15 @@ Common::$lablearray['E01'] = '';
                 
                 Bussiness::PrepareData(true);
 
-                // Bussiness::$Conn->endTransaction();            
-                echo "MSG "."Message was successfully sent";      
+                    // Bussiness::$Conn->endTransaction();            
+                    //   echo "MSG " . "Message was successfully sent";
+
+                    echo Common::createResponse('ok', "Message was successfully sent");
+
                 
             else:
-                 echo "MSG "."Failed to sent message"; 
+                    //echo "MSG "."Failed to sent message"; 
+                    echo Common::createResponse('war', "Failed to sent message");
             endif;
             
             break;
@@ -208,14 +212,15 @@ Common::$lablearray['E01'] = '';
         Common::prepareParameters($parameters, 'asatdate', Common::changeDateFromPageToMySQLFormat($formdata['txtDate']));   
         Common::prepareParameters($parameters, 'product_prodid', $formdata['product_prodid']); 
         Common::prepareParameters($parameters, 'n_days', $formdata['txtnDays']);
-        Common::prepareParameters($parameters, 'name', '');  
-        Common::prepareParameters($parameters, 'loannumbers',$slnr); 
-     
-        $results = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false); 
-        
-      
-            getlables("1610"); 
-            echo "MSG:" .$results[0]['msg'].$lablearray['1610'];
+                Common::prepareParameters($parameters, 'name', '');
+                Common::prepareParameters($parameters, 'loannumbers', $slnr);
+
+                $results = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
+
+
+                getlables("1610");
+                echo Common::createResponse('ok', $results[0]['msg'] . $lablearray['1610']); 
+            //echo "MSG:" .$results[0]['msg'].$lablearray['1610'];
             break;
          }
         break;
@@ -240,18 +245,20 @@ Common::$lablearray['E01'] = '';
         $results = Common::common_sp_call(serialize($parameters), '', Common::$connObj, true);   
         
         if($results['id']=='2'):
-            getlables("772");       
-            echo "MSG:" . $lablearray['772'].' '.$formdata['product_prodid'];
+            getlables("772");
+            // echo "MSG:" . $lablearray['772'].' '.$formdata['product_prodid'];
+            echo Common::createResponse('ok', $lablearray['772'] . ' ' . $formdata['product_prodid']); 
             exit();
         endif;
                
         if($results['id']=='3'):
-            getlables("1554");       
-            echo "MSG:" . $lablearray['1554'].' '.$formdata['product_prodid'];
+            getlables("1554");
+            echo Common::createResponse('info', $lablearray['1554'] . ' ' . $formdata['product_prodid']); 
+           // echo "MSG:" . $lablearray['1554'].' '.$formdata['product_prodid'];
             exit();
         endif;
-        
-        echo "1111111";         
+
+        echo Common::createResponse('ok', $lablearray['218']);       
         break;   
 
     case 'frmmanagetransactions':
@@ -379,14 +386,17 @@ Common::$lablearray['E01'] = '';
            
             break;
         }
-        echo "1111111"; 
+
+        echo Common::createResponse('ok', $lablearray['218']);  
+
         break;
        
     case 'frmfees':
 
         if ($formdata['txtDate'] == "") {
             Common::getlables("1200", "", "", $Conn);
-            echo 'ERR ' . Common::$lablearray['1200'];
+            echo Common::createResponse('err', $lablearray['1200']);  
+           // echo 'ERR ' . Common::$lablearray['1200'];
             exit();
         }
 
@@ -405,7 +415,8 @@ Common::$lablearray['E01'] = '';
 
         if ($loan_array['lnr'] == "") {
             Common::getlables("1346", "", "", $Conn);
-            echo 'ERR ' . Common::$lablearray['1346'];
+            // echo 'ERR ' . Common::$lablearray['1346'];
+            echo Common::createResponse('err', $lablearray['1346']);  
             exit();
         }
         $formdata['txtDate'] = Common::changeDateFromPageToMySQLFormat($formdata['txtDate']);
@@ -416,7 +427,8 @@ Common::$lablearray['E01'] = '';
         if ($formdata['MODE'] == 'SA') { // Pay from Savings
             if ($formdata['SPRODID'] == "") {
                 Common::getlables("1435", "", "", $Conn);
-                echo 'ERR ' . Common::$lablearray['1435'];
+                echo Common::createResponse('err', $lablearray['1435']); 
+               // echo 'ERR ' . Common::$lablearray['1435'];
                 exit();
             }
 
@@ -426,7 +438,8 @@ Common::$lablearray['E01'] = '';
             // check see if account exists
             if ($accounts_array[0]['savaccounts_account'] == "") {
                 Common::getlables("1510", "", "", $Conn);
-                echo 'ERR ' . Common::$lablearray['1510'];
+                // echo 'ERR ' . Common::$lablearray['1510'];
+                echo Common::createResponse('err', $lablearray['1510']); 
                 exit();
             }
             
@@ -436,12 +449,13 @@ Common::$lablearray['E01'] = '';
              Savings::$prodid = $formdata['SPRODID'];
              Savings::$asatdate = $formdata['DATE'];
              Savings::$savacc = $accounts_array[0]['savaccounts_account'];
-         
+
             // check if balances are sufficient
-            if(Savings::getSavingsBalance($formdata['AMOUNT'])){                
-           
-                Common::getlables("1216", "", "", $Conn);          
-                echo 'ERR '.Common::$lablearray['1216'].' '.$accounts_array['savaccounts_account'];
+            if (Savings::getSavingsBalance($formdata['AMOUNT'])) {
+
+                Common::getlables("1216", "", "", $Conn);
+                //  echo 'ERR '.Common::$lablearray['1216'].' '.$accounts_array['savaccounts_account'];
+                echo Common::createResponse('err', Common::$lablearray['1216'] . ' ' . $accounts_array['savaccounts_account']); 
                 exit();            
              
             }
@@ -474,10 +488,12 @@ Common::$lablearray['E01'] = '';
         
         Loan::updateLoan($form_data, 'LC');
         if (Common::$lablearray['E01'] != "") {
-            echo 'MSG ' . Common::$lablearray['E01'];
+            echo Common::createResponse('err', Common::$lablearray['E01']); 
+           // echo 'MSG ' . Common::$lablearray['E01'];
             exit();
         }
-        echo '1111111';
+
+        echo Common::createResponse('ok', Common::$lablearray['218']);
         
         break;
     case 'frmmodemsettings':
@@ -489,7 +505,8 @@ Common::$lablearray['E01'] = '';
         if(isset($modem_results[0]['modem_port']) && $formdata['action']=='add'):
             
             if($modem_results[0]['modem_port']==$formdata['txtPort']):
-                echo 'MSG ' . Common::$lablearray['1609'];
+                // echo 'MSG ' . Common::$lablearray['1609'];
+                echo Common::createResponse('ok',  Common::$lablearray['1609']);
                 exit();  
             endif;
               
@@ -506,11 +523,12 @@ Common::$lablearray['E01'] = '';
         Modem::updateModem($form_data);
         
         if (Common::$lablearray['E01'] != "") {
-            echo 'MSG ' . Common::$lablearray['E01'];
+            echo Common::createResponse('ok', Common::$lablearray['E01']);
+         //   echo 'MSG ' . Common::$lablearray['E01'];
             exit();
         }
-        
-        echo '1111111';
+
+        echo Common::createResponse('ok', Common::$lablearray['218']);
         
         break;
     case 'frmimportdata':
@@ -525,7 +543,7 @@ Common::$lablearray['E01'] = '';
             Common::getlables("1346,1347,218", "", "", $Conn);
 
 
-            if ($ext[1] == '') {
+            if ($ext[1] == '') {                
                 echo '<div class="w2ui-error">' . Common::$lablearray['1346'] . '</div>';
                 exit();
             }
@@ -1008,7 +1026,8 @@ Common::$lablearray['E01'] = '';
 
                     Loan::updateLoan($form_data, $formdata['LSTATUS']);
                     if (Common::$lablearray['E01'] != "") {
-                        echo 'MSG ' . Common::$lablearray['E01'];
+                        echo Common::createResponse('ok', Common::$lablearray['E01']);
+                        //echo 'MSG ' . Common::$lablearray['E01'];
                         exit();
                     }
                     break;
@@ -1139,7 +1158,7 @@ Common::$lablearray['E01'] = '';
                         
                         Loan::updateLoan($form_data, 'PA');
                         if (Common::$lablearray['E01'] != "") {
-                            echo 'MSG ' . Common::$lablearray['E01'];
+                            echo Common::createResponse('ok', Common::$lablearray['E01']);
                             exit();
                         }
                         break;
@@ -1707,6 +1726,7 @@ Common::$lablearray['E01'] = '';
                            if (!Savings::getSavingsBalance($data[6])){ 
                                                           
                                 echo "MSG:" . Common::$lablearray['1216'] . ' - ' .array_sum(array_column(Savings::$bal_array,'balance')).' '.$data[0].' '.$data[1]; // Insufficient funds on account to complete transaction
+                                echo Common::createResponse('ok', Common::$lablearray['1216'] . ' - ' . array_sum(array_column(Savings::$bal_array, 'balance')) . ' ' . $data[0] . ' ' . $data[1]);
                                 exit();
                             }
                 
@@ -1777,7 +1797,8 @@ Common::$lablearray['E01'] = '';
                         Loan::updateLoan($form_data, 'PA'); 
                         
                         if (Common::$lablearray['E01'] != ""):
-                            echo 'MSG ' . Common::$lablearray['E01'];
+                            // echo 'MSG ' . Common::$lablearray['E01'];
+                            echo Common::createResponse('ok', Common::$lablearray['E01']);
                             exit();
                         endif;
                     endif;
@@ -1801,7 +1822,8 @@ Common::$lablearray['E01'] = '';
                 case 'LOANREPAY':
                     Loan::updateLoan($form_data, 'LR');
                     if (Common::$lablearray['E01'] != "") {
-                        echo 'MSG ' . Common::$lablearray['E01'];
+                        //  echo 'MSG ' . Common::$lablearray['E01'];
+                        echo Common::createResponse('ok', Common::$lablearray['E01']);
                         exit();
                     }
                     break;
@@ -1869,7 +1891,7 @@ Common::$lablearray['E01'] = '';
 //                $Conn->SQLUpdate(array('configuration' => array('configuration_key' => $formdata['SETTING_PAYMODE'])), true);
 //
 //                
-//                echo '1111111';
+//                 echo Common::createResponse('ok', Common::$lablearray['218']);
 //                break 2;
 //               
 //            default:
@@ -1884,12 +1906,14 @@ Common::$lablearray['E01'] = '';
          case 'edit':
             if ($formdata['txtproduct'] == "") {
                getlables("1521");
-               echo "MSG:" . $lablearray['1521'];
+                    echo Common::createResponse('ok', Common::$lablearray['1521']);
+              // echo "MSG:" . $lablearray['1521'];
                exit();
            }
             if ($formdata['txtproductcode'] == "") {
                getlables("1521");
-               echo "MSG:" . $lablearray['1521'];
+                    echo Common::createResponse('ok', Common::$lablearray['1521']);
+              // echo "MSG:" . $lablearray['1521'];
                exit();
            }
            
@@ -1904,8 +1928,8 @@ Common::$lablearray['E01'] = '';
            $form_data[]= $formdata;
            
            Products::updateProducts($form_data);
-           
-            echo "1111111";
+
+                echo Common::createResponse('ok', $lablearray['218']);   
             break 2;
         
         default:
@@ -1924,19 +1948,22 @@ Common::$lablearray['E01'] = '';
 
                 if ($formdata['branch_code'] == "") {
                     getlables("1521");
-                    echo "MSG:" . $lablearray['1521'];
+                    echo Common::createResponse('ok', Common::$lablearray['1521']);
+                   // echo "MSG:" . $lablearray['1521'];
                     exit();
                 }
 
                 if ($formdata['product_prodid'] == "") {
                     getlables("1435");
-                    echo "MSG " . $lablearray['1435'];
+                    echo Common::createResponse('ok', Common::$lablearray['1435']);
+                 //   echo "MSG " . $lablearray['1435'];
                     exit();
                 }
 
                 if ($formdata['client_idno'] == "") {
                     getlables("1199");
-                    echo "INFO." . $lablearray['1199'];
+                    echo Common::createResponse('ok', Common::$lablearray['1199']);
+                  //  echo "INFO." . $lablearray['1199'];
                     exit();
                 }
                 
@@ -1969,7 +1996,8 @@ Common::$lablearray['E01'] = '';
 
                     if ($formdata['CHEQNO'] == "") {
                         getlables("185");
-                        echo "INFO." . $lablearray['185'];
+                        echo Common::createResponse('info', Common::$lablearray['185']);
+                      //  echo "INFO." . $lablearray['185'];
                         exit();
                     }
 
@@ -1981,7 +2009,8 @@ Common::$lablearray['E01'] = '';
                 if ($formdata['REPAYSAVAMOUNT'] > 0 && $formdata['FREQ'] == "") {
 
                     getlables("1198");
-                    echo "MSG:" . $lablearray['1198'];
+                    echo Common::createResponse('ok', Common::$lablearray['1198']);
+                  //  echo "MSG:" . $lablearray['1198'];
                     exit();
                 }
 
@@ -2015,12 +2044,13 @@ Common::$lablearray['E01'] = '';
                 $form_data[]= $formdata;
                 Savings::updateSavings($form_data);
 
-                if(Common::$lablearray['E01']!=""){                    
-                    echo 'ERR '.Common::$lablearray['E01'];
+                if (Common::$lablearray['E01'] != "") {
+                    echo Common::createResponse('ok', Common::$lablearray['E01']);                
+                  //  echo 'ERR '.Common::$lablearray['E01'];
                     exit();
                 }
                 getlables("218");
-                echo "1111111";
+                echo Common::createResponse('ok', $lablearray['218']);   
                 break 2;
 
             case 'edit':
@@ -2036,24 +2066,26 @@ Common::$lablearray['E01'] = '';
             case 'add':
                 if ($formdata['branch_code'] == "") {
                     getlables("1436");
-                    echo "MSG:" . $lablearray['1436'];
+                    echo Common::createResponse('info', Common::$lablearray['1436']);
+                  //  echo "MSG:" . $lablearray['1436'];
                     exit();
                 }
 
                 if ($formdata['txtDate'] == "") {
-
-                    echo "MSG:" . $lablearray['621'];
+                    echo Common::createResponse('info', Common::$lablearray['621']);
+                  //  echo "MSG:" . $lablearray['621'];
                     exit();
                 }
 
                 if ($formdata['product_prodid'] == "") {
-
-                    echo "MSG:" . $lablearray['1434'];
+                    echo  Common::createResponse('info', Common::$lablearray['1434']);
+                   // echo "MSG:" . $lablearray['1434'];
                     exit();
                 }
 
                 if (substr($formdata['product_prodid'], 0, 1) != "S") {
-                    echo "MSG:" . $lablearray['1435'];
+                    echo  Common::createResponse('info', Common::$lablearray['1435']);
+                   // echo "MSG:" . $lablearray['1435'];
                     exit();
                 }
 
@@ -2070,9 +2102,12 @@ Common::$lablearray['E01'] = '';
                 $results = Common::common_sp_call(serialize($parameters), '', $Conn, true);
 
                 if ($results['state'] == '0') {
-                    echo "WAR" . $results['msg'];
+                    echo  Common::createResponse('info', $results['msg']);
+                   //  echo Common::createResponse('war', $results['msg']);
+                    // echo "WAR" . $results['msg'];
                 } else {
-                    echo '1111111';
+                    echo Common::createResponse('ok', Common::$lablearray['218']);
+
                 }
                 break;
             default:
@@ -2099,21 +2134,26 @@ Common::$lablearray['E01'] = '';
                 if(count($tdeposit_array)>0): 
                     
                     if($formdata['TDSTATUS']=='TW' && $tdeposit_array[0]['status']=='TW'):
-                        echo "MSG " . Common::$lablearray['1618'];
+                        echo  Common::createResponse('info', Common::$lablearray['1618']);
+                       // echo "MSG " . Common::$lablearray['1618'];
                         exit();
                     endif;
                     
                 endif;
-                
-                
-                 // check see if a transaction is selected
-                if($theid==''):                              
-                    echo "MSG" .Common::$lablearray['1339'];
+
+
+                // check see if a transaction is selected
+                if (
+                    $theid == ''
+                ):
+                    echo  Common::createResponse('info', Common::$lablearray['1339']);                              
+                   // echo "MSG" .Common::$lablearray['1339'];
                     exit();
                 endif;
                 
                  if ($formdata['txtDate'] == ''):
-                    echo "MSG:" . Common::$lablearray['186'];
+                    echo  Common::createResponse('info', Common::$lablearray['186']); 
+                   // echo "MSG:" . Common::$lablearray['186'];
                     exit();
                 endif;
                 
@@ -2133,17 +2173,21 @@ Common::$lablearray['E01'] = '';
                 
                 // check if time deposit is withdrawn
                 if(TDeposit::$tdeposit_array['status']=='TW'):
-                    getlables("1612");                
-                    echo "MSG " . Common::$lablearray['1612'];
+                    getlables("1612");
+                    echo  Common::createResponse('info', Common::$lablearray['1612']);               
+                    //echo "MSG " . Common::$lablearray['1612'];
                     exit();
                 endif;
                 
                 $curdate = Common::getcurrentDateTime('D');
                 $matdate = Common::changeMySQLDateToPageFormat($tdeposit_array[0]['ddate']);
-                
+
                 // check see of maturity date has arrived
-                if($curdate < $matdate):                                  
-                    echo "MSG " . Common::$lablearray['1611'];
+                if (
+                    $curdate < $matdate
+                ):
+                    echo  Common::createResponse('info', Common::$lablearray['1611']);                                  
+                   // echo "MSG " . Common::$lablearray['1611'];
                     exit();                
                 endif;
                 
@@ -2181,8 +2225,9 @@ Common::$lablearray['E01'] = '';
 
                     Common::replace_key_function($formdata, 'cheques_no', 'CHEQNO');
 
-                    if ($formdata['CHEQNO'] == "") {                       
-                        echo "INFO.".Common::$lablearray['185'];
+                    if ($formdata['CHEQNO'] == "") {
+
+                        echo  Common::createResponse('info', Common::$lablearray['186']); 
                         exit();
                     }
 
@@ -2217,7 +2262,8 @@ Common::$lablearray['E01'] = '';
                
                if (count($td_amounts_array) > 0):
                     if ($formdata['AMOUNT']!=$nAmount):
-                        echo "INFO.".Common::$lablearray['1674'];
+                        echo  Common::createResponse('info', Common::$lablearray['1674']); 
+                      //  echo "INFO.".Common::$lablearray['1674'];
                         exit();
                     endif;
                 endif;
@@ -2233,9 +2279,13 @@ Common::$lablearray['E01'] = '';
                 Tdeposit::updateTimeDeposit($form_data);                   
                 
                 if(Common::$lablearray['E01']!=""):
-                    echo 'WAR:'.Common::$lablearray['E01'];
+                    echo  Common::createResponse('info', Common::$lablearray['E01']); 
+                    // 'WAR:'.Common::$lablearray['E01'];
                 else:
-                    echo "1111111";               
+                    echo Common::createResponse(
+                        'ok',
+                        $lablearray['218']
+                    );                  
                 endif;       
                 
                 break;
@@ -2246,11 +2296,12 @@ Common::$lablearray['E01'] = '';
 
                 if ($theid == "") {
                     getlables("1339");
-                    echo "MSG:" . $lablearray['1339'];
+                    echo  Common::createResponse('info', Common::$lablearray['1339']); 
+                  //  echo "MSG:" . $lablearray['1339'];
                     exit();
                 }
                 Common::reverseTransaction(array(TRIM($theid)), 'T', $_SESSION['user_id'], Common::$connObj);
-                echo "1111111"; 
+                echo Common::createResponse('ok', $lablearray['218']);    
                 break;
                 
             case 'add':
@@ -2270,13 +2321,15 @@ Common::$lablearray['E01'] = '';
                     
                 case 'TR': 
                     if ($_POST['keyparam']==""):
-                        echo "MSG " . Common::$lablearray['1621'];
+                            echo  Common::createResponse('info', Common::$lablearray['1621']); 
+                       // echo "MSG " . Common::$lablearray['1621'];
                         exit();
                     endif;
 
                         // check see of maturity date has arrived
-                    if($curdate < $matdate):                                      
-                        echo "MSG " . Common::$lablearray['1620'];
+                        if ($curdate < $matdate):
+                            echo  Common::createResponse('info', Common::$lablearray['1620']);
+                        // echo "MSG " . Common::$lablearray['1620'];
                         exit();                                                                  
                     endif;
                     
@@ -2288,9 +2341,12 @@ Common::$lablearray['E01'] = '';
                     break;  
                
                 case 'TM':
-                     // check see of maturity date has arrived
-                    if($curdate >= $matdate):                                      
-                        echo "MSG:" . Common::$lablearray['1625'];
+                        // check see of maturity date has arrived
+                        if (
+                            $curdate >= $matdate
+                        ):
+                            echo  Common::createResponse('info', Common::$lablearray['1620']);                                    
+                        // echo "MSG:" . Common::$lablearray['1625'];
                         exit();                                                                  
                     endif;
                     
@@ -2312,44 +2368,46 @@ Common::$lablearray['E01'] = '';
                
                 if ($formdata['product_prodid'] == "") { //CHECK TIME DEPOSIT
                     getlables("1198");
-                    echo "MSG" . Common::$lablearray['1198'];
+                    echo  Common::createResponse('info', Common::$lablearray['1198']); 
+                    //echo "MSG" . Common::$lablearray['1198'];
                     exit();
                 }
 
                 if ($formdata['client_idno'] == "") { // CHECK CLIENT
-                   
-                    echo "MSG" . Common::$lablearray['1199'];
+                    echo  Common::createResponse('info', Common::$lablearray['1199']); 
+                   // echo "MSG" . Common::$lablearray['1199'];
                     exit();
                 }
 
                 if ($formdata['TDSTATUS'] == "") { //CHECK TRANSACTION TYPE
-                   
-                    echo "MSG" . Common::$lablearray['1209'];
+                    echo  Common::createResponse('info', Common::$lablearray['1209']);
+                    // echo "MSG" . Common::$lablearray['1209'];
                     exit();
                 }
 
                 if ($formdata['txtamount'] == "" || $formdata['txtamount'] <= 0) { // CHECK AMOUNT
-                  
-                    echo "MSG" . Common::$lablearray['1210'];
+                    echo  Common::createResponse('info', Common::$lablearray['1210']);
+                   //  echo "MSG" . Common::$lablearray['1210'];
                     exit();
                 }          
                            
                 if ($formdata['txtperiod'] == '') { // TENURE
-                  
-                    echo "MSG" . Common::$lablearray['1602'];
-                    exit();
-                }
-                
-                
-                if ($formdata['INSTYPE'] == '') {// INTEREST CALCULATION PERIOD
-                   
-                    echo "MSG" . Common::$lablearray['1603'];
+                    echo  Common::createResponse('info', Common::$lablearray['1602']);
+                    // echo "MSG" . Common::$lablearray['1602'];
                     exit();
                 }
 
-               
-                if ($formdata['txtDate'] == '') { // CHECK DATE                   
-                    echo "MSG" . Common::$lablearray['186'];
+
+                if ($formdata['INSTYPE'] == '') { // INTEREST CALCULATION PERIOD
+                    echo  Common::createResponse('info', Common::$lablearray['1603']);
+                   //  echo "MSG" . Common::$lablearray['1603'];
+                    exit();
+                }
+
+
+                if ($formdata['txtDate'] == '') { // CHECK DATE  
+                    echo  Common::createResponse('info', Common::$lablearray['186']);                 
+                   // echo "MSG" . Common::$lablearray['186'];
                     exit();
                 }
 
@@ -2475,7 +2533,8 @@ Common::$lablearray['E01'] = '';
                     $formdata = $temp_data;
                    
                     if ($formdata['AMOUNT']!= $nAmount):
-                        echo "INFO." . Common::$lablearray['1674'];
+                            echo  Common::createResponse('info', Common::$lablearray['1674']); 
+
                         exit();
                     endif;
                 
@@ -2486,15 +2545,13 @@ Common::$lablearray['E01'] = '';
                 Tdeposit::updateTimeDeposit($form_data);
 
                 if (Common::$lablearray['E01'] != ''):
-                    echo 'ERR ' . Common::$lablearray['E01'];
+                        echo  Common::createResponse('err', Common::$lablearray['E01']); 
+                   // echo 'ERR ' . Common::$lablearray['E01'];
                     exit();
                 endif;
                 }
                 if ($formdata['STATUS']=='TR' || $formdata['STATUS']=='TW' || $formdata['STATUS']=='TD'):
-                     echo "1111111"; 
-                
-                else:
-                    echo "MSG.".Common::$lablearray['218'];
+                    echo Common::createResponse('ok', Common::$lablearray['218']);
                 endif; 
                 break;
          }
@@ -2513,12 +2570,13 @@ Common::$lablearray['E01'] = '';
 
                 if ($theid == "") {
                     getlables("1339");
-                    echo "MSG:" . $lablearray['1339'];
+                    echo  Common::createResponse('info', Common::$lablearray['1339']);
+                  //  echo "MSG:" . $lablearray['1339'];
                     exit();
                 }
 
                 Common::reverseTransaction(array(TRIM($theid)), 'S', $_SESSION['user_id'], $Conn);
-                echo "1111111"; 
+                echo Common::createResponse('ok', $lablearray['218']);    
                 break;
                 
             case 'add':
@@ -2526,38 +2584,44 @@ Common::$lablearray['E01'] = '';
 
                 if ($formdata['product_prodid'] == "") {
                     getlables("1198");
-                    echo "INFO:" . $lablearray['1198'];
+                    echo  Common::createResponse('info', Common::$lablearray['1198']);
+                  //  echo "INFO:" . $lablearray['1198'];
                     exit();
                 }
 
                 if ($formdata['client_idno'] == "") {
                     getlables("1199");
-                    echo "INFO:" . $lablearray['1199'];
+                    echo  Common::createResponse('info', Common::$lablearray['1199']);
+                  //  echo "INFO:" . $lablearray['1199'];
                     exit();
                 }
 
                 if ($formdata['ttype'] == "") {
                     getlables("1209");
-                    echo "INFO:" . $lablearray['1209'];
+                    echo  Common::createResponse('info', Common::$lablearray['1209']);
+                 //   echo "INFO:" . $lablearray['1209'];
                     exit();
                 }
 
                 if ($formdata['txtamount'] == "" || $formdata['txtamount'] <= 0) {
                     getlables("1210");
-                    echo "INFO:" . $lablearray['1210'];
+                    echo  Common::createResponse('info', Common::$lablearray['1210']);
+                  //  echo "INFO:" . $lablearray['1210'];
                     exit();
                 }
 
                 // check if we are transfering to savings
                 if ($formdata['txtDate'] == '') {
                     getlables("186");
-                    echo "INFO:" . $lablearray['186'];
+                    echo  Common::createResponse('info', Common::$lablearray['186']);
+                 //   echo "INFO:" . $lablearray['186'];
                     exit();
                 }
 
                 if ($formdata['client_idno'] == "") {
                     getlables("1199");
-                    echo "MSG:" . $lablearray['1199'];
+                    echo  Common::createResponse('info', Common::$lablearray['1119']);
+                 //   echo "MSG:" . $lablearray['1199'];
                     exit();
                 }
 
@@ -2596,7 +2660,8 @@ Common::$lablearray['E01'] = '';
                    
                     if (!Savings::getSavingsBalance($nTotwithdraw)) {
                         getlables("1216");
-                        echo "MSG:" . $lablearray['1216'] . ' - ' . $grpbalance; // Insufficient funds on account to complete transaction
+                        echo  Common::createResponse('info', $lablearray['1216'] . ' - ' . $grpbalance);
+
                         exit();
                     }
                     
@@ -2631,7 +2696,8 @@ Common::$lablearray['E01'] = '';
 
                         if ($formdata['CHEQNO'] == "") {
                             getlables("185");
-                            echo "INFO." . $lablearray['185'];
+                            echo  Common::createResponse('info', Common::$lablearray['185']);
+                          //  echo "INFO." . $lablearray['185'];
                             exit();
                         }
 
@@ -2730,7 +2796,8 @@ Common::$lablearray['E01'] = '';
                                         $memname = Common::sum_array('members_idno', $formdata['MEMID'], 'name',$mem_bal_array);
 
                                         getlables("1666");
-                                        echo "ERR " . $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID'];
+                                    echo  Common::createResponse('err', $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID']);
+                                        // echo "ERR " . $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID'];
                                         exit();
 
                                     endif;
@@ -2775,7 +2842,8 @@ Common::$lablearray['E01'] = '';
 
                                     if ($tamount < $memamount):
                                         getlables("1666");
-                                        echo "ERR " . $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID'];
+                                    echo  Common::createResponse('err', $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID']);
+                                      //  echo "ERR " . $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID'];
                                         exit();
                                     endif;
                                     
@@ -2793,12 +2861,13 @@ Common::$lablearray['E01'] = '';
                     Savings::updateSavings($form_data);                    
 
                     if (Common::$lablearray['E01'] != ''):
-                        echo 'ERR ' . Common::$lablearray['E01'];
+                        echo  Common::createResponse('err', Common::$lablearray['E01']);
+                       //  echo 'ERR ' . Common::$lablearray['E01'];
                         exit();
                     endif;
                 }
-         
-                echo "1111111";
+
+                echo Common::createResponse('ok', $lablearray['218']);   
                 
                 break 2;
             case 'loadform':
@@ -2816,7 +2885,8 @@ Common::$lablearray['E01'] = '';
                 break 2;
             case 'reverse':
                Common::reverseTransaction($_POST['keyparam'],'S', $_SESSION['user_id'], Common::$connObj);
-               echo 'INFO.' . Common::$lablearray['E01'];
+                echo  Common::createResponse('info', Common::$lablearray['E01']);
+              // echo 'INFO.' . Common::$lablearray['E01'];
                exit();
                break 2;
             default:
@@ -2828,6 +2898,7 @@ Common::$lablearray['E01'] = '';
         Common::getlables("1406,1195", "", "", $Conn);
 
         if ($array1['paydetails']['paymodes'] == "") {
+            echo  Common::createResponse('info', Common::$lablearray['1195']);
             echo "INFO.".Common::$lablearray['1195'];
             exit();
         }
@@ -2880,7 +2951,7 @@ Common::$lablearray['E01'] = '';
          if (Common::$error != "") {
              echo Common::$error;
          } else {
-             echo '1111111';
+            echo Common::createResponse('ok', Common::$lablearray['218']);
          }
          break;
  
@@ -2938,21 +3009,25 @@ Common::$lablearray['E01'] = '';
                 
                 if($formdata['AMOUNT']!=$formdata['DueTotal']){
                     echo "INFO." .Common::$lablearray['1737'].$formdata['DueTotal'].'-'.$formdata['AMOUNT'];
+                    echo  Common::createResponse('err', Common::$lablearray['E01']);
                     exit();
                 }
 
-                if (!isset($formdata['MODE'])) {                 
-                     echo "INFO." .Common::$lablearray['1195'];
+                if (!isset($formdata['MODE'])) {
+                    // echo "INFO." .Common::$lablearray['1195'];
+                    echo  Common::createResponse('err', Common::$lablearray['1195']);
                      exit();
                  }
 
                  if ($formdata['MODE'] == "CQ" && $formdata['cheques_no'] == '') {
-                    echo "INFO." . self::$lablearray['185'];
+                    //  echo "INFO." . self::$lablearray['185'];
+                    echo  Common::createResponse('err', Common::$lablearray['185']);
                     exit();
                 }
 
-                 if (!isset($formdata['DATE'])) {                 
-                    echo "INFO." . self::$lablearray['1196'];
+                if (!isset($formdata['DATE'])) {
+                    // echo "INFO." . self::$lablearray['1196'];
+                    echo  Common::createResponse('err', Common::$lablearray['1196']);
                     exit();
                 }
 
@@ -3003,7 +3078,8 @@ Common::$lablearray['E01'] = '';
                         $formdata['SPRODID'] = $accoundetails [1];
                         
                         if($formdata['SAVACC']==""):
-                              echo 'WAR' . Common::$lablearray['1197'];
+                            echo  Common::createResponse('info', Common::$lablearray['1197']);
+                            //  echo 'WAR' . Common::$lablearray['1197'];
                               exit();
                         endif;
                   
@@ -3016,7 +3092,7 @@ Common::$lablearray['E01'] = '';
                     if($formdata['SPRODID']==''):
                         
                         Common::getlables("1593", "", "", $Conn);
-
+                        echo  Common::createResponse('info', Common::$lablearray['1593']);
                         echo 'ERR ' . Common::$lablearray['1593'];
                         exit();
                     endif;                
@@ -3087,9 +3163,12 @@ Common::$lablearray['E01'] = '';
                         endif;
                         
                         if($alloverpayments['val']=='1'):
-                             if($formdata['AMOUNT'] > $memamount):                                 
-                                Common::getlables("1658", "", "", $Conn); 
-                                echo 'MSG ' . Common::$lablearray['1658'].' '.$formdata['MEMID'].' '.bcsub($formdata['AMOUNT'], $memamount,SETTING_ROUNDING);;
+                            if (
+                                $formdata['AMOUNT'] > $memamount
+                            ):
+                                Common::getlables("1658", "", "", $Conn);
+                                echo  Common::createResponse('info', Common::$lablearray['1658'] . ' ' . $formdata['MEMID'] . ' ' . bcsub($formdata['AMOUNT'], $memamount, SETTING_ROUNDING));
+                             //   echo 'MSG ' . Common::$lablearray['1658'].' '.$formdata['MEMID'].' '.bcsub($formdata['AMOUNT'], $memamount,SETTING_ROUNDING);
                                 exit();
                             endif;
                         endif;
@@ -3112,11 +3191,12 @@ Common::$lablearray['E01'] = '';
                 $loan::updateLoan($form_data,'LR');
                 
                 if (Common::$lablearray['E01'] != "") {
-                    echo 'MSG ' . Common::$lablearray['E01'];
+                    //  echo 'MSG ' . Common::$lablearray['E01'];
+                    echo Common::createResponse('info', Common::$lablearray['E01']);
                     exit();
                 }
-                        
-                echo '1111111';
+
+                echo Common::createResponse('ok', Common::$lablearray['218']);
        
                 break;
 
@@ -3206,10 +3286,10 @@ Common::$lablearray['E01'] = '';
                 Bussiness::covertArrayToXML($form_data, true);
                 // $tabledata['xml_data'] = Common::$xml;                
                 Bussiness::PrepareData(true);
-              
-               // Bussiness::$Conn->endTransaction();
-                       
-                echo '1111111';
+
+                // Bussiness::$Conn->endTransaction();
+
+                echo Common::createResponse('ok', Common::$lablearray['218']);
                 break;
 
             default:
@@ -3238,7 +3318,7 @@ Common::$lablearray['E01'] = '';
                 
                 $Conn->SQLInsert(array('feesconfig' => $flat1), true);
 
-                echo '1111111';
+                echo Common::createResponse('ok', Common::$lablearray['218']);
 
                 break;
             case 'edit':
@@ -3327,7 +3407,7 @@ Common::$lablearray['E01'] = '';
 
         $Conn->sp_call($parameters, '');
 
-        echo '1111111';
+        echo Common::createResponse('ok', Common::$lablearray['218']);
         break;
 
         case 'frmLoanapp3': // ADD LOAN APPLICATION
@@ -3437,8 +3517,9 @@ Common::$lablearray['E01'] = '';
         }
         if(count($memberloans)>0):
             if($nPrinc<=0 || $nPrinc != $formdata['LAMNT']):
-               Common::getlables("1642", "", "", Common::$connObj);            
-               echo 'MSG.'.Common::$lablearray['1642']; 
+                Common::getlables("1642", "", "", Common::$connObj);
+                echo Common::createResponse('info', Common::$lablearray['1642']);          
+             //  echo 'MSG.'.Common::$lablearray['1642']; 
                exit();
             endif;
         endif;
@@ -3463,11 +3544,13 @@ Common::$lablearray['E01'] = '';
                 $form_data[] = $formdata;
 
                 Loan::addeditLoan($form_data);
-                
-                if(Common::$lablearray['E01']!=''):                    
-                   echo 'MSG.'.Common::$lablearray['E01'];                
-                else:                
-                    echo '1111111';                
+
+                if (Common::$lablearray['E01'] != ''):
+                    echo Common::createResponse('info', Common::$lablearray['E01']);
+                //  echo 'MSG.' . Common::$lablearray['E01'];
+                else:
+                    echo Common::createResponse('info', Common::$lablearray['218']);
+                  //  echo Common::createResponse('ok', Common::$lablearray['218']);                
                 endif;
                 
                 break 2;
@@ -3483,7 +3566,7 @@ Common::$lablearray['E01'] = '';
                 // save due details
                 $Conn->SQLInsert(array('dues' => $flat3), true);
                 //echo informationUpdate('success',$lablearray['218']);
-                echo '1111111';
+                echo Common::createResponse('ok', Common::$lablearray['218']);
                 break 2;
 
             default:
@@ -3527,21 +3610,24 @@ Common::$lablearray['E01'] = '';
 
                         if ($formdata['startDate'] == ""):
                             $lablearray = getlables("186");
-                            echo "MSG:" . $lablearray["186"]; // Please select status
+                            echo Common::createResponse('info', Common::$lablearray['186']);
+                          //  echo "MSG:" . $lablearray["186"]; // Please select status
                             break 2;
                         endif;
 
 
                         if ($formdata['lstatus'] == ""):
                             $lablearray = getlables("1232");
-                            echo "MSG:" . $lablearray["1232"]; // Please select status
+                            echo Common::createResponse('info', Common::$lablearray['1232']);
+                           // echo "MSG:" . $lablearray["1232"]; // Please select status
                             break 2;
                         endif;
 
                         if ($formdata['lstatus'] != "AP" && $formdata['lstatus'] != "RF") :
                             if ($formdata['txtvoucher'] == ""):
                                 $lablearray = getlables("1577");
-                                echo "MSG:" . $lablearray["1577"]; // Please select status
+                                echo Common::createResponse('info', Common::$lablearray['1577']);
+                             //   echo "MSG:" . $lablearray["1577"]; // Please select status
                                 break 2;
                             endif;
                         endif;
@@ -3571,7 +3657,8 @@ Common::$lablearray['E01'] = '';
                         $loan_amount = Common::get_array_elements_with_key_in_3D_array($array1, 'lamount');
                         
                         if($nprinc!=$loan_amount[0]):
-                            echo "ERR " . Common::$lablearray['1688']."(".Common::number_format_locale_display($loan_amount[0]).") ".Common::$lablearray['1689']." ".Common::number_format_locale_display($nprinc);
+                            echo Common::createResponse('err', Common::$lablearray['1688'] . "(" . Common::number_format_locale_display($loan_amount[0]) . ") " . Common::$lablearray['1689'] . " " . Common::number_format_locale_display($nprinc));
+                            // echo "ERR " . Common::$lablearray['1688']."(".Common::number_format_locale_display($loan_amount[0]).") ".Common::$lablearray['1689']." ".Common::number_format_locale_display($nprinc);
                             exit();
                         endif;                              
                        
@@ -3580,13 +3667,14 @@ Common::$lablearray['E01'] = '';
                         Loan::$isBulkInsert = true;
                        if(count($loan_dues)>0):
                             $results = Loan::updateLoan($form_data, 'RS');
-                       endif;                      
+                        endif;
 
-                        if (Common::$lablearray['E01'] != "") {                            
-                            echo 'MSG ' . Common::$lablearray['E01'];
+                        if (Common::$lablearray['E01'] != "") {
+                            echo Common::createResponse('err', Common::$lablearray['E01']);                           
+                            //echo 'MSG ' . Common::$lablearray['E01'];
                             exit();
                         }
-                        echo '1111111';
+                        echo Common::createResponse('ok', Common::$lablearray['218']);
                         exit();
                         break;
                          
@@ -3599,18 +3687,25 @@ Common::$lablearray['E01'] = '';
                                 
                         $results = Loan::updateLoan($form_data, 'WO');
 
-                        if (Common::$lablearray['E01'] != "") {                            
-                            echo 'MSG ' . Common::$lablearray['E01'];
+                        if (Common::$lablearray['E01'] != "") {
+                            echo Common::createResponse('info', Common::$lablearray['E01']);                         
+                           // echo 'MSG ' . Common::$lablearray['E01'];
                             exit();
                         }
                         switch($results['id']){                        
                         case '1':
-                            echo '1111111';
+                                echo Common::createResponse('ok', Common::$lablearray['218']);
                              break;
                         case '2':
-                            echo "MSG:" . Common::$lablearray["695"];
+                                echo Common::createResponse('info', Common::$lablearray['695']);
+                          //  echo "MSG:" . Common::$lablearray["695"];
+
                         case '3':
-                            echo "MSG:" . Common::$lablearray["772"];
+                                echo Common::createResponse(
+                                    'info',
+                                    Common::$lablearray['772']
+                                );
+                          //  echo "MSG:" . Common::$lablearray["772"];
                             break 3;
                         }
                         break 2;
@@ -3620,7 +3715,8 @@ Common::$lablearray['E01'] = '';
                         Common::getlables("1475,1492,1491", "", "", $Conn);
 
                         if ($formdata['txttopupperloan'] <= 0 || $formdata['txttopupperloan'] == "") {
-                            echo "MSG:" . Common::$lablearray["1491"]; // Please enter the amount
+                            echo Common::createResponse('info', Common::$lablearray['1491']);
+                          //  echo "MSG:" . Common::$lablearray["1491"]; // Please enter the amount
                             break 2;
                         }
 
@@ -3662,10 +3758,11 @@ Common::$lablearray['E01'] = '';
                         Loan::updateLoan($form_data, 'RF');
 
                         if (Common::$lablearray['E01'] != "") {
-                            echo 'MSG ' . Common::$lablearray['E01'];
+                            echo Common::createResponse('info', Common::$lablearray['E01']);
+                           // echo 'MSG ' . Common::$lablearray['E01'];
                             exit();
                         }
-                        echo '1111111';
+                        echo Common::createResponse('ok', Common::$lablearray['218']);
                         
                         break 2;
 
@@ -3676,7 +3773,7 @@ Common::$lablearray['E01'] = '';
                             Common::deleteItem($loan_number, 'LOAN');
 
                         }
-                        echo '1111111';
+                        echo Common::createResponse('ok', Common::$lablearray['218']);
                         break 2;
                     
                     default: // DIBURSE, REJECT , APPROVE
@@ -3687,21 +3784,24 @@ Common::$lablearray['E01'] = '';
                         Common::getlables("1579,1216,1198,1195,185,1216,1196,1231,1555,218", "", "", Common::$connObj);
                         
                         if ($formdata['PAYMODES'] == "" && $formdata['lstatus'] != 'RJ' && $formdata['lstatus'] != 'AP') {
-                           // getlables("1195");
-                            echo "ERR" .Common::$lablearray['1195'];
+                            // getlables("1195");
+                            echo Common::createResponse('info', Common::$lablearray['1195']);
+                        //    echo "ERR" .Common::$lablearray['1195'];
                             break 2;
                         }
 
                         if ($formdata['PAYMODES'] == "CQ" && $formdata['cheques_no'] == '') {
-                           // getlables("185");
-                            echo "MSG:" .Common::$lablearray['185'];
+                            // getlables("185");
+                            echo Common::createResponse('info', Common::$lablearray['185']);
+                          //  echo "MSG:" .Common::$lablearray['185'];
                             exit();
                         }
 
 
                         if ($formdata['startDate'] == "") {
                             //$lablearray = getlables("1196");
-                            echo "MSG:" . Common::$lablearray["1196"];
+                            echo Common::createResponse('info', Common::$lablearray['1196']);
+                          //  echo "MSG:" . Common::$lablearray["1196"];
                             break 2;
                         }
 
@@ -3709,7 +3809,8 @@ Common::$lablearray['E01'] = '';
                             // check product
                             if ($formdata['product_prodid'] == "") {
                                 // $lablearray = getlables("1231");
-                                echo "MSG:" . Common::$lablearray["1231"];
+                                echo Common::createResponse('info', Common::$lablearray['1231']);
+                            //    echo "MSG:" . Common::$lablearray["1231"];
                                 break 2;
                             }
                         }
@@ -3765,7 +3866,8 @@ Common::$lablearray['E01'] = '';
                                 $disb_array = $Conn->SQLSelect("SELECT loan_number,disbursements_amount FROM " . TABLE_DISBURSEMENTS . " WHERE  loan_number='" . $loan_number . "'");
                                 if (isset($disb_array[0]['loan_number']) && $formdata['lstatus'] == 'LD'):
                                     if ($disb_array[0]['disbursements_amount'] == $loan_array[0]['loan_amount']):
-                                        echo "MSG." . Common::$lablearray["1579"] . ' ' . $disb_array[0]['loan_number'];
+                                            echo Common::createResponse('info', Common::$lablearray["1579"] . ' ' . $disb_array[0]['loan_number']);
+                                     //   echo "MSG." . Common::$lablearray["1579"] . ' ' . $disb_array[0]['loan_number'];
                                         exit();
                                     endif;
                                 endif;
@@ -3821,9 +3923,10 @@ Common::$lablearray['E01'] = '';
                         endif;
                         
                         if($commfromsavings):
-                                                        
-                            if($formdata['SPRODID']==""):                                
-                              echo "MSG." . Common::$lablearray["1198"];
+
+                                if ($formdata['SPRODID'] == ""):
+                                    echo Common::createResponse('info', Common::$lablearray["1198"]);                                
+                             // echo "MSG." . Common::$lablearray["1198"];
                               exit();
                             endif;
                                                     
@@ -3837,11 +3940,12 @@ Common::$lablearray['E01'] = '';
                             $Sav_bal_array = Savings::getSavingsBalance();
                             
                             Common::addKeyValueToArray($formdata, 'SAVACC',$Sav_bal_array['savaccounts_account']);
-                            
-                            
-                            // CHECK SAVINGS BALANCE IS SUFFICIENT
-                            if((int)$Sav_bal_array['balance'] < (int)$formdata['COMM']):                                
-                              echo "MSG." . Common::$lablearray["1216"].' '.$loan_array[0]['client_idno'].' '.$formdata['SPRODID'].' '.$Sav_bal_array['balance'];
+
+
+                                // CHECK SAVINGS BALANCE IS SUFFICIENT
+                                if ((int)$Sav_bal_array['balance'] < (int)$formdata['COMM']):
+                                    echo Common::createResponse('info', Common::$lablearray["1216"] . ' ' . $loan_array[0]['client_idno'] . ' ' . $formdata['SPRODID'] . ' ' . $Sav_bal_array['balance']);                                
+                              //  echo "MSG." . Common::$lablearray["1216"].' '.$loan_array[0]['client_idno'].' '.$formdata['SPRODID'].' '.$Sav_bal_array['balance'];
                               exit();
                             endif;
                             
@@ -3850,8 +3954,9 @@ Common::$lablearray['E01'] = '';
                               $lbal  = $loan_array[0]['loan_amount'] - ($nstat+$ncom);
                               
                               if($lbal <=0 && ($nstat >0  || $ncom >0)):
-                                echo "MSG:" . Common::$lablearray["1555"];
-                                BREAK 2;
+                                    echo Common::createResponse('info', Common::$lablearray["1555"]);
+                                    //  echo "MSG:" . Common::$lablearray["1555"];
+                                    break 2;
                               endif;                               
                         
                         endif;
@@ -3872,11 +3977,12 @@ Common::$lablearray['E01'] = '';
                     Loan::updateLoan($form_data,$formdata['LSTATUS']);
                     
                     if (Common::$lablearray['E01'] != "") {
-                        echo 'MSG:' . Common::$lablearray['E01'];
+                            echo Common::createResponse('info', Common::$lablearray["E01"]);
+                       // echo 'MSG:' . Common::$lablearray['E01'];
                         exit();
                     }else{
-                    //Bussiness::$Conn->endTransaction();
-                        echo "1111111";   
+                            //Bussiness::$Conn->endTransaction();
+                            echo Common::createResponse('ok', $lablearray['218']);      
                         exit();
                     }
                 }
@@ -3970,7 +4076,8 @@ Common::$lablearray['E01'] = '';
         Common::replace_key_function($formdata, 'client_type', 'CTYPE');  
                
         switch($formdata['CTYPE']):
-        case 'I': if ($formdata['client_regdate'] == '' &&  $formdata['client_idno'] == ''):
+            case 'I':
+                if ($formdata['client_regdate'] == '' &&  $formdata['client_idno'] == ''):
                     //  echo "MSG " .Common::$lablearray['1639'];
                     echo Common::createResponse('war', Common::$lablearray['1639']); 
                 exit();
@@ -4414,8 +4521,8 @@ Common::$lablearray['E01'] = '';
              
                 break;
         }
-        
-        echo '1111111';
+
+        echo Common::createResponse('ok', Common::$lablearray['218']);
 //        getlables("652,659,654,658,655,656,657,667");
 //        $_SESSION['reportname'] = $lablearray['652'];
 //        $_SESSION['reporttitle'] = $lablearray['652'];
@@ -4507,7 +4614,9 @@ Common::$lablearray['E01'] = '';
              case 'delete':  // delete
                 Common::getlables("218", "", "", $Conn);
                  Bussiness::$Conn->SQLDelete(TABLE_USERS,'user_id', $_POST['keyparam']);
-                 echo 'INFO.'.Common::$lablearray['218']; 
+                // echo 'INFO.'.Common::$lablearray['218']; 
+                echo Common::createResponse('ok', Common::$lablearray['218']);
+
                  exit();
                 break;
             case 'add':  // add
@@ -4629,10 +4738,10 @@ Common::$lablearray['E01'] = '';
                 Bussiness::covertArrayToXML($form_data, true);
                // $tabledata['xml_data'] = Common::$xml;                
                 Bussiness::PrepareData(true);
-              
-               // Bussiness::$Conn->endTransaction();
-    
-                echo '1111111';
+
+                // Bussiness::$Conn->endTransaction();
+
+                echo Common::createResponse('ok', Common::$lablearray['218']);
                  
                 break;
 
@@ -5070,7 +5179,7 @@ Common::$lablearray['E01'] = '';
                   //  Bussiness::$Conn->endTransaction();
                     
                 }
-                echo '1111111';
+                echo Common::createResponse('ok', Common::$lablearray['218']);
            
                 break 2;
 
@@ -5093,14 +5202,18 @@ Common::$lablearray['E01'] = '';
                 } else {
                     tep_db_query("INSERT INTO " . TABLE_CASHITEMS . " (cashitems_name,chartofaccounts_accountcode) VALUES ('" . tep_db_prepare_input($_POST['cashitems_name']) . "','" . tep_db_prepare_input($_POST['chartofaccounts_accountcode']) . "')");
                     getlables("218");
-                    echo informationUpdate('add', $lablearray['218']);
+                    //echo informationUpdate('add', $lablearray['218']);
+                    echo Common::createResponse('ok', Common::$lablearray['218']);
+
                 }
                 break;
 
             case 'update':
                 tep_db_query("UPDATE " . TABLE_CASHITEMS . " SET cashitems_name='" . tep_db_prepare_input($_POST['cashitems_name']) . "',chartofaccounts_accountcode='" . $_POST['chartofaccounts_accountcode'] . "' WHERE cashitems_id='" . $_POST['cashitems_id'] . "'");
                 getlables("218");
-                echo informationUpdate("", $lablearray['218']);
+                echo Common::createResponse('ok', Common::$lablearray['218']);
+
+               // echo informationUpdate("", $lablearray['218']);
                 break;
 
             case 'edit':
@@ -5169,9 +5282,9 @@ Common::$lablearray['E01'] = '';
 
                 $setting->UpdateSettings();
                 $setting->UpdateAccounts();
-               //$lablearray = getlables("218");
+                //$lablearray = getlables("218");
 
-                echo '1111111';
+                echo Common::createResponse('ok', Common::$lablearray['218']);
                 break 2;
             default:
                 break 2;
@@ -7314,7 +7427,9 @@ Common::$lablearray['E01'] = '';
                 }
 
                 getlables("218");
-                echo informationUpdate("success", $lablearray['218'], "");
+                echo Common::createResponse('ok', Common::$lablearray['218']);
+
+               // echo informationUpdate("success", $lablearray['218'], "");
                 break 2;
 
             case 'edit':
@@ -7528,8 +7643,8 @@ Common::$lablearray['E01'] = '';
                 Bussiness::covertArrayToXML($form_data, true);
               //  $tabledata['xml_data'] = Common::$xml;                
                 Bussiness::PrepareData(true);
-   
-                echo "1111111";
+
+                echo Common::createResponse('ok', $lablearray['218']);   
 
                 break;
 
@@ -7607,8 +7722,8 @@ Common::$lablearray['E01'] = '';
                 Bussiness::covertArrayToXML($form_data, true);
                // $tabledata['xml_data'] = Common::$xml;                
                 Bussiness::PrepareData(true);
-          
-                echo '1111111';
+
+                echo Common::createResponse('ok', Common::$lablearray['218']);
                 
                 break;
             default:
@@ -7652,8 +7767,8 @@ Common::$lablearray['E01'] = '';
                     Bussiness::PrepareData(true);
                 
                 endif;
-                  
-                echo '1111111';    
+
+                echo Common::createResponse('ok', Common::$lablearray['218']);    
                
                 break;
 
@@ -7711,7 +7826,7 @@ Common::$lablearray['E01'] = '';
                     echo 'MSG:' . $lablearray['576'];
                 } else {
                     $Conn->SQLInsert(array('cashaccounts' => $cashaccounts_array), true);
-                    echo '1111111';
+                    echo Common::createResponse('ok', Common::$lablearray['218']);
                 }
                 break;
             case 'delete':
@@ -7719,8 +7834,8 @@ Common::$lablearray['E01'] = '';
                 $Conn->ReferenceFieldList['cashaccounts'] = array('cashaccounts_id' => $formdata['cashaccounts_id']);
                 $Conn->SQLDelete('cashaccounts');
                 $Conn->setAutoCommit(true);
-              //  $Conn->SQLInsert(array('cashaccounts' => $cashaccounts_array), true);
-                echo '1111111';
+                //  $Conn->SQLInsert(array('cashaccounts' => $cashaccounts_array), true);
+                echo Common::createResponse('ok', Common::$lablearray['218']);
 
                 break;    
             case 'update':
@@ -7728,7 +7843,7 @@ Common::$lablearray['E01'] = '';
                 $Conn->ReferenceFieldList['cashaccounts'] = array('cashaccounts_id' => $formdata['cashaccounts_id']);
                 $Conn->SQLDelete('cashaccounts');
                 $Conn->SQLInsert(array('cashaccounts' => $cashaccounts_array), true);
-                echo '1111111';
+                echo Common::createResponse('ok', Common::$lablearray['218']);
 
                 break;
 
@@ -7820,7 +7935,9 @@ Common::$lablearray['E01'] = '';
                     $query_results1 = tep_db_query("SELECT  (max(branch_code)+1)branch_code FROM " . TABLE_BANKBRANCHES . " WHERE  licence_build='" . tep_db_prepare_input($_POST['licence_build']) . "'");
                     $results = tep_db_fetch_array($query_results1);
                     tep_db_query("INSERT INTO " . TABLE_BANKBRANCHES . " (bankbranches_name,branch_code,licence_build,branch_code) VALUES ('" . tep_db_prepare_input($_POST['organisationname']) . "','" . tep_db_prepare_input($results['branch_code']) . "','" . tep_db_prepare_input($_POST['licence_build']) . "','" . tep_db_prepare_input($_POST['branch_code']) . "')");
-                    echo informationUpdate('success', $lablearray['218']);
+                    // echo informationUpdate('success', $lablearray['218']);
+                    echo Common::createResponse('ok', Common::$lablearray['218']);
+
                 }
                 break;
 
@@ -7840,7 +7957,9 @@ Common::$lablearray['E01'] = '';
 
             case 'update':
                 tep_db_query("UPDATE " . TABLE_BANKBRANCHES . " SET bankbranches_name='" . tep_db_prepare_input($_POST['organisationname']) . "',licence_build='" . tep_db_prepare_input($_POST['licence_build']) . "',branch_code='" . tep_db_prepare_input($_POST['branch_code']) . "' WHERE bankbranches_id='" . tep_db_prepare_input($_POST['bankbranches_id']) . "'");
-                echo informationUpdate('success', $lablearray['218']);
+                //  echo informationUpdate('success', $lablearray['218']);
+                echo Common::createResponse('ok', Common::$lablearray['218']);
+
                 break;
 
             case 'delete':
@@ -7911,7 +8030,9 @@ Common::$lablearray['E01'] = '';
 
             case 'update':
                 tep_db_query("UPDATE " . TABLE_LICENCE . " SET licence_organisationname='" . tep_db_prepare_input($_POST['organisationname']) . "',licence_address='" . tep_db_prepare_input($_POST['licence_address']) . "' WHERE licence_build='" . tep_db_prepare_input($_POST['licence_build']) . "'");
-                echo informationUpdate('', $lablearray['218'], "showResult('frmid=frmbanks','txtHint')");
+                // echo informationUpdate('', $lablearray['218'], "showResult('frmid=frmbanks','txtHint')");
+                echo Common::createResponse('ok', Common::$lablearray['218']);
+
                 break;
 
             case 'delete':
@@ -7989,8 +8110,8 @@ Common::$lablearray['E01'] = '';
                     Bussiness::covertArrayToXML($form_data, true);                
                     //$tabledata['xml_data'] = Common::$xml;
                     Bussiness::PrepareData(true);
-                  //  Bussiness::$Conn->endTransaction();                
-                    echo '1111111';
+                    //  Bussiness::$Conn->endTransaction();                
+                    echo Common::createResponse('ok', Common::$lablearray['218']);
                   
                 }
 
@@ -8072,8 +8193,8 @@ Common::$lablearray['E01'] = '';
 //                        echo informationUpdate('failure', 'Sorry, you can not delete account.<br> Account has ' . $p_num['num'] . ' Transactions posted on it.', 'messageStackError');
 //                    } else {
                         tep_db_query("DELETE FROM " . TABLE_CHARTOFACCOUNTS . " WHERE chartofaccounts_accountcode='" . $formdata['ccurrent_selected_acc'] . "'");
-                        
-                        echo '1111111';
+
+                    echo Common::createResponse('ok', Common::$lablearray['218']);
                         // echo informationUpdate('', 'Information has been successfully deleted', "showResult('frmid=frmcoa','txtHint')");
                    // }
                 }

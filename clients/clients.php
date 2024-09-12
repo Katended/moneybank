@@ -116,7 +116,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
         var tags = document.getElementsByName('client_type');
         var ajaxdatadiv = '';
 
-        destroyDataTable();
+        destroyAllDataTables();
 
         for (var i = 0; i < tags.length; ++i) {
             if (tags[i].checked) {
@@ -168,6 +168,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
                 //   dojo.style(dijit.byId("mem_details").controlButton.domNode,{display:"none"});       
                 TXTPAGE = 'BUSS';
+
                 ajaxdatadiv = 'business';
                 break;
 
@@ -183,8 +184,8 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 $("#Grpfieldset").hide();
                 $("#Indfieldset").hide();
                 TXTPAGE = 'GRP';
+
                 ajaxdatadiv = 'members';
-                // displaymessage('', "<?php echo $lablearray['1635']; ?>", 'INFO');          
                 break;
 
             default:
@@ -280,13 +281,17 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
     document.addEventListener('click', function(event) {
         // Check if the clicked element is a checkbox with the class 'row-checkbox'
         if (event.target.matches('input[type="checkbox"].row-checkbox')) {
-            $('#memdetails').removeAttr('disabled');
-            dojo.style(dijit.byId("mem_details").controlButton.domNode, {
-                display: "inline-block"
-            });
 
-            dijit.byId('regtabs').selectChild(dijit.byId('mem_details'));
-            !event.target.value.includes('M') && loadGroupMembers(event.target.value);
+            const checkboxValue = event.target.value;
+            if (checkboxValue.includes('G')) {
+                $('#memdetails').removeAttr('disabled');
+                dojo.style(dijit.byId("mem_details").controlButton.domNode, {
+                    display: "inline-block"
+                });
+
+                dijit.byId('regtabs').selectChild(dijit.byId('mem_details'));
+                !event.target.value.includes('M') && loadGroupMembers(event.target.value);
+            }
         }
     });
 </script>
@@ -670,36 +675,37 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
     });
 
-    $("#btnSave , #btnAddMem").click(function(event) {
+    $("#btnSave, #btnAddMem").click(function(event) {
+        const tags = document.getElementsByName('client_type');
+        // let TXTPAGE = Array.from(tags).find(tag => tag.checked)?.value || '';
 
-
-        var tags = document.getElementsByName('client_type');
-
-        for (var i = 0; i < tags.length; ++i) {
-            if (tags[i].checked) {
-
-                TXTPAGE = tags[i].value;
-
-                if (event.target.id == 'btnAddMem') {
-                    tags[i].value = 'M';
-                }
-            }
+        if (event.target.id === 'btnAddMem' && TXTPAGE) {
+            TXTPAGE = 'GMEM';
+            tags.forEach(tag => tag.checked && (tag.value = 'M'));
         }
 
-        var action = $('#action').val();
+        const action = $('#action').val();
         showValues('frmClients', '', action).done(function() {
-
-            w2utils.date(new Date());
-            //   $('#client_idno').val(ajaxdatadiv);
             const client_idno = document.getElementById("client_idno").value;
-            showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', client_idno)
+            const divGridId = getDivGridId(TXTPAGE);
 
+            showValues('frmClients', divGridId, 'search', TXTPAGE, 'load.php', client_idno).done(function() {
+                resetAllForms();
+            });
 
-
-            // newPage(ctype)       
 
         });
     });
+
+    function getDivGridId(TXTPAGE) {
+        const mapping = {
+            'Grp': 'groups',
+            'GMEM': 'members',
+            'IND': 'individuals',
+            'BUSS': 'business'
+        };
+        return mapping[TXTPAGE] || '';
+    }
 
     $(document).ready(function() {
         w2utils.date(new Date());

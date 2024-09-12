@@ -232,12 +232,12 @@ if ($_POST['action'] == 'search') {
                     case 'ADDGRPLOANS':
                     case 'GRPLOANSREP':
                     case 'GRP':
+                case 'BUSS':
                         $conditions = [
                             sprintf("c.entity_name LIKE '%%%s%%'", $sanitizedSearchTerm),
                             sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm)
                         ];
-                        break;
-                
+                    break;                 
                     default:
                         $conditions = [
                             sprintf("c.client_firstname LIKE '%%%s%%'", $sanitizedSearchTerm),

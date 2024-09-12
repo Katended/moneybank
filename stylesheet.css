@@ -9,7 +9,7 @@ body {
     sans-serif;
   color: #000000;
   font-size: 12px;
-  letter-spacing: 0.1px;
+  /* letter-spacing: 0.1px; */
 }
 
 input:required {
@@ -3426,10 +3426,10 @@ input[type="checkbox"].w2ui-toggle:focus {
   display: none;
 
   width: auto;
-  padding: 5px;
-  -moz-border-radius: 15px;
-  -webkit-border-radius: 15px;
-  border-radius: 15px; /* future proofing */
+  padding: 3px;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius:50%; /* future proofing */
 }
 
 .radiooptionsnew > label > input[type="radio"] {

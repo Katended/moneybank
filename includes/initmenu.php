@@ -370,64 +370,62 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             }
         };
 
-        let dataTableInstance; // Declare a variable to hold the DataTable instance
+        let dataTableInstances = []; // Array to hold multiple DataTable instances
 
-        const handleDataTable = (tableData, ajaxdatadiv) => {
-            if (tableData instanceof Object && tableData !== null) {
-                // Initialize the DataTable and store the instance
-                dataTableInstance = $('#grid_' + ajaxdatadiv).DataTable({
-                    fixedHeader: true,
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-                    responsive: true,
-                    scrollResize: true,
-                    searchDelay: 100,
-                    scrollX: true,
-                    order: 3,
-                    scrollY: 100,
-                    data: tableData.data,
-                    columns: tableData.columns,
-                    scroller: {
-                        loadingIndicator: true
-                    },
-                    columnDefs: [{
-                        defaultContent: "-",
-                        targets: "_all",
-                        width: '15px',
-                        targets: 0,
-                    }],
-                    orderable: false,
-                    pageLength: 20,
-                    scrollCollapse: true,
-                    bDestroy: true,
-                });
+const handleDataTable = (tableData, ajaxdatadiv) => {
+    if (tableData instanceof Object && tableData !== null) {
+        // Initialize the DataTable and store the instance
+        const tableInstance = $('#grid_' + ajaxdatadiv).DataTable({
+            fixedHeader: true,
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+            responsive: true,
+            scrollResize: true,
+            searchDelay: 100,
+            scrollX: true,
+            order: 3,
+            scrollY: 100,
+            data: tableData.data,
+            columns: tableData.columns,
+            scroller: {
+                loadingIndicator: true
+            },
+            columnDefs: [{
+                defaultContent: "-",
+                targets: "_all",
+                width: '15px',
+                targets: 0,
+            }],
+            orderable: false,
+            pageLength: 20,
+            scrollCollapse: true,
+            bDestroy: true,
+        });
 
-                configureDataTableSearch(dataTableInstance);
-                configureRowSelection(dataTableInstance, ajaxdatadiv);
-            } else {
-                $("#" + ajaxdatadiv).html(tableData);
-            }
-        };
+        dataTableInstances.push(tableInstance); // Store the instance in the array
 
-        // Function to clear the DataTable
-        const clearDataTable = () => {
-            if (dataTableInstance) {
-                dataTableInstance.clear().draw(); // Clear the data and redraw the table
-            }
-        };
+        configureDataTableSearch(tableInstance);
+        configureRowSelection(tableInstance, ajaxdatadiv);
+    } else {
+        $("#" + ajaxdatadiv).html(tableData);
+    }
+};
 
-        const destroyDataTable = () => {
-            if (dataTableInstance) {
-                const tableNode = dataTableInstance.table().node(); // Get the table node
-                const tableId = $(tableNode).attr('id'); // Get the ID of the table
-
-                dataTableInstance.destroy(); // Destroy the DataTable instance
-                dataTableInstance = null; // Clear the reference
-
-                // Clear the table body and optionally reset headers
-                $(tableNode).empty(); // Clear the table
-                $(tableNode).append('<thead></thead><tbody></tbody>'); // Optionally reset headers
-            }
-        };
+// Function to destroy all DataTable instances
+const destroyAllDataTables = () => {
+    dataTableInstances.forEach((instance) => {
+        if (instance) {
+            const tableNode = instance.table().node(); // Get the table node
+            
+            instance.destroy(); // Destroy the DataTable instance
+            
+            // Clear the table body and optionally reset headers
+            $(tableNode).empty(); // Clear the table
+            $(tableNode).append('<thead></thead><tbody></tbody>'); // Optionally reset headers
+        }
+    });
+    
+    dataTableInstances = []; // Clear the array after destruction
+};
         
         const configureDataTableSearch = (table) => {
             $(".dataTables_filter").unbind().bind("keyup", function(e) {
@@ -483,6 +481,12 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 }
             }
             return;
+        }
+        
+        // Function to reset all forms on the page      
+        function resetAllForms() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => form.reset());
         }
 
         function populateForm(frm, jobj) {
