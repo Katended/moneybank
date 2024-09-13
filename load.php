@@ -1022,40 +1022,47 @@ if ($_POST['action'] == 'search') {
         case 'MEMSAVACC':
         case 'INDSAVACC':
         case 'GRPSAVACC':
-        case 'BUSSAVACC': //Client Savings Accounts
+        case 'BUSSAVACC': // Client Savings Accounts
 
-            Common::getlables("1665,9,296,1633", "", "", $Conn);
+            Common::getlables("1665,9,296,1633,1628,1245", "", "", $Conn);
 
             $query = Savings::getSavingsAccounts($pageparams, "", $cWhere);
          
             NewGrid::$actionlinks = "<a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='large'>&nbsp;<img src='images/plus.gif' border='0' >&nbsp;</span>";
 
-            
-            //  NewGrid::$fieldlist= array('name',  'savaccounts_account','product_prodid');
-//            if ($pageparams == 'MEMSAVACC'):
-//                $newgrid->keyfield = 'members_idno';
-//            else:
-//                $newgrid->keyfield = 'savaccounts_id';
-//            endif;
+            NewGrid::$columntitle = array(
+                Common::$lablearray['296'],
+                Common::$lablearray['9'],
+                Common::$lablearray['1633'],
+                Common::$lablearray['1628'],
+                Common::$lablearray['1245']
+            );
 
-            NewGrid::$keyfield = "savaccounts_id";           
+            NewGrid::$fieldlist = array(
+                'name',
+                'savaccounts_account',
+                'product_prodid',
+                'savaccounts_opendate',
+                'savaccounts_closedate'
+            );
+
+            NewGrid::$grid_id = 'grid_' . ($_POST['keyparam'] ?? '');
             NewGrid::$request = $_POST;
             NewGrid::$sSQL = $query;
+            NewGrid::$order = ' ORDER BY savaccounts_account DESC ';
             NewGrid::$searchcatparam = $pageparams;
-            NewGrid::$columntitle = array('', Common::$lablearray['296'], Common::$lablearray['9'], Common::$lablearray['1633']);
-            NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
 
-            if (isset($_POST['grid_id'])):
-              //   print_r($_POST);                
-               echo NewGrid::getData();
-               
-            else:
-               echo NewGrid::generateDatatableHTML();
-            endif;
+            $data = NewGrid::getData();
+
+            echo $data;
+         
             exit();
+
             break;
 
         case 'GRPLOANS':
+        case 'BUSLOANS':
+
             if (isset($_GET['searchterm'])) {
                 $cWhere = $cWhere . " OR l.loan_number LIKE '%" . filter_input(INPUT_GET, 'searchterm') . "%'";
             }
@@ -1064,16 +1071,19 @@ if ($_POST['action'] == 'search') {
             $newgrid->keyfield = 'loan_number';
             Common::getlables("1097,9,1093,1099,1098", "", "", $Conn);
             $gridcolumnnames = array(Common::$lablearray['1097'], Common::$lablearray['9'], Common::$lablearray['1093'], Common::$lablearray['1099'], Common::$lablearray['1098']);
+            
             break;
 
         case 'MEMLOANS':
         case 'INDLOANS':
-        case 'BUSLOANS':
 
-            // DO TO: Add enhanacement query for group member loans
-
-            if (isset($_GET['searchterm'])) {
-                $cWhere = $cWhere . " OR l.loan_number LIKE '%" . filter_input(INPUT_GET, 'searchterm') . "%'";
+            // DO TO: Add enhanacement query for group member 
+            if (isset($_POST['keyparam'])) {
+                $cWhere = " WHERE l.client_idno = c.client_idno AND l.client_idno='" . $_POST['keyparam'] . "'";
+            } else {
+                if (isset($_GET['searchterm'])) {
+                    $cWhere = $cWhere . " OR l.loan_number LIKE '%" . filter_input(INPUT_GET, 'searchterm') . "%'";
+                }  
             }
 
             $query = "SELECT CONCAT(c.client_surname,' ',c.client_firstname,' ',c.client_middlename) name,l.loan_number,l.client_idno,loan_amount,loan_startdate FROM " . TABLE_LOAN . " l," . TABLE_VCLIENTS . " c ";

@@ -108,7 +108,7 @@ while ($lang = tep_db_fetch_array($Lang_results2)) {
 //session_start();
 // here you can perform all the checks you need on the user submited variables
 $_SESSION['security_number'] = rand(10000, 99999);
-getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,1640,208,1641,68,1243,1090,42,1244,1245,1095,885,585,1094,447,888,540,1093,1092,1091,1090,1069,224,225,260,20,1089,1017,886,1089,1086,1086,887,1015,1016,887,888,1016,1019,199,484,1018,316,1020,1021,1022,21,887,899,900,905,628,905,1049,1050,11,1052,1053,1054,1056,1057,1058,1060,1061,1062,1063,1064,1065,1066,1067,1068,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,888");
+getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,1242,1640,208,1641,68,1243,1090,42,1244,1245,1095,885,585,1094,447,888,540,1093,1092,1091,1090,1069,224,225,260,20,1089,1017,886,1089,1086,1086,887,1015,1016,887,888,1016,1019,199,484,1018,316,1020,1021,1022,21,887,899,900,905,628,905,1049,1050,11,1052,1053,1054,1056,1057,1058,1060,1061,1062,1063,1064,1065,1066,1067,1068,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,888");
 ?>
 <script language="javascript">
     function newPage(cpar) {
@@ -123,6 +123,7 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 TXTPAGE = tags[i].value;
             }
         }
+
         switch (TXTPAGE) {
 
             case 'I':
@@ -204,11 +205,12 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
 
         if (typeof($("input[type=search]").val()) !== 'undefined') {
-
             searchterm = $("input[type=search]").val();
         }
 
         loadValues(searchterm, ajaxdatadiv);
+
+
 
     }
 
@@ -216,9 +218,21 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
         return showValues('frmClients', ajaxdatadiv, 'search', TXTPAGE, `load.php?searchterm=${searchterm}`);
     }
 
-    function loadGroupMembers(client_idno) {
+    function loadGroupMembers() {
 
-        showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', client_idno ?? $('#client_idno').val());
+        return showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', $('#client_idno').val());
+
+    }
+
+    function loadLoans(checkboxValue) {
+        TXTPAGE = (checkboxValue.includes('G') ? 'GRPLOANS' : checkboxValue.includes('B') ? 'BUSLOANS' : checkboxValue.includes('I') ? 'INDLOANS' : null);
+        return showValues('frmClients', 'loans', 'search', TXTPAGE, 'load.php', checkboxValue ?? $('#client_idno').val());
+
+    }
+
+    function loadSavings() {
+        TXTPAGE = (checkboxValue.includes('G') ? 'GRPSAVACC' : checkboxValue.includes('B') ? 'BUSSAVACC' : checkboxValue.includes('I') ? 'INDSAVACC' : null);
+        return showValues('frmClients', 'savings', 'search', TXTPAGE, 'load.php', $('#client_idno').val());
 
     }
 
@@ -292,7 +306,19 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                 dijit.byId('regtabs').selectChild(dijit.byId('mem_details'));
                 !event.target.value.includes('M') && loadGroupMembers(event.target.value);
             }
+
+            // get loans
+
+            // get savings
+
+            loadLoans(checkboxValue).then(() => {
+                return loadSavings(checkboxValue);
+            });
+
+
         }
+
+
     });
 </script>
 <?php require('../' . DIR_WS_INCLUDES . 'pageheader.php'); ?>
@@ -570,9 +596,6 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
                                                                     ?>
                                                                 </td>
                                                             </tr>
-
-
-
                                                         </table>
 
                                                     </td>
@@ -586,15 +609,15 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
 
                                     </div>
 
-                                    <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1089']; ?>">
-                                        <div id='grdLoans'></div>
+                                    <div data-dojo-type="dijit/layout/ContentPane" id="paneLoans" title="<?php echo $lablearray['1036']; ?>">
+                                        <span id="loans" width="100%;"></span>
                                     </div>
 
-                                    <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1086']; ?>">
-                                        <div id='grbSavings'></div>
+                                    <div data-dojo-type="dijit/layout/ContentPane" id="paneSavings" title="<?php echo $lablearray['1086']; ?>">
+                                        <span id="grid_savings" width="100%;"></span>
                                     </div>
-                                    <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1089']; ?>">
-                                        <div id='grdShares'></div>
+                                    <div data-dojo-type="dijit/layout/ContentPane" id="paneShares" title="<?php echo $lablearray['1089']; ?>">
+                                        <span id="grid_shares" width="100%;"></span>
                                     </div>
 
                                     <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1017']; ?>">
@@ -650,10 +673,9 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
     <table id="grid_business" width="100%;"></table>
 </div>
 </div>
-
-
 <script type="text/javascript">
     var data = '';
+
 
 
     $("#btnAddMemDocs").click(function() {
@@ -664,7 +686,6 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
             name: "client_type",
             value: "D"
         });
-
 
         pageparams = JSON.stringify(doccsarray);
         //frm, ajaxdatadiv, action, pageparams
@@ -713,7 +734,9 @@ getlables("1199,1733,1511,730,1241,391,9,260,447,1635,1219,1259,1582,886,1242,16
         $('input[type=us-date]').w2field('date', {
             format: '<?php echo SETTING_DATE_FORMAT ?>'
         })
+
         var myTxt = dojo.byId("document_issuedate");
+
     });
 </script>
 </BODY>

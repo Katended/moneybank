@@ -857,11 +857,8 @@ class Grid
 
 			$data .= "$('#" . $idheader . "').click(function(){
                     $('#" . $idpanel .
-				"').slideToggle('slow');
-                       
+				"').slideToggle('slow');                       
                  });
-                 
-                
              </script>";
 
 
@@ -2624,8 +2621,7 @@ function DrawComboFromArray($allaccounts = array(), $fieldname = '', $selected_i
             <option id='SW' value='SW'>" .  $lablearray1['1028'] . "</option>
             <option id='SW' value='IT'>" .  $lablearray1['1212'] . "</option>
             </select>
-            <script>
-            // payment mode
+            <script>            
             $( '#PAYMODES' ).change(function() {
                 showValues('" . $frmid . "','modes','search','PAYMODES','load.php',$('#PAYMODES').val());
             });
