@@ -292,7 +292,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             var trimmedData = data.trim();
 
             try {
-                debugger;
+                //debugger;
                 var jsonObj = isValidJsonString(trimmedData);
 
                 switch (jsonObj.status) {
@@ -404,7 +404,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 dataTableInstances.push(tableInstance); // Store the instance in the array
 
                 configureDataTableSearch(tableInstance);
-                configureRowSelection(tableInstance, ajaxdatadiv);
+                // configureRowSelection(tableInstance, ajaxdatadiv);
             } else {
                 tableData = tableData.replace("\\x3C", "<");
                 $("#" + ajaxdatadiv).html(tableData);
@@ -451,26 +451,26 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             });
         };
 
-        const configureRowSelection = (table, ajaxdatadiv) => {
-            const tbody = $(`#grid_${ajaxdatadiv} tbody`);
+        // const configureRowSelection = (table, ajaxdatadiv) => {
+        //     const tbody = $(`#grid_${ajaxdatadiv} tbody`);
 
-            tbody.on('click', 'tr', function(event) {
-                const target = $(event.target);
+        //     tbody.on('click', 'tr', function(event) {
+        //         const target = $(event.target);
 
-                // Check if the target is not the checkbox itself
-                if (!target.is('.row-checkbox')) {
-                    const checkbox = $(this).find('.row-checkbox');
+        //         // Check if the target is not the checkbox itself
+        //         if (!target.is('.row-checkbox')) {
+        //             const checkbox = $(this).find('.row-checkbox');
 
-                    if (checkbox.length) {
-                        // Toggle the class based on the checkbox's checked state
-                        $(this).addClass('selected-row');
-                        checkbox.trigger('click');
-                        checkbox.checked = true;
+        //             if (checkbox.length) {
+        //                 // Toggle the class based on the checkbox's checked state
+        //                 $(this).addClass('selected-row');
+        //                 checkbox.trigger('click');
+        //                 checkbox.checked = true;
 
-                    }
-                }
-            });
-        };
+        //             }
+        //         }
+        //     });
+        // };
 
         function SelectItemInList(elementid, selectedText) {
             var list = document.getElementById(elementid);
@@ -595,7 +595,8 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                             title: ctitle,
                             url: urlad,
                             id: 'win_' + winid,
-                            resizable: true
+                            resizable: true,
+                            style: ''
                         }).placeAt("targetID2");
 
                         vFloatingPane.setAttribute("data-dojo-props", "closable:true;opacity:0.1;");

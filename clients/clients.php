@@ -116,7 +116,7 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
         var tags = document.getElementsByName('client_type');
         var ajaxdatadiv = '';
 
-        destroyAllDataTables();
+        // destroyAllDataTables();
 
         for (var i = 0; i < tags.length; ++i) {
             if (tags[i].checked) {
@@ -137,6 +137,10 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                     display: "none"
                 });
 
+                $("#div_individuals").show();
+                $("#div_groups").hide();
+                $("#div_business").hide();
+
                 // dojo.style(dijit.byId("mem_details").controlButton.domNode, {
                 //     display: "inline-block"
                 // });
@@ -156,7 +160,11 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                 });
                 $("#mem_details").children().prop('disabled', false);
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
-                $("#Indfieldset").hide();
+
+                $("#div_individuals").hide();
+                $("#div_groups").show();
+                $("#div_business").hide();
+
                 TXTPAGE = 'GRP';
                 ajaxdatadiv = 'groups';
                 break;
@@ -167,6 +175,11 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                 $('#memdetails').removeAttr('disabled');
                 $("#Indfieldset").hide();
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
+
+                $("#div_individuals").hide();
+                $("#div_groups").hide();
+                $("#div_business").show();
+
                 //   dojo.style(dijit.byId("mem_details").controlButton.domNode,{display:"none"});       
                 TXTPAGE = 'BUSS';
 
@@ -210,6 +223,8 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
 
         loadValues(searchterm, ajaxdatadiv);
 
+        return true;
+
 
 
     }
@@ -230,7 +245,7 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
 
     }
 
-    function loadSavings() {
+    function loadSavings(checkboxValue) {
         TXTPAGE = (checkboxValue.includes('G') ? 'GRPSAVACC' : checkboxValue.includes('B') ? 'BUSSAVACC' : checkboxValue.includes('I') ? 'INDSAVACC' : null);
         return showValues('frmClients', 'savings', 'search', TXTPAGE, 'load.php', $('#client_idno').val());
 
@@ -296,24 +311,29 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
         // Check if the clicked element is a checkbox with the class 'row-checkbox'
         if (event.target.matches('input[type="checkbox"].row-checkbox')) {
 
-            const checkboxValue = event.target.value;
-            if (checkboxValue.includes('G')) {
+            const checkboxValue = event.target;
+
+
+            if (checkboxValue.value.includes('G')) {
                 $('#memdetails').removeAttr('disabled');
                 dojo.style(dijit.byId("mem_details").controlButton.domNode, {
                     display: "inline-block"
                 });
 
                 dijit.byId('regtabs').selectChild(dijit.byId('mem_details'));
-                !event.target.value.includes('M') && loadGroupMembers(event.target.value);
+                !checkboxValue.value.includes('M') && loadGroupMembers(checkboxValue.value);
             }
 
             // get loans
 
             // get savings
 
-            loadLoans(checkboxValue).then(() => {
-                return loadSavings(checkboxValue);
-            });
+            setTimeout(function() {
+                loadLoans(checkboxValue.value).done(() => {
+                    return loadSavings(checkboxValue.value);
+                });
+            }, 2000);
+
 
 
         }
@@ -341,336 +361,334 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                 <?php echo $lablearray['316']; ?><?php echo DrawComboFromArray('branch_code', 'branch_code', '', 'operatorbranches', '', ''); ?>
 
             </td>
-            <td>
+            <td id='div_name' align="center">
 
-
-                <div class="indicator" id='div_name'></div>
             </td>
 
         </tr>
 
-        <table>
+    </table>
 
-            <table width="100%" border="0" cellpadding='0'>
-                <tr>
-                    <td>
-                        <fieldset id="Indfieldset" style="display:block;width:auto;padding:5px;">
-                            <legend><?php echo $lablearray['1016']; ?></legend>
+    <table width="100%" border="0" cellpadding='0'>
+        <tr>
+            <td>
+                <fieldset id="Indfieldset" style="display:block;width:auto;padding:5px;">
+                    <legend><?php echo $lablearray['1016']; ?></legend>
 
-                            <table width="100%" border="0" cellpadding="5px;" cellspacing="0">
-                                <tr>
-                                    <td>
-                                        <?php echo $lablearray['1242']; ?> <br>
-                                        <select id="client_regstatus" name="client_regstatus" required>
-                                            <option value="ACT" selected><?php echo $lablearray['68']; ?></option>
-                                            <option value="INA"><?php echo $lablearray['1243']; ?></option>
-                                            <option value="EXT"><?php echo $lablearray['1244']; ?></option>
-                                            <option value="CLO"><?php echo $lablearray['1245']; ?></option>
-                                            <option value="REC"><?php echo $lablearray['1582']; ?></option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <?php echo $lablearray['1018']; ?><br>
-                                        <?php echo tep_draw_input_field('client_surname', '', '', true, 'text', $retainvalues, '20'); ?>
-                                    </td>
-                                    <td><?php echo $lablearray['887']; ?><br>
-                                        <?php echo tep_draw_input_field('client_firstname', '', '', true, 'text', $retainvalues, '20'); ?></td>
-                                    <td><?php echo $lablearray['888']; ?><?php echo $lablearray['1511']; ?><br>
-                                        <?php echo tep_draw_input_field('client_middlename', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                </tr>
+                    <table width="100%" border="0" cellpadding="5px;" cellspacing="0">
+                        <tr>
+                            <td>
+                                <?php echo $lablearray['1242']; ?> <br>
+                                <select id="client_regstatus" name="client_regstatus" required>
+                                    <option value="ACT" selected><?php echo $lablearray['68']; ?></option>
+                                    <option value="INA"><?php echo $lablearray['1243']; ?></option>
+                                    <option value="EXT"><?php echo $lablearray['1244']; ?></option>
+                                    <option value="CLO"><?php echo $lablearray['1245']; ?></option>
+                                    <option value="REC"><?php echo $lablearray['1582']; ?></option>
+                                </select>
+                            </td>
+                            <td>
+                                <?php echo $lablearray['1018']; ?><br>
+                                <?php echo tep_draw_input_field('client_surname', '', '', true, 'text', $retainvalues, '20'); ?>
+                            </td>
+                            <td><?php echo $lablearray['887']; ?><br>
+                                <?php echo tep_draw_input_field('client_firstname', '', '', true, 'text', $retainvalues, '20'); ?></td>
+                            <td><?php echo $lablearray['888']; ?><?php echo $lablearray['1511']; ?><br>
+                                <?php echo tep_draw_input_field('client_middlename', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                        </tr>
 
-                                <tr>
+                        <tr>
 
-                                <tr>
-                                    <td>
-                                        <?php echo $lablearray['199']; ?> <br>
+                        <tr>
+                            <td>
+                                <?php echo $lablearray['199']; ?> <br>
 
-                                        <select id="client_gender" name="client_gender" required>
-                                            <option value="M"><?php echo $lablearray['224']; ?></option>
-                                            <option value="F"><?php echo $lablearray['225']; ?></option>
-                                            <option value="U" selected><?php echo $lablearray['1069']; ?></option>
+                                <select id="client_gender" name="client_gender" required>
+                                    <option value="M"><?php echo $lablearray['224']; ?></option>
+                                    <option value="F"><?php echo $lablearray['225']; ?></option>
+                                    <option value="U" selected><?php echo $lablearray['1069']; ?></option>
 
-                                        </select>
-
-
-                                    </td>
-                                    <td>
-                                        <?php echo $lablearray['1640']; ?><br>
-                                        &nbsp;<input type="us-date" id="client_bday" name="client_bday" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
-                                    </td>
-                                    <td> <?php echo $lablearray['1022']; ?><?php echo $lablearray['1511']; ?><br>
-                                        <?php echo tep_draw_input_field('clientcode', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                    <td><?php echo $lablearray['1641']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_occupation', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                </tr>
-                                <tr>
-                                    <td><?php echo $lablearray['208']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_kinname', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                    <td><?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}"></td>
-                                    <td> </td>
-                                    <td> </td>
-                                </tr>
-
-                            </table>
-                        </fieldset>
-
-                        <fieldset id="Grpfieldset" style="display:none; padding:5px;">
-                            <legend><?php echo $lablearray['1020']; ?></legend>
-                            <table width="100%" border="0" cellpadding="2" cellspacing="2">
-                                <tr>
-                                    <td>
-                                        <?php echo $lablearray['1021']; ?><br>
-                                        <?php echo tep_draw_input_field('entity_name', '', '', false, 'text', $retainvalues, '20'); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
-                                    </td>
-                                    <td>
-                                        <?php echo $lablearray['484']; ?><?php echo $lablearray['1511']; ?><br><input type="us-date" id="entity_enddate" name="entity_enddate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
-                                    </td>
-
-                                    <td>
-
-                                        <?php echo $lablearray['1733']; ?><?php echo $lablearray['1511']; ?><br>
-                                        <?php echo tep_draw_input_field('entity_regcode', '', '', false, 'text', $retainvalues, '20'); ?>
-
-                                    </td>
+                                </select>
 
 
-                                    <td>
-                                        <?php echo $lablearray['1022']; ?><?php echo $lablearray['1511']; ?><br>
-                                        <?php echo tep_draw_input_field('client_idno', '', '', false, 'text', $retainvalues, '20'); ?>
-                                    </td>
-                                </tr>
+                            </td>
+                            <td>
+                                <?php echo $lablearray['1640']; ?><br>
+                                &nbsp;<input type="us-date" id="client_bday" name="client_bday" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
+                            </td>
+                            <td> <?php echo $lablearray['1022']; ?><?php echo $lablearray['1511']; ?><br>
+                                <?php echo tep_draw_input_field('clientcode', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                            <td><?php echo $lablearray['1641']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_occupation', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $lablearray['208']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_kinname', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                            <td><?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}"></td>
+                            <td> </td>
+                            <td> </td>
+                        </tr>
 
-                            </table>
-                        </fieldset>
-                        <div style="display:block;margin:0px;width:auto;">
+                    </table>
+                </fieldset>
 
-                            <div>
-                                <div data-dojo-type="dijit/layout/TabContainer" style="width:auto;height:auto;margin:5px;" tabPosition="right-h" id='regtabs'>
+                <fieldset id="Grpfieldset" style="display:none; padding:5px;">
+                    <legend><?php echo $lablearray['1020']; ?></legend>
+                    <table width="100%" border="0" cellpadding="2" cellspacing="2">
+                        <tr>
+                            <td>
+                                <?php echo $lablearray['1021']; ?><br>
+                                <?php echo tep_draw_input_field('entity_name', '', '', false, 'text', $retainvalues, '20'); ?>
+                            </td>
+                            <td>
+                                <?php echo $lablearray['1019']; ?><br><input type="us-date" id="client_regdate" name="client_regdate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
+                            </td>
+                            <td>
+                                <?php echo $lablearray['484']; ?><?php echo $lablearray['1511']; ?><br><input type="us-date" id="entity_enddate" name="entity_enddate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
+                            </td>
 
-                                    <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1092']; ?>" id="idgrpbuss">
-                                        <fieldset style="width:auto;">
-                                            <legend><?php echo $lablearray['1092']; ?></legend>
-                                            <table width="100%" border="0" cellpadding="0">
+                            <td>
 
-                                                <tr>
-                                                    <td>&nbsp;<?php echo $lablearray['1050']; ?><br><?php echo tep_draw_input_field('client_city', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                                    <td>&nbsp;<?php echo $lablearray['11']; ?><br><?php echo tep_draw_input_field('client_addressphysical', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                                </tr>
+                                <?php echo $lablearray['1733']; ?><?php echo $lablearray['1511']; ?><br>
+                                <?php echo tep_draw_input_field('entity_regcode', '', '', false, 'text', $retainvalues, '20'); ?>
 
-                                                <tr>
-                                                    <td>&nbsp;<?php echo $lablearray['1052']; ?><br><?php echo DrawComboFromArray($acodes, 'areacode_code', '', 'combo', '', ''); ?></td>
-                                                    <td>&nbsp;<?php echo $lablearray['1053']; ?><br><?php echo tep_draw_input_field('client_tel1', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                                </tr>
+                            </td>
 
-                                                <tr>
-                                                    <td>&nbsp;<?php echo $lablearray['585']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_emailad', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                                    <td>&nbsp;<?php echo $lablearray['1054']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_tel2', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                                </tr>
 
-                                                <tr>
-                                                    <td></td>
-                                                    <td>&nbsp;<?php echo $lablearray['1049']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_postad', '', '', false, 'text', $retainvalues, '20'); ?> </td>
-                                                </tr>
+                            <td>
+                                <?php echo $lablearray['1022']; ?><?php echo $lablearray['1511']; ?><br>
+                                <?php echo tep_draw_input_field('client_idno', '', '', false, 'text', $retainvalues, '20'); ?>
+                            </td>
+                        </tr>
 
-                                            </table>
-                                        </fieldset>
+                    </table>
+                </fieldset>
+                <div style="display:block;margin:0px;width:auto;">
+
+                    <div>
+                        <div data-dojo-type="dijit/layout/TabContainer" style="width:auto;height:auto;margin:5px;" tabPosition="right-h" id='regtabs'>
+
+                            <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1092']; ?>" id="idgrpbuss">
+                                <fieldset style="width:auto;">
+                                    <legend><?php echo $lablearray['1092']; ?></legend>
+                                    <table width="100%" border="0" cellpadding="0">
+
+                                        <tr>
+                                            <td>&nbsp;<?php echo $lablearray['1050']; ?><br><?php echo tep_draw_input_field('client_city', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                                            <td>&nbsp;<?php echo $lablearray['11']; ?><br><?php echo tep_draw_input_field('client_addressphysical', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>&nbsp;<?php echo $lablearray['1052']; ?><br><?php echo DrawComboFromArray($acodes, 'areacode_code', '', 'combo', '', ''); ?></td>
+                                            <td>&nbsp;<?php echo $lablearray['1053']; ?><br><?php echo tep_draw_input_field('client_tel1', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>&nbsp;<?php echo $lablearray['585']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_emailad', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                                            <td>&nbsp;<?php echo $lablearray['1054']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_tel2', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td></td>
+                                            <td>&nbsp;<?php echo $lablearray['1049']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('client_postad', '', '', false, 'text', $retainvalues, '20'); ?> </td>
+                                        </tr>
+
+                                    </table>
+                                </fieldset>
+                            </div>
+
+
+
+
+                            <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1090']; ?>" id="mem_details">
+
+                                <fieldset id="memdetails" style="margin:0px; width:auto;">
+                                    <legend><?php echo $lablearray['1090']; ?></legend>
+
+                                    <div style="display:block;width:auto;margin-top:0px;padding:10px;height:100%">
+                                        <table width="100%" border="0" cellpadding="1" cellspacing="0">
+                                            <tr>
+                                                <td>&nbsp;<?php echo $lablearray['887']; ?><br><?php echo tep_draw_input_field('member_firstname', '', '', false, 'text', $retainvalues, '28'); ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['888']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_middlename', '', '', false, 'text', $retainvalues, '28'); ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['900']; ?><br><?php echo tep_draw_input_field('member_lastname', '', '', false, 'text', $retainvalues, '28'); ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['1064']; ?><?php echo $lablearray['1511']; ?><br>
+                                                    <select id="member_maritalstate" name="member_maritalstate">
+                                                        <option value="M"><?php echo $lablearray['1065']; ?></option>
+                                                        <option value="S"><?php echo $lablearray['1067']; ?></option>
+                                                        <option value="D"><?php echo $lablearray['1068']; ?></option>
+                                                        <option value="U"><?php echo $lablearray['1069']; ?></option>
+
+                                                    </select>
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;<?php echo $lablearray['1070']; ?><br><input type="us-date" id="member_regdate" name="member_regdate"></td>
+                                                <td>&nbsp;<?php echo $lablearray['1071']; ?><?php echo $lablearray['1511']; ?><br><input type="us-date" id="member_enddate" name="member_enddate"></td>
+                                                <td>&nbsp;<?php echo $lablearray['1640']; ?><br><input type="us-date" id="member_bday" name="member_bday"></td>
+                                                <td>&nbsp;<?php echo $lablearray['540']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_children', '0', '', false, 'text', $retainvalues, '5'); ?></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>&nbsp;<?php echo $lablearray['1074']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($clientcats1, 'member_category1_id1', 'xx', 'combo', '', ''); ?> </td>
+                                                <td>&nbsp;<?php echo $lablearray['1075']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($clientcats2, 'member_category2_id2', 'xx', 'combo', '', ''); ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['1076']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($education, 'member_educationlevel_id', 'xx', 'combo', '', ''); ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['1094']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($incomecats, 'member_incomecategories_id', 'xx', 'combo', '', ''); ?></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>&nbsp;<?php echo $lablearray['1078']; ?><?php echo $lablearray['1511']; ?><br><?php
+                                                                                                                                    echo DrawComboFromArray($clientlang, 'member_clientlanguages_id1', '', 'combo', '', '');
+                                                                                                                                    ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['1079']; ?><?php echo $lablearray['1511']; ?><br><?php
+                                                                                                                                    echo DrawComboFromArray($clientlang, 'member_clientlanguages_id2', '', 'combo', '', '');
+                                                                                                                                    ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['1241']; ?><br><?php echo tep_draw_input_field('member_no', '0000', '', false, 'text', $retainvalues, '15'); ?></td>
+                                                <td> <?php echo $lablearray['1242']; ?>
+                                                    <select id="member_regstatus" name="member_regstatus">
+                                                        <option value=""><?php echo $lablearray['42']; ?></option>
+                                                        <option value="ACT" selected><?php echo $lablearray['68']; ?></option>
+                                                        <option value="INA"><?php echo $lablearray['1243']; ?></option>
+                                                        <option value="EXT"><?php echo $lablearray['1244']; ?></option>
+                                                        <option value="CLO"><?php echo $lablearray['1245']; ?></option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>&nbsp;<?php echo $lablearray['447']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_income', '0', '', false, 'text', $retainvalues, '5'); ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['585']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_email', '0', '', false, 'text', $retainvalues, '30'); ?></td>
+                                                <td>&nbsp;<?php echo $lablearray['1072']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_dependants', '0', '', false, 'text', $retainvalues, '5'); ?> </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" align="center">
+
+                                                    <p align='center'><a name="btnAddMem" class="s10" id="btnAddMem" name="btnAddMem" alt="Add member"><?php echo $lablearray['730']; ?></a></p>
+
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div id="wrapper" style="text-align:center">
+                                        <table id="grid_members" width="100%"></table>
                                     </div>
 
 
+                                </fieldset>
+                            </div>
+                            <div id='iddocs' style="width:auto;display:none;">
 
-
-                                    <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1090']; ?>" id="mem_details">
-
-                                        <fieldset id="memdetails" style="margin:0px; width:auto;">
-                                            <legend><?php echo $lablearray['1090']; ?></legend>
-
-                                            <div style="display:block;width:auto;margin-top:0px;padding:10px;height:100%">
-                                                <table width="100%" border="0" cellpadding="1" cellspacing="0">
+                                <span class="indicator_small" id='div_name2'> </span>
+                                <div>
+                                    <input id="members_idno" name="members_idno" type="hidden" value='' />
+                                    <table border="0" cellpadding="0">
+                                        <tr>
+                                            <td colspan="2">&nbsp;
+                                                <table border="0" cellpadding="2">
                                                     <tr>
-                                                        <td>&nbsp;<?php echo $lablearray['887']; ?><br><?php echo tep_draw_input_field('member_firstname', '', '', false, 'text', $retainvalues, '28'); ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['888']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_middlename', '', '', false, 'text', $retainvalues, '28'); ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['900']; ?><br><?php echo tep_draw_input_field('member_lastname', '', '', false, 'text', $retainvalues, '28'); ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1064']; ?><?php echo $lablearray['1511']; ?><br>
-                                                            <select id="member_maritalstate" name="member_maritalstate">
-                                                                <option value="M"><?php echo $lablearray['1065']; ?></option>
-                                                                <option value="S"><?php echo $lablearray['1067']; ?></option>
-                                                                <option value="D"><?php echo $lablearray['1068']; ?></option>
-                                                                <option value="U"><?php echo $lablearray['1069']; ?></option>
-
-                                                            </select>
-
+                                                        <td>&nbsp;<?php echo $lablearray['1060']; ?></td>
+                                                        <td>&nbsp;<?php
+                                                                    echo DrawComboFromArray($doctypes, 'documenttypes_id', '', 'combo', '', '');
+                                                                    ?></td>
+                                                        <td>&nbsp;<?php echo $lablearray['1061']; ?></td>
+                                                        <td>&nbsp;<?php echo tep_draw_input_field('document_serial', '', '', false, 'text', $retainvalues, '20'); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>&nbsp;<?php echo $lablearray['905']; ?></td>
+                                                        <td>&nbsp;<input type="us-date" id="document_issuedate" name="document_issuedate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
                                                         </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>&nbsp;<?php echo $lablearray['1070']; ?><br><input type="us-date" id="member_regdate" name="member_regdate"></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1071']; ?><?php echo $lablearray['1511']; ?><br><input type="us-date" id="member_enddate" name="member_enddate"></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1640']; ?><br><input type="us-date" id="member_bday" name="member_bday"></td>
-                                                        <td>&nbsp;<?php echo $lablearray['540']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_children', '0', '', false, 'text', $retainvalues, '5'); ?></td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>&nbsp;<?php echo $lablearray['1074']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($clientcats1, 'member_category1_id1', 'xx', 'combo', '', ''); ?> </td>
-                                                        <td>&nbsp;<?php echo $lablearray['1075']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($clientcats2, 'member_category2_id2', 'xx', 'combo', '', ''); ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1076']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($education, 'member_educationlevel_id', 'xx', 'combo', '', ''); ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1094']; ?><?php echo $lablearray['1511']; ?><br><?php echo DrawComboFromArray($incomecats, 'member_incomecategories_id', 'xx', 'combo', '', ''); ?></td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>&nbsp;<?php echo $lablearray['1078']; ?><?php echo $lablearray['1511']; ?><br><?php
-                                                                                                                                            echo DrawComboFromArray($clientlang, 'member_clientlanguages_id1', '', 'combo', '', '');
-                                                                                                                                            ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1079']; ?><?php echo $lablearray['1511']; ?><br><?php
-                                                                                                                                            echo DrawComboFromArray($clientlang, 'member_clientlanguages_id2', '', 'combo', '', '');
-                                                                                                                                            ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1241']; ?><br><?php echo tep_draw_input_field('member_no', '0000', '', false, 'text', $retainvalues, '15'); ?></td>
-                                                        <td> <?php echo $lablearray['1242']; ?>
-                                                            <select id="member_regstatus" name="member_regstatus">
-                                                                <option value=""><?php echo $lablearray['42']; ?></option>
-                                                                <option value="ACT" selected><?php echo $lablearray['68']; ?></option>
-                                                                <option value="INA"><?php echo $lablearray['1243']; ?></option>
-                                                                <option value="EXT"><?php echo $lablearray['1244']; ?></option>
-                                                                <option value="CLO"><?php echo $lablearray['1245']; ?></option>
-                                                            </select>
+                                                        <td>&nbsp;<?php echo $lablearray['628']; ?></td>
+                                                        <td>&nbsp;<?php echo tep_draw_input_field('document_issuedby', '', '', false, 'text', $retainvalues, '20');  ?>
                                                         </td>
                                                     </tr>
 
                                                     <tr>
-                                                        <td>&nbsp;<?php echo $lablearray['447']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_income', '0', '', false, 'text', $retainvalues, '5'); ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['585']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_email', '0', '', false, 'text', $retainvalues, '30'); ?></td>
-                                                        <td>&nbsp;<?php echo $lablearray['1072']; ?><?php echo $lablearray['1511']; ?><br><?php echo tep_draw_input_field('member_dependants', '0', '', false, 'text', $retainvalues, '5'); ?> </td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="5" align="center">
+                                                        <td>&nbsp;<?php echo $lablearray['1062']; ?><?php echo $lablearray['1511']; ?></td>
+                                                        <td>&nbsp;<input type="us-date" id="document_docexpiry" name="document_docexpiry" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
 
-                                                            <p align='center'><a name="btnAddMem" class="s10" id="btnAddMem" name="btnAddMem" alt="Add member"><?php echo $lablearray['730']; ?></a></p>
+                                                        </td>
+                                                        <td>&nbsp;<?php echo $lablearray['1063']; ?><?php echo $lablearray['1511']; ?></td>
+                                                        <td>&nbsp;
 
+                                                            <?php
+                                                            echo DrawComboFromArray($docprority, 'document_priority', '', 'combo', '', '');
+                                                            ?>
                                                         </td>
                                                     </tr>
                                                 </table>
-                                            </div>
-                                            <div id="wrapper" style="text-align:center">
-                                                <table id="grid_members" width="100%;"></table>
-                                            </div>
 
+                                            </td>
 
-                                        </fieldset>
-                                    </div>
-                                    <div id='iddocs' style="width:auto;display:none;">
+                                        </tr>
 
-                                        <span class="indicator_small" id='div_name2'> </span>
-                                        <div>
-                                            <input id="members_idno" name="members_idno" type="hidden" value='' />
-                                            <table border="0" cellpadding="0">
-                                                <tr>
-                                                    <td colspan="2">&nbsp;
-                                                        <table border="0" cellpadding="2">
-                                                            <tr>
-                                                                <td>&nbsp;<?php echo $lablearray['1060']; ?></td>
-                                                                <td>&nbsp;<?php
-                                                                            echo DrawComboFromArray($doctypes, 'documenttypes_id', '', 'combo', '', '');
-                                                                            ?></td>
-                                                                <td>&nbsp;<?php echo $lablearray['1061']; ?></td>
-                                                                <td>&nbsp;<?php echo tep_draw_input_field('document_serial', '', '', false, 'text', $retainvalues, '20'); ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>&nbsp;<?php echo $lablearray['905']; ?></td>
-                                                                <td>&nbsp;<input type="us-date" id="document_issuedate" name="document_issuedate" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
-                                                                </td>
-                                                                <td>&nbsp;<?php echo $lablearray['628']; ?></td>
-                                                                <td>&nbsp;<?php echo tep_draw_input_field('document_issuedby', '', '', false, 'text', $retainvalues, '20');  ?>
-                                                                </td>
-                                                            </tr>
+                                    </table>
 
-                                                            <tr>
-                                                                <td>&nbsp;<?php echo $lablearray['1062']; ?><?php echo $lablearray['1511']; ?></td>
-                                                                <td>&nbsp;<input type="us-date" id="document_docexpiry" name="document_docexpiry" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
-
-                                                                </td>
-                                                                <td>&nbsp;<?php echo $lablearray['1063']; ?><?php echo $lablearray['1511']; ?></td>
-                                                                <td>&nbsp;
-
-                                                                    <?php
-                                                                    echo DrawComboFromArray($docprority, 'document_priority', '', 'combo', '', '');
-                                                                    ?>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-
-                                                    </td>
-
-                                                </tr>
-
-                                            </table>
-
-                                            <p align='right'><button class="btn" type="button" id="btnAddMemDocs" name="btnAddMemDocs"><?php echo $lablearray['730']; ?></button></p>
-                                        </div>
-
-                                    </div>
-
-                                    <div data-dojo-type="dijit/layout/ContentPane" id="paneLoans" title="<?php echo $lablearray['1036']; ?>">
-                                        <span id="loans" width="100%;"></span>
-                                    </div>
-
-                                    <div data-dojo-type="dijit/layout/ContentPane" id="paneSavings" title="<?php echo $lablearray['1086']; ?>">
-                                        <span id="grid_savings" width="100%;"></span>
-                                    </div>
-                                    <div data-dojo-type="dijit/layout/ContentPane" id="paneShares" title="<?php echo $lablearray['1089']; ?>">
-                                        <span id="grid_shares" width="100%;"></span>
-                                    </div>
-
-                                    <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1017']; ?>">
-                                        <fieldset>
-                                            <legend><?php echo $lablearray['1017']; ?></legend>
-                                            <table width="100%" border="0">
-                                                <tr>
-
-                                                    <td>&nbsp;</td>
-
-                                                    <td>&nbsp;<?php echo $lablearray['1081']; ?><?php echo $lablearray['1511']; ?></td>
-                                                    <td>&nbsp;<?php echo DrawComboFromArray($clientcats1, 'client_cat1', '', 'combo', '', ''); ?>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>&nbsp;<?php echo $lablearray['1082']; ?><?php echo $lablearray['1511']; ?></td>
-                                                    <td>&nbsp;<?php echo DrawComboFromArray($costcenters, 'costcenters_code', '', 'combo', '', ''); ?></td>
-
-                                                    <td>&nbsp;<?php echo $lablearray['1259']; ?><?php echo $lablearray['1511']; ?></td>
-                                                    <td>&nbsp;<?php echo DrawComboFromArray($busssector, 'bussinesssector_code', '', 'combo', '', ''); ?></td>
-
-                                                </tr>
-
-                                                <tr>
-                                                    <td>&nbsp;<?php echo $lablearray['1083']; ?><?php echo $lablearray['1511']; ?></td>
-                                                    <td>&nbsp;<?php echo DrawComboFromArray($clientcats2, 'client_cat2', '', 'combo', '', ''); ?>
-
-                                                    <td>&nbsp;<?php echo $lablearray['1084']; ?><?php echo $lablearray['1511']; ?></td>
-                                                    <td>&nbsp;<input type="us-date" id="client_enddate" name="client_enddate" value="" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
-                                                    </td>
-                                                </tr>
-
-                                            </table>
-                                        </fieldset>
-                                    </div>
+                                    <p align='right'><button class="btn" type="button" id="btnAddMemDocs" name="btnAddMemDocs"><?php echo $lablearray['730']; ?></button></p>
                                 </div>
+
+                            </div>
+
+                            <div data-dojo-type="dijit/layout/ContentPane" id="paneLoans" title="<?php echo $lablearray['1036']; ?>">
+                                <span id="loans" width="100%;"></span>
+                            </div>
+
+                            <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1086']; ?>">
+                                <table id="grid_savings" width="100%"></table>
+                            </div>
+                            <div data-dojo-type="dijit/layout/ContentPane" id="paneShares" title="<?php echo $lablearray['1089']; ?>">
+                                <span id="grid_shares"></span>
+                            </div>
+
+                            <div data-dojo-type="dijit/layout/ContentPane" title="<?php echo $lablearray['1017']; ?>">
+                                <fieldset>
+                                    <legend><?php echo $lablearray['1017']; ?></legend>
+                                    <table width="100%" border="0">
+                                        <tr>
+
+                                            <td>&nbsp;</td>
+
+                                            <td>&nbsp;<?php echo $lablearray['1081']; ?><?php echo $lablearray['1511']; ?></td>
+                                            <td>&nbsp;<?php echo DrawComboFromArray($clientcats1, 'client_cat1', '', 'combo', '', ''); ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;<?php echo $lablearray['1082']; ?><?php echo $lablearray['1511']; ?></td>
+                                            <td>&nbsp;<?php echo DrawComboFromArray($costcenters, 'costcenters_code', '', 'combo', '', ''); ?></td>
+
+                                            <td>&nbsp;<?php echo $lablearray['1259']; ?><?php echo $lablearray['1511']; ?></td>
+                                            <td>&nbsp;<?php echo DrawComboFromArray($busssector, 'bussinesssector_code', '', 'combo', '', ''); ?></td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <td>&nbsp;<?php echo $lablearray['1083']; ?><?php echo $lablearray['1511']; ?></td>
+                                            <td>&nbsp;<?php echo DrawComboFromArray($clientcats2, 'client_cat2', '', 'combo', '', ''); ?>
+
+                                            <td>&nbsp;<?php echo $lablearray['1084']; ?><?php echo $lablearray['1511']; ?></td>
+                                            <td>&nbsp;<input type="us-date" id="client_enddate" name="client_enddate" value="" constraints="{datePattern:'<?php echo Common::convertDateJSFormat() ?>', strict:true}">
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </fieldset>
                             </div>
                         </div>
-                        <div style="padding:2px;align:right;width:auto;float:right;"><button class="btn" name="btnSave" type="button" id="btnSave"><?php echo $lablearray['20']; ?></button><button class="btn" name="btnsearch" type="button" onClick="CloseDialog(vFloatingPane.id);" id="btnsearch"><?php echo $lablearray['260']; ?></button></div>
-                    </td>
-                    <td></td>
-                </tr>
-            </table>
+                    </div>
+                </div>
+                <div style="padding:2px;align:right;width:auto;float:right;"><button class="btn" name="btnSave" type="button" id="btnSave"><?php echo $lablearray['20']; ?></button><button class="btn" name="btnsearch" type="button" onClick="CloseDialog(vFloatingPane.id);" id="btnsearch"><?php echo $lablearray['260']; ?></button></div>
+            </td>
+            <td></td>
+        </tr>
+    </table>
 
 </form>
-<div id="wrapper" style="text-align: center">
+<div style="text-align: center" id="div_groups">
     <table id="grid_groups" width="100%"></table>
 </div>
-<div id="wrapper" style="text-align:center">
-    <table id="grid_individuals" width="100%;"></table>
+<div style="text-align:center" id="div_individuals">
+    <table id="grid_individuals" width="100%"></table>
 </div>
-<div id="wrapper" style="text-align:center">
-    <table id="grid_business" width="100%;"></table>
+<div style="text-align:center" id="div_business">
+    <table id="grid_business" width="100%"></table>
 </div>
 </div>
 <script type="text/javascript">

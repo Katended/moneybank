@@ -39,72 +39,46 @@ Class Savings extends ProductConfig {
      * @$pageparams string 
      */
     public static function getSavingsAccounts($pageparams = '', $theid = '', $cWhere = '') {
-
-
-        switch ($pageparams):
-            case 'INDSAVACC':
-            case 'BUSSAVACC':
-                if ($theid != ""):
+        // Construct the WHERE clause based on pageparams and theid
+        if ($theid != "") {
+            switch ($pageparams) {
+                case 'INDSAVACC':
+                case 'BUSSAVACC':
                     $cWhere = " AND c.client_idno='" . $theid . "'";
-                endif;
-                break;
+                    break;
 
-            case 'GRPSAVACC':                
-            case 'MEMSAVACC':
-                if ($theid != ""):
-                    $cWhere = " AND (c.entity_idno='".$theid. "' OR c.members_idno='".$theid."')";
-                endif;
-                break;
+                case 'GRPSAVACC':
+                case 'MEMSAVACC':
+                    $cWhere = " AND (c.entity_idno='" . $theid . "' OR c.members_idno='" . $theid . "')";
+                    break;
 
-            default:
-                break;
-        endswitch;
-        
-        DataTable::prepareFieldList(array('','savaccounts_id','savaccounts_account','name','product_prodid'));
-       
-        switch ($pageparams):
+                default:
+                    break;
+            }
+        }
+
+        // Construct the query based on pageparams
+        $query = '';
+        switch ($pageparams) {
             case 'INDSAVACC':
-                
-                NewGrid::$fieldlist = array("sa.savaccounts_id",'sa.client_idno',"CONCAT(c.client_surname,' ',c.client_firstname,' ',c.client_middlename) name",'sa.savaccounts_account','sa.product_prodid');
-                Datatable::$searchable = array('sa.client_idno',"c.client_surname","c.client_firstname","c.client_middlename","sa.savaccounts_account","sa.product_prodid");
-                NewGrid::$order = " ORDER BY sa.savaccounts_account DESC,sa.product_prodid";
-                $query = " FROM " . TABLE_SAVACCOUNTS . " sa," . TABLE_VCLIENTS . " c "; // . $clienttype;       
-                DataTable::$where_condition = " c.client_idno=sa.client_idno  AND client_type='I' ";
-                break;
-
             case 'GRPSAVACC':
-                
-                NewGrid::$fieldlist = array("sa.savaccounts_id","sa.entity_idno","CONCAT(c.entity_name) name","sa.savaccounts_account","sa.product_prodid");
-                Datatable::$searchable = array('sa.entity_idno',"c.entity_name","sa.savaccounts_account","sa.product_prodid");
-                NewGrid::$order =" ORDER BY sa.savaccounts_account DESC,sa.product_prodid";
-                $query = " FROM " . TABLE_SAVACCOUNTS . " sa," . TABLE_ENTITY . " c " ;
-                DataTable::$where_condition = " c.entity_idno=sa.client_idno ".$cWhere;
-                break;
-
             case 'BUSSAVACC':
-                
-                NewGrid::$fieldlist = array("sa.savaccounts_id","sa.client_idno","client_bussname name","sa.savaccounts_account","sa.product_prodid");
-                Datatable::$searchable = array('sa.client_idno',"client_bussname","sa.savaccounts_account","sa.product_prodid");
-                NewGrid::$order =" ORDER BY sa.savaccounts_account DESC,sa.product_prodid";
-                $query = " FROM " . TABLE_SAVACCOUNTS . " sa," . TABLE_VCLIENTS . " c " . $cWhere;
-                DataTable::$where_condition =" c.client_idno=sa.client_idno  AND client_type='B' ".$cWhere;
-                break;
 
+                $query = " FROM " . TABLE_SAVACCOUNTS . " sa 
+                          JOIN " . TABLE_VCLIENTS . " c ON sa.client_idno = c.client_idno";
+                break;
+    
             case 'MEMSAVACC':
-                
-                NewGrid::$fieldlist = array("sa.savaccounts_id","CONCAT(c.members_firstname,' ',c.members_middlename,' ',c.members_lastname) name","sa.client_idno","sa.savaccounts_account","sa.product_prodid","c.members_idno");
-                NewGrid::$order =" ORDER BY sa.savaccounts_account DESC,sa.product_prodid,c.members_idno";
-                $query = " FROM " . TABLE_SAVACCOUNTS . " sa," . TABLE_MEMBERS . " c   ". $cWhere;
-                DataTable::$where_condition =" c.entity_idno=sa.client_idno  ".$cWhere;
+                $query = " FROM " . TABLE_SAVACCOUNTS . " sa 
+                          JOIN " . TABLE_MEMBERS . " c ON sa.client_idno = c.client_idno" . $cWhere;
                 break;
-
+    
             default:
                 break;
-        endswitch;
-
+        }
+    
         return $query;
     }
-
 
     /**
      * getSavingsAccounts

@@ -54,17 +54,15 @@ Class DataTable {
 					$dataValue = $data[$i][self::$columns[$j]['db'] ?? ''];
 					$ajaxDataDiv = self::$request['ajaxdatadiv'];
 
-					$function  = sprintf("showValues('%s','%s','%s','','load.php','%s','',false)", $formId, $ajaxDataDiv, 'edit',$dataValue);
+					$function = sprintf("showValues('%s','%s','%s','','load.php','%s','',false)", $formId, $ajaxDataDiv, 'edit', $dataValue);
 					
-					// $callback  =				
-					
-					// usually the first column is the identit column
+					// usually the first column is the identity column
 					$row[0] = sprintf(
-						'<input type="checkbox" class="row-checkbox" value="%s" onClick="%s">',
+						'<input type="checkbox" class="row-checkbox" value="%s" onClick="if (this.checked) { %s; }">',
 						htmlspecialchars($dataValue, ENT_QUOTES),
 						htmlspecialchars($function, ENT_QUOTES)
-					);	
-					
+					);
+										
 					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','','load.php','%s','',true)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $ajaxDataDiv,'Delete',$dataValue);					
 
 				}

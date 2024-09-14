@@ -1024,23 +1024,27 @@ if ($_POST['action'] == 'search') {
         case 'GRPSAVACC':
         case 'BUSSAVACC': // Client Savings Accounts
 
-            Common::getlables("1665,9,296,1633,1628,1245", "", "", $Conn);
+            Common::getlables("391,1018,887,900,1096,1628,1245", "", "", $Conn);
 
-            $query = Savings::getSavingsAccounts($pageparams, "", $cWhere);
+            $query = Savings::getSavingsAccounts($pageparams, $_POST['keyparam'] ?? "", $cWhere);
          
             NewGrid::$actionlinks = "<a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='large'>&nbsp;<img src='images/plus.gif' border='0' >&nbsp;</span>";
 
             NewGrid::$columntitle = array(
-                Common::$lablearray['296'],
-                Common::$lablearray['9'],
-                Common::$lablearray['1633'],
+                Common::$lablearray['391'],
+                Common::$lablearray['1018'],
+                Common::$lablearray['887'],
+                Common::$lablearray['900'],
+                Common::$lablearray['1096'],
                 Common::$lablearray['1628'],
                 Common::$lablearray['1245']
             );
 
-            NewGrid::$fieldlist = array(
-                'name',
+            NewGrid::$fieldlist = array(                
                 'savaccounts_account',
+                'client_surname',
+                'client_firstname',
+                'client_lastname',
                 'product_prodid',
                 'savaccounts_opendate',
                 'savaccounts_closedate'
