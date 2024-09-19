@@ -3422,9 +3422,14 @@ input[type="checkbox"].w2ui-toggle:focus {
   font-size: 90%;
   margin: 0px;
 }
+
+.radiooptionsnew {
+  width: auto;
+  font-size: 90%;
+  margin: 0px;
+}
 .radiooptionsnew > input[type="radio"] {
   display: none;
-
   width: auto;
   padding: 3px;
   -moz-border-radius: 50%;
@@ -3437,12 +3442,14 @@ input[type="checkbox"].w2ui-toggle:focus {
   visibility: hidden; /* Makes input not-clickable */
   position: absolute; /* Remove input from document flow */
 }
+
 .radiooptionsnew > label > input[type="radio"] + img {
   /* IMAGE STYLES */
   cursor: pointer;
   border: 1px solid transparent;
   margin: 8px;
 }
+
 .radiooptionsnew > label > input:checked + img {
   animation-name: radiooptionsanim;
   animation-duration: 2s;

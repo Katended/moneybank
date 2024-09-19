@@ -18,6 +18,7 @@ class NewGrid
     public static $columntitle = array();
     public static $keyfield = '';
     public static $order = "";
+    public static $tableTitle;
 
     /* DESCRIPTION:  THIS FUNCTION IS TO INITIALISE THE DATATABLE */
     public static function initDatatable(
@@ -71,9 +72,9 @@ class NewGrid
         . implode("</th><th>", self::$columntitle)
             . "</th></tr>"
             . "</thead>"
-            . "<tfoot>"
+        . "<tfoot>"
             . "<tr>"
-            . "<th></th><th>"
+        . "<th></th><th>"
         . implode("</th><th>", self::$columntitle)
             . "</th></tr>"
             . "</tfoot>"
@@ -95,6 +96,7 @@ class NewGrid
             Datatable::$order = self::$order;
             Datatable::$keyfield = self::$keyfield;
             Datatable::$sSQL = self::$sSQL;
+            Datatable::$tableTitle = self::$tableTitle;
             self::$request['columntitle'] = self::$columntitle;
             self::$request['columns'] = self::$fieldlist;
             self::$request['actionlinks'] = self::$actionlinks;

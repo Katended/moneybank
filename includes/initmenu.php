@@ -298,6 +298,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 switch (jsonObj.status) {
                     case 'data':
                         // Handle table data
+
                         handleDataTable(jsonObj.table, ajaxdatadiv);
                         break;
 
@@ -353,8 +354,8 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 case "loadform":
                 case "edit":
                 case "add":
-                    if (data.includes("formObj")) {
-                        eval(data);
+                    if (jsonObj instanceof String) {
+                        eval(jsonObj);
                     } else {
                         populateForm(frm, jsonObj.data);
                     }
@@ -375,7 +376,11 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         const handleDataTable = (tableData, ajaxdatadiv) => {
             if (tableData instanceof Object && tableData !== null) {
                 // Initialize the DataTable and store the instance
+
+                $(`#grid_${ajaxdatadiv}`).prepend(`<caption style='font-size:16px;'>${tableData.caption}</caption>`);
+
                 const tableInstance = $('#grid_' + ajaxdatadiv).DataTable({
+
                     fixedHeader: true,
                     buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
                     responsive: true,
