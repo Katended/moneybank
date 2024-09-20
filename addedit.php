@@ -1904,17 +1904,19 @@ Common::$lablearray['E01'] = '';
 
          case 'add':
          case 'edit':
+                Common::getlables("1521", "", "", Common::$connObj);
+
             if ($formdata['txtproduct'] == "") {
-               getlables("1521");
+              
                     echo Common::createResponse('ok', Common::$lablearray['1521']);
-              // echo "MSG:" . $lablearray['1521'];
+            
                exit();
            }
             if ($formdata['txtproductcode'] == "") {
-               getlables("1521");
+            
                     echo Common::createResponse('ok', Common::$lablearray['1521']);
-              // echo "MSG:" . $lablearray['1521'];
-               exit();
+
+                    exit();
            }
            
            Common::replace_key_function($formdata, 'txtproductcode', 'PCODE');
@@ -1944,26 +1946,25 @@ Common::$lablearray['E01'] = '';
             case 'add':
             case 'update':
 
-                getlables("1040,1199,218");
+                Common::getlables("1040,1199,218,1521,1435,1199,185", "", "", Common::$connObj);
 
                 if ($formdata['branch_code'] == "") {
-                    getlables("1521");
-                    echo Common::createResponse('ok', Common::$lablearray['1521']);
-                   // echo "MSG:" . $lablearray['1521'];
+                    // getlables("1521");
+                    echo Common::createResponse('ok', Common::$lablearray['1521']);                  
                     exit();
                 }
 
                 if ($formdata['product_prodid'] == "") {
-                    getlables("1435");
+                   // getlables("1435");
                     echo Common::createResponse('ok', Common::$lablearray['1435']);
-                 //   echo "MSG " . $lablearray['1435'];
+              
                     exit();
                 }
 
                 if ($formdata['client_idno'] == "") {
-                    getlables("1199");
+                   // getlables("1199");
                     echo Common::createResponse('ok', Common::$lablearray['1199']);
-                  //  echo "INFO." . $lablearray['1199'];
+                
                     exit();
                 }
                 
@@ -1988,14 +1989,14 @@ Common::$lablearray['E01'] = '';
                 $formdata['TTYPE'] = $formdata['TTYPE']??'';
 
                 if($formdata['MODE'] == 'CA'){
-                   Common::replace_key_function($formdata, 'cashaccounts_code', 'GLACC');                    
+                    Common::replace_key_function($formdata, 'cashaccounts_code', 'GLACC'); 
+                  
                 }
                 
                 if ($formdata['MODE'] == 'CQ') {
                     Common::replace_key_function($formdata, 'cheques_no', 'CHEQNO');
 
-                    if ($formdata['CHEQNO'] == "") {
-                        getlables("185");
+                    if ($formdata['CHEQNO'] == "") {                       
                         echo Common::createResponse('info', Common::$lablearray['185']);
                       //  echo "INFO." . $lablearray['185'];
                         exit();

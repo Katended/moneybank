@@ -20,8 +20,9 @@ class Common {
         } elseif (function_exists("openssl_random_pseudo_bytes")) {
             $bytes = openssl_random_pseudo_bytes(ceil($lenght / 2));
         } else {
-            throw new Exception("no cryptographically secure random function available");
+            throw "no cryptographically secure random function available";
         }
+
         return substr(bin2hex($bytes), 0, $lenght);
     }
 
@@ -2357,12 +2358,10 @@ class Common {
 // Most probably the Transaction type passed is not yet defined in this procedure
     public static function returnTransactionOptions(&$aLines, &$Conn) {
 
-        try {
-
-            $account[] = array();
+        $account[] = array();
 
             self::getlables("1613,1614,1622,1470,171,1504,1240,1402,704,1229,1230,1105,1216,1203,1028,1193,1202,311,1203,1203,1027,1204,1205,772,67,696,970,704,1144,1145,1105,1181", "", "", self::$connObj);
-//           $prevLinecurrency ='';
+
             foreach ($aLines as $key => &$value) {
 
                 $column1 = 'productconfig_paramname';
@@ -2508,43 +2507,43 @@ class Common {
 
                         if ($value['TTYPE'] == 'PRI') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'PRINCIPAL_OUTSTANDING_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1144'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1144'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'LD') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'PRINCIPAL_OUTSTANDING_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1229'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1229'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'INT') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'INT_RECEIVED_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1145'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1145'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'COM') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'COMM_RECEIVED_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1105'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1105'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'STA') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'STAT_RECEIVED_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1230'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1230'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'PEN') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'PEN_RECEIVED_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1181'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1181'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'VAT') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'VAT_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1402'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1402'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'OVR') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'LOAN_OVERPAYMENT_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1240'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1240'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         } elseif ($value['TTYPE'] == 'SFEE') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'SERVICE_FEE_ACC');
-                            self::$lablearray['E01'] = self::$lablearray['1504'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID'];
+                        throw new Exception(self::$lablearray['1504'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
                         }
 
 
                         if (count($data_acc) == 0) {
                             self::$error = self::$lablearray['704'] . ' ' . self::$lablearray['E01'];
-                            throw new Exception(self::$lablearray['E01']);
+                        throw self::$lablearray['E01'];
                             break 2;
                         }
 
                         if ($data_acc[$column2] == "") {
-                            self::$lablearray['E01'] .= self::$lablearray['704'] . " " . $value['PRODUCT_PRODID'];
-                            throw new Exception(self::$lablearray['E01']);
+                        throw new Exception(self::$lablearray['E01'] .= self::$lablearray['704'] . " " . $value['PRODUCT_PRODID']);
+                         
                             break 2;
                         } else {
                             self::$lablearray['E01'] = '';
@@ -2571,8 +2570,8 @@ class Common {
 
                             if ($ex_rate == "" || $ex_rate == 0) {
 
-                                self::$lablearray['E01'] = self::$lablearray['696'] . " <br><b>" . $value['PRODUCT_PRODID'] . "</b>";
-                                throw new Exception(self::$lablearray['E01']);
+                            throw new Exception(self::$lablearray['696'] . " <br><b>" . $value['PRODUCT_PRODID'] . "</b>");
+                    
                                 break 2;
                                 // throw new Exception(self::$lablearray['696']." ".$data_acc['CURRENCIES_ID']);
                             }
@@ -2587,7 +2586,7 @@ class Common {
                     case 'CA':     // cash
                         $_cash = self::$connObj->SQLSelect("SELECT chartofaccounts_accountcode,currencies_id FROM " . TABLE_CASHACCOUNTS . " WHERE  chartofaccounts_accountcode='" . $value['GLACC'] . "' AND branch_code='" . $value['BRANCHCODE'] . "'");
 
-                        if ($_cash[0]['chartofaccounts_accountcode'] == "") {
+                    if (($_cash[0]['chartofaccounts_accountcode']) ?? "" == "") {
                             self::getlables("367", "", "", self::$connObj);
                             throw new Exception(self::$lablearray['367'] . ' ' . $value['GLACC']);
                         } else {
@@ -2616,15 +2615,15 @@ class Common {
                         $value['GLACC'] = $data_acc['productconfig_value'];
 
                         if ($value['GLACC'] == '') {
-                            // throw new Exception(self::$lablearray['772'].' '.self::$lablearray['1203']);
-                            self::$lablearray['E01'] = self::$lablearray['704'] . ' ' . self::$lablearray['1203'] . ' ' . $value['PRODUCT_PRODID'];
+                        // throw new Exception(self::$lablearray['772'].' '.self::$lablearray['1203']);
+                        throw new Exception(self::$lablearray['704'] . ' ' . self::$lablearray['1203'] . ' ' . $value['PRODUCT_PRODID']);
                             break 2;
                         }
 
                         if ($ex_rate == "" || $ex_rate == 0) {
-                            //throw new Exception(self::$lablearray['1193']." ".self::$lablearray['1203']);
+                        //throw new Exception(self::$lablearray['1193']." ".self::$lablearray['1203']);
 
-                            self::$lablearray['E01'] = self::$lablearray['1193'] . " " . self::$lablearray['1203'];
+                        throw new Exception(self::$lablearray['1193'] . " " . self::$lablearray['1203']);
                             break 2;
                         }
                         break;
@@ -2640,7 +2639,7 @@ class Common {
 
                         if ($bankbranches_acc[0]['acc'] == '') {
 
-                            self::$lablearray['E01'] = self::$lablearray['772'] . ' ' . self::$lablearray['67'] . ' ' . $bankbranches_acc[0]['banks_name'] . ' ' . $bankbranches_acc['bankbranches_name'];
+                        throw new Exception(self::$lablearray['772'] . ' ' . self::$lablearray['67'] . ' ' . $bankbranches_acc[0]['banks_name'] . ' ' . $bankbranches_acc['bankbranches_name']);
                             break 2;
                             // throw new Exception(self::$lablearray['772'].' '.self::$lablearray['67']);
                         }
@@ -2760,19 +2759,9 @@ class Common {
 
                     default:
 
-                        self::$lablearray['E01'] = "No transaction type specified";
+                    throw new Exception("No transaction type specified");
                         break;
                 }
-
-//                if($prevLinecurrency!=''){
-//                    
-//                    // check see if currenyes of the transaction are consitent
-//                    if($prevLinecurrency!=$currency):
-//                      throw new Exception(self::$lablearray['1216'])  
-//                    endif;
-//                }
-//                
-//                $prevLinecurrency = $currency;
 
                 if (SETTTING_CURRENCY_ID != $currency) {
                     $value['FXAMT'] = $value['AMOUNT'];
@@ -2796,13 +2785,8 @@ class Common {
                 $value['TRANCODE'] = $_trancode;
 
                 $value['FXID'] = $forexrates_id;
-            }
-        } catch (Exception $ex) {
-
-            self::$error = $ex->getMessage();
-
-            throw new Exception(self::$error);
         }
+       
     }
 
     /* DESCRIPTION:  THIS FUNCTION IS USED TO DECODE SERIALISED FORM DATA

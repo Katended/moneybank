@@ -2929,7 +2929,7 @@ function DrawCashAccounts($roles_id)
 
 	$cashaccounts_query = tep_db_query("SELECT cc.chartofaccounts_accountcode, cashaccounts_name FROM " . TABLE_ROLESCASHACCOUNTS . " as rc, " . TABLE_CASHACCOUNTS . " cc  WHERE cc.chartofaccounts_accountcode=rc.chartofaccounts_accountcode  AND rc.roles_id=" . $roles_id2 . ' GROUP BY cc.chartofaccounts_accountcode,cashaccounts_name');
 
-	$html_out = 'Cash Accounts <br><select id="cashaccounts_code" name="cashaccounts_code">';
+	$html_out .= 'Cash Accounts <br><select id="cashaccounts_code" name="cashaccounts_code">';
 
 	while ($cashaccounts_array = tep_db_fetch_array($cashaccounts_query)) {
 

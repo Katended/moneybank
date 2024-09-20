@@ -812,7 +812,7 @@
 
             case 'IND':
 
-                Common::getlables("1018,1019,1093,240,484,1665,887", "", "", $Conn);
+                Common::getlables("1018,1019,1093,1023,240,484,1665,887", "", "", $Conn);
 
                 //  $query = Savings::getClientDetails($pageparams, "", $cWhere);
                 $query = " FROM " . TABLE_CLIENTS . " c " . " WHERE 1=1 " . $cWhere;
@@ -834,6 +834,7 @@
                     
                 NewGrid::$grid_id = 'grid_'.($_POST['keyparam']??'');
                 NewGrid::$request = $_POST;
+                NewGrid::$tableTitle = Common::$lablearray['1023'];
                 NewGrid::$sSQL = $query;
                 NewGrid::$order = ' ORDER BY client_idno DESC ';
                 NewGrid::$searchcatparam = $pageparams;
@@ -1244,24 +1245,35 @@
 
                 switch ($_POST['keyparam']) {
                     case 'CA':
-                        echo DrawCashAccounts($_SESSION['roles']);
+                        $str_account = DrawCashAccounts($_SESSION['roles']);
+                        echo Common::createResponse('form', $str_account); 
+
                         exit();
+
                         break 2;
 
                     case 'CQ':
                     case 'DB':
                         // bank
-                        echo Common::DrawCheqBanks($_POST['keyparam']);
+                        $str_account = Common::DrawCheqBanks($_POST['keyparam']);
+                        echo Common::createResponse('form', $str_account); 
+                        
                         exit();
+
                         break 2;
 
                     case 'SA':
-                        echo Common::SavAccounts($_GET['id'], $Conn);
+                        $str_account = Common::SavAccounts($_GET['id'], $Conn);
+                        echo Common::createResponse('form', $str_account); 
+                        
                         exit();
+
                         break 2;
 
                     default:
+
                         exit();
+
                         break 2;
                 }
                 break;
@@ -1273,7 +1285,8 @@
 
         if ($query == "" && $newgrid->sp_code == "") {
             $lablearray = getlables("1271");
-            echo "<span class='info'>" . $lablearray['1271'] . "</div>";
+            echo Common::createResponse('ok', Common::$lablearray['1271']); 
+            //echo "<span class='info'>" . $lablearray['1271'] . "</div>";
             exit();
         }
 

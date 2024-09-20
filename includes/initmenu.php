@@ -304,7 +304,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     case 'ok':
                         // Display success message
-                        displaymessage(frm, "<?php echo $lablearray['218']; ?>", jsonObj.status);
+                        displaymessage(frm, jsonObj.message, jsonObj.status);
                         break;
 
                     case 'form':
@@ -346,7 +346,9 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             }
         };
 
+        const populateFormElement = (frm, jsonObj, ajaxdatadiv) => {
 
+        };
 
 
         const handleFormActions = (action, frm, jsonObj, ajaxdatadiv) => {
@@ -354,22 +356,28 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 case "loadform":
                 case "edit":
                 case "add":
+
                     if (jsonObj instanceof String) {
                         eval(jsonObj);
                     } else {
                         populateForm(frm, jsonObj.data);
                     }
+
+                    break;
+                case "loadelement":
+                    handleDataTable(jsonObj.message, ajaxdatadiv);
                     break;
                 case "eval":
                     eval(data);
                     break;
                 case "search":
-                case "loadelement":
                 default:
-                    handleDataTable(data, ajaxdatadiv);
+                    handleDataTable(jsonObj, ajaxdatadiv);
                     break;
             }
         };
+
+
 
         let dataTableInstances = []; // Array to hold multiple DataTable instances
 
@@ -487,6 +495,35 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 }
             }
             return;
+        }
+
+
+        /**
+         * Resets all form fields except specified elements.
+         * 
+         * @param {string} formId - The ID of the form to reset.
+         * @param {string[]} excludeIds - An array of IDs of elements to exclude from reset.
+         */
+        function resetFormExcluding(formId, excludeIds) {
+            const form = document.getElementById(formId);
+
+            if (!form) {
+                console.error(`Form with ID "${formId}" not found.`);
+                return;
+            }
+
+            Array.from(form.elements).forEach(element => {
+                if (!excludeIds.includes(element.id)) {
+                    switch (element.type) {
+                        case 'checkbox':
+                        case 'radio':
+                            element.checked = false; // Reset checkboxes and radio buttons
+                            break;
+                        default:
+                            element.value = ''; // Reset text inputs and others
+                    }
+                }
+            });
         }
 
         // Function to reset all forms on the page      

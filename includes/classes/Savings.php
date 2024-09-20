@@ -222,25 +222,28 @@ Class Savings extends ProductConfig {
      */
     public static function updateSavings(&$formdata) {
 
-        self::$aLines = array();
 
         try {
 
-            Bussiness::$Conn->AutoCommit = false;
+            self::$aLines = array();
+            $accounts_array = array();
+            $products_array = array();
+
+            Bussiness::$Conn->setAutoCommit();
 
             Bussiness::$Conn->beginTransaction();
 
             Common::getlables("1027,1028,171,1504", "", "", Common::$connObj);
             
-            $accounts_array =array();
-            $products_array =array();
+      
             foreach ($formdata as $key => $value) {
 
                 $value['MEMID'] =$value['MEMID']??'';
                 
                 // used in computation of balances
                 Common::deleteElementByValue($value['SAVACC'],$accounts_array);
-                Common::deleteElementByValue($value['PRODUCT_PRODID'],$products_array); 
+                Common::deleteElementByValue($value['PRODUCT_PRODID'], $products_array);
+                 
                 $accounts_array[] = $value['SAVACC'];
                 $products_array[] = $value['PRODUCT_PRODID'];
 

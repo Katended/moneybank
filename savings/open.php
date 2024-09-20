@@ -192,11 +192,9 @@ getlables("20,1515,1403,271,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9
 
             showValues('frmsavaccounts', '', $('#action').val(), data1, 'addedit.php', $('#theid').val()).done(function() {
 
+                loadSavingAccount();
 
-
-                //function(){		
-                //$('#toppanel').hide('slide', {direction: 'left'}, 1000);
-                // document.getElementById("frmsavaccounts").reset();
+                resetFormExcluding("frmsavaccounts", ["client_idno", "action"])
 
             });
 
