@@ -1,1 +1,0 @@
-a:1:{s:0:"";a:7:{s:8:"pay_date";s:19:"2024-03-23 17:45:25";s:13:"due_principal";s:9:"290000.00";s:12:"due_interest";s:8:"23200.00";s:11:"due_penalty";s:4:"0.00";s:14:"due_commission";s:4:"0.00";s:7:"due_vat";s:4:"0.00";s:5:"Total";d:313200;}}

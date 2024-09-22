@@ -1936,8 +1936,7 @@ Common::$lablearray['E01'] = '';
         
         default:
             break 2;
-        }
-        
+        }        
         
         break;
     case 'frmsavaccounts':

@@ -1246,7 +1246,7 @@
                 switch ($_POST['keyparam']) {
                     case 'CA':
                         $str_account = DrawCashAccounts($_SESSION['roles']);
-                        echo Common::createResponse('form', $str_account); 
+                        echo Common::createResponse('form', '', [], $str_account); 
 
                         exit();
 
@@ -1256,7 +1256,7 @@
                     case 'DB':
                         // bank
                         $str_account = Common::DrawCheqBanks($_POST['keyparam']);
-                        echo Common::createResponse('form', $str_account); 
+                        echo Common::createResponse('form', '', [], $str_account); 
                         
                         exit();
 
@@ -1264,7 +1264,7 @@
 
                     case 'SA':
                         $str_account = Common::SavAccounts($_GET['id'], $Conn);
-                        echo Common::createResponse('form', $str_account); 
+                        echo Common::createResponse('form', '', [], $str_account); 
                         
                         exit();
 

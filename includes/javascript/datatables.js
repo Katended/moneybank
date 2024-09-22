@@ -5094,41 +5094,40 @@
 		 *        table - scroll foot table
 		 *          tfoot - tfoot
 		 */
-		var scroller = $( _div, { 'class': classes.sScrollWrapper } )
-			.append(
-				$(_div, { 'class': classes.sScrollHead } )
-					.css( {
-						overflow: 'hidden',
-						position: 'relative',
-						border: 0,
-						width: scrollX ? size(scrollX) : '100%'
-					} )
-					.append(
-						$(_div, { 'class': classes.sScrollHeadInner } )
-							.css( {
-								'box-sizing': 'content-box',
-								width: scroll.sXInner || '100%'
-							} )
-							.append(
-								headerClone
-									.removeAttr('id')
-									.css( 'margin-left', 0 )
-									.append( captionSide === 'top' ? caption : null )
-									.append(
-										table.children('thead')
-									)
-							)
-					)
-			)
-			.append(
-				$(_div, { 'class': classes.sScrollBody } )
-					.css( {
-						position: 'relative',
-						overflow: 'auto',
-						width: size( scrollX )
-					} )
-					.append( table )
-			);
+		var scroller = $(_div, { class: classes.sScrollWrapper })
+      .append(
+        $(_div, { class: classes.sScrollHead })
+          .css({
+            overflow: "hidden",
+            position: "relative",
+            border: 0,
+            width: scrollX ? size(scrollX) : "100%",
+          })
+          .append(
+            $(_div, { class: classes.sScrollHeadInner })
+              .css({
+                "box-sizing": "content-box",
+                width: scroll.sXInner || "100%",
+              })
+              .append(
+                headerClone
+                  .removeAttr("id")
+                  .css("margin-left", 0)
+                  .append(captionSide === "top" ? caption : null)
+                  .append(table.children("thead"))
+              )
+          )
+      )
+      .append(
+        $(_div, { class: classes.sScrollBody })
+          .css({
+            position: "relative",
+            overflow: "auto",
+            width: size(scrollX)
+            
+          })
+          .append(table)
+      );
 	
 		if ( footer ) {
 			scroller.append(

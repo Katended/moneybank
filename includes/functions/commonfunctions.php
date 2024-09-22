@@ -2920,25 +2920,23 @@ function getAccountNoHeaders()
 function DrawCashAccounts($roles_id)
 {
 
-	$html_out = '<div style="display:none;float:right;" id="divcashaccounts">';
+	$html_out = "<span id='divcashaccounts'>";
 
 	// change array values to string
 	$roles_id2 = implode(" OR rc.roles_id=", $roles_id);
-
-	//$html_out .= '<fieldset style="width:auto;margin:10px;">';
-
+		
 	$cashaccounts_query = tep_db_query("SELECT cc.chartofaccounts_accountcode, cashaccounts_name FROM " . TABLE_ROLESCASHACCOUNTS . " as rc, " . TABLE_CASHACCOUNTS . " cc  WHERE cc.chartofaccounts_accountcode=rc.chartofaccounts_accountcode  AND rc.roles_id=" . $roles_id2 . ' GROUP BY cc.chartofaccounts_accountcode,cashaccounts_name');
 
-	$html_out .= 'Cash Accounts <br><select id="cashaccounts_code" name="cashaccounts_code">';
+	$html_out .= "Cash Accounts <br><select id='cashaccounts_code' name='cashaccounts_code'>";
 
 	while ($cashaccounts_array = tep_db_fetch_array($cashaccounts_query)) {
 
-		$html_out .= '<option id="' . $cashaccounts_array['chartofaccounts_accountcode'] . '" value="' . $cashaccounts_array['chartofaccounts_accountcode'] . '">' . $cashaccounts_array['chartofaccounts_accountcode'] . " | " . $cashaccounts_array['cashaccounts_name'] . '</option>';
+		$html_out .= "<option id='" . $cashaccounts_array['chartofaccounts_accountcode'] . "' value='" . $cashaccounts_array['chartofaccounts_accountcode'] . "'>" . $cashaccounts_array['chartofaccounts_accountcode'] . " | " . $cashaccounts_array['cashaccounts_name'] . "</option>";
 	}
 
-	$html_out .= '</select>';
-	//$html_out .="</fieldset>";
-	$html_out .= "</div>";
+	$html_out .= "</select>";
+
+	$html_out .= "</span>";
 
 	return $html_out;
 }

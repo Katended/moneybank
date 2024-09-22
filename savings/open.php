@@ -14,6 +14,9 @@ $_parent = basename(__FILE__);
     var act = '';
 
     $(document).ready(function() {
+
+        $("#PAYMODES").trigger("change");
+
         const radios = document.getElementsByName("radiosclient");
         radios.forEach((radio) => {
             radio.addEventListener('click', () => {
@@ -56,7 +59,6 @@ $_parent = basename(__FILE__);
 
     });
 
-
     function getinfo(frm_id, theid, action, pagedata, urlpage, element) {
 
         $("#action").val(action);
@@ -75,10 +77,7 @@ $_parent = basename(__FILE__);
                     populateForm('frmsavaccounts', jsonObj['data']);
                 });
             });
-
     }
-
-
 
     // Listen for click events on the entire document
     document.addEventListener('click', function(event) {
@@ -107,7 +106,7 @@ $_parent = basename(__FILE__);
 </script>
 <?php
 require('../' . DIR_WS_INCLUDES . 'pageheader.php');
-getlables("20,1515,1403,271,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9,654,316,317,1443,1723,1724");
+getlables("20,1515,1403,271,1751,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9,654,316,317,1443,1723,1724");
 ?>
 <form id="frmsavaccounts" name="frmsavaccounts">
     <table cellpadding="0" cellspacing="0" width="100%">
@@ -134,22 +133,28 @@ getlables("20,1515,1403,271,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9
                 <tr>
                     <td><?php echo $lablearray['1197']; ?><br><input type="text" id="txtsavaccount" name="txtsavaccount" value="" readonly=""></td>
                     <td><?php echo $lablearray['654']; ?><br><input type="text" id="client_idno" name="client_idno" value="" readonly=""></td>
-                    <td id='modes'></td>
+                    <td></td>
                 </tr>
                 <tr>
-                    <td><?php echo $lablearray['317']; ?><br><input type="us-date" class='date' id="txtOpenDate" name="txtOpenDate" value=""><?php echo TEXT_FIELD_REQUIRED; ?></td>
-                    <td><?php echo $lablearray['1096']; ?><br><?php echo DrawComboFromArray(array(), 'product_prodid', '', 'SAVPROD', '', 'SAVPROD'); ?><?php echo TEXT_FIELD_REQUIRED; ?></td>
+                    <td><?php echo $lablearray['317']; ?><br><input type="us-date" class='date' id="txtOpenDate" name="txtOpenDate" value=""></td>
+                    <td><?php echo $lablearray['1096']; ?><br><?php echo DrawComboFromArray(array(), 'product_prodid', '', 'SAVPROD', '', 'SAVPROD'); ?></td>
                     <td><?php echo $lablearray['24']; ?><br><?php echo Common::DrawComboFromArray(array(), 'PAYMODES', '', 'PAYMODES', '', 'PAYMODES'); ?></td>
                 </tr>
                 <tr>
-                    <td><?php echo $lablearray['316']; ?><br><?php echo DrawComboFromArray('branch_code', 'branch_code', 'PP', 'operatorbranches', '', ''); ?><?php echo TEXT_FIELD_REQUIRED; ?></td>
-                    <td><?php echo $lablearray['299']; ?><br><input type="text" id="txtvoucher" name="txtvoucher" value=""></td>
+                    <td><?php echo $lablearray['316']; ?><br><?php echo DrawComboFromArray('branch_code', 'branch_code', 'PP', 'operatorbranches', '', ''); ?></td>
+                    <td><?php echo $lablearray['299']; ?><?php echo $lablearray['1751']; ?><br><input type="text" id="txtvoucher" name="txtvoucher" value=""></td>
                     <td><?php echo $lablearray['373']; ?><br><input type="numeric" id="txtamount" name="txtamount" value='0'></td>
                 </tr>
                 <tr>
+                    <td colspan="3" align="center" id='modes'>
+
+                    </td>
+                </tr>
+                <tr>
                     <td colspan="3">
-                        <fieldset style='padding:5px;'>
-                            <legend><?php echo $lablearray['1516']; ?></legend><?php echo $lablearray['271']; ?> <input type="numeric" id="txtrepaysavtamount" name="txtrepaysavtamount" value='0'> <?php echo $lablearray['1515']; ?> <?php echo DrawComboFromArray(array(), 'CMBFREQUENCY', '', "FREQUENCY", "", "", "frmsavaccounts"); ?> <?php echo $lablearray['1403']; ?> <?php echo Common::DrawComboFromArray(array(), 'LOANPROD', 'LOANPROD', 'LOANPROD', "", "", ""); ?>
+                        <span id='modes'></span>
+                        <fieldset>
+                            <legend><?php echo $lablearray['1516']; ?></legend><?php echo $lablearray['271']; ?><?php echo $lablearray['1751']; ?> <input type="numeric" id="txtrepaysavtamount" name="txtrepaysavtamount" value='0'> <?php echo $lablearray['1515']; ?><?php echo $lablearray['1751']; ?> <?php echo DrawComboFromArray(array(), 'CMBFREQUENCY', '', "FREQUENCY", "", "", "frmsavaccounts"); ?> <?php echo $lablearray['1403']; ?> <?php echo Common::DrawComboFromArray(array(), 'LOANPROD', 'LOANPROD', 'LOANPROD', "", "", ""); ?>
                         </fieldset>
                     </td>
                 </tr>
@@ -158,7 +163,7 @@ getlables("20,1515,1403,271,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9
             </table>
         </div>
 
-        <div>
+        <div syle="max-height:500px;">
             <table id="grid_accounts" width="100%">
             </table>
         </div>
@@ -166,7 +171,7 @@ getlables("20,1515,1403,271,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9
     <p style="text-align:center;">
         <button class="btn" name="Go" type="button" id="btnscancel"><?php echo $lablearray['300']; ?></button><button class="btn" name="btnBack" type="button" id="btnBack"><?php echo $lablearray['1161']; ?></button><button class="btn" name="btnSave" type="button" id="btnSave"><?php echo $lablearray['20']; ?></button>
     </p>
-    <table id="grid_gridata" width="100%">
+    <table id="grid_gridata" width="100%" syle="max-height:500px;">
     </table>
 </form>
 <script type="text/javascript">
@@ -174,12 +179,6 @@ getlables("20,1515,1403,271,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9
 
         $('input[type=us-date]').w2field('date', {
             format: '<?php echo SETTING_DATE_FORMAT ?>'
-        });
-
-        $("#PAYMODES").trigger("change");
-        // payment mode
-        $("#PAYMODES").change(function() {
-            showValues('frmsavaccounts', 'modes', 'search', 'PAYMODES', 'load.php', $('#PAYMODES').val());
         });
 
         $("#btnSave").click(function() {
@@ -193,9 +192,7 @@ getlables("20,1515,1403,271,21,1516,24,300,1161,1024,373,299,317,1197,1096,373,9
             showValues('frmsavaccounts', '', $('#action').val(), data1, 'addedit.php', $('#theid').val()).done(function() {
 
                 loadSavingAccount();
-
-                resetFormExcluding("frmsavaccounts", ["client_idno", "action"])
-
+                resetFormExcluding("frmsavaccounts", ["client_idno", "action", "branch_code"])
             });
 
             $(this).prop('disabled', false);

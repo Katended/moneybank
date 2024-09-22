@@ -1,3 +1,8 @@
+
+.dataTables_scrollBody {
+    max-height:500px !important;
+}
+
 table.dataTable{width:auto;margin:0 auto;clear:both;border-collapse:collapse;border-spacing: 0;}
 table.dataTable thead th,table.dataTable tfoot th{/* font-weight:bold; */}
 table.dataTable thead th,table.dataTable thead td{padding: 5px 5px;}

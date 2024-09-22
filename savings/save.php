@@ -488,11 +488,6 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
 
         });
 
-        // payment mode
-        $("#PAYMODES").change(function() {
-            showValues('frmSave', 'modes', 'search', 'PAYMODES', 'load.php', $('#PAYMODES').val());
-        });
-
         $("#btnSave").click(function() {
             $('#action').val('add')
 
@@ -541,7 +536,7 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
 
         });
 
-       
+
 
         $(document.body).on('keypress', '#txtsearchterm', function(event) {
 

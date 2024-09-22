@@ -30,7 +30,7 @@ class Common {
     {
     //     // Validate status
         if (!in_array(strtoupper($status), ['ERR','WAR','INFO','MSG','SQLSTATE','OK','DATA','DATA','FORM'])) {
-            throw ('Status must be "success" or "failure".');
+            $message = 'Status not defined in createResponse() ';
         }
     
         // Create the response array
@@ -1524,22 +1524,21 @@ class Common {
         //$connObj = new ConnectionFactory;
         $banks_array = self::$connObj->SQLSelect("SELECT bb.bankbranches_id as bankbranches_id, banks_name , bb.bankbranches_name as bankbranches_name,bankaccounts_accno,(SELECT currencies_id FROM " . TABLE_CHARTOFACCOUNTS . " c WHERE c.chartofaccounts_accountcode=ba.chartofaccounts_accountcode ) as currencies_id FROM " . TABLE_BANKBRANCHES . " bb, " . TABLE_BANKS . " b, " . TABLE_BANKACCOUNTS . " ba WHERE ba.bankbranches_id = bb.bankbranches_id AND bb.banks_id=b.banks_id GROUP BY bb.bankbranches_id");
 
-        $banks = '<select id="bankbranches_id" name="bankbranches_id">';
+        $banks = "<select id='bankbranches_id' name='bankbranches_id'>";
         foreach ($banks_array as $key => $val) {
-            $banks .= '<option id="' . $val['bankaccounts_accno'] . '" value="' . $val['bankaccounts_accno'] . '">' . $val['banks_name'] . " | " . $val['bankbranches_name'] . ' | ' . $val['bankaccounts_accno'] . ' (' . $val['currencies_id'] . ')</option>';
+            $banks .= "<option id='" . $val['bankaccounts_accno'] . "' value='" . $val['bankaccounts_accno'] . "'>" . $val['banks_name'] . " | " . $val['bankbranches_name'] . ' | ' . $val['bankaccounts_accno'] . "(" . $val['currencies_id'] . ")</option>";
         }
         $banks .= '</select>';
 
         if ($ttype == 'CQ'):
-            $banks .= $lablearraybanks['36'] . '<input id="cheques_no" name="cheques_no" value="" type="text" size="15">';
+            $banks .= $lablearraybanks['36'] . "<input id='cheques_no' name='cheques_no' value='' type='text' size='15'>";
 
         endif;
-        echo $banks;
+        return $banks;
     }
 
     public static function SavAccounts($theid = '') {
 
-        try {
 
             self::getlables("1206,1096,1408,1661", "", "", self::$connObj);
 
@@ -1572,32 +1571,27 @@ class Common {
 
             if (count($accounts_array) > 0) {
                 if ($theid != "") {
-                    $accounts = self::$lablearray['1408'] . '<br> <select id="cmbsavaccounts" name="cmbsavaccounts">';
+                $accounts = self::$lablearray['1408'] . "<br><select id='cmbsavaccounts' name='cmbsavaccounts'>";
                     foreach ($accounts_array as $key => $val) {
-                        $accounts .= '<option id="' . $val['savaccounts_id'] . '" value="' . $val['savaccounts_account'] . ":" . $val['product_prodid'] . '">' . $val['savaccounts_account'] . ' (' . $val['product_prodid'] . ') ' . $val['balance'] . ' ' . $val['currency'] . '</option>';
+                    $accounts .= "<option id='" . $val['savaccounts_id'] . "' value='" . $val['savaccounts_account'] . ":" . $val['product_prodid'] . "'>" . $val['savaccounts_account'] . " (" . $val['product_prodid'] . ') ' . $val['balance'] . ' ' . $val['currency'] . '</option>';
                     }
                 } else {
                     $accounts_array = self::$connObj->SQLSelect("SELECT product_name,product_prodid FROM " . TABLE_PRODUCT . " WHERE LEFT(product_name,1)='S'");
 
-                    $accounts = self::$lablearray['1096'] . '<br> <select id="cmbproducts" name="cmbproducts">';
+                $accounts = self::$lablearray['1096'] . "<br> <select id='cmbproducts' name='cmbproducts'>";
 
                     foreach ($accounts_array as $key => $val) {
-                        $accounts .= '<option id="' . $val['savaccounts_id'] . '" value="' . $val['savaccounts_account'] . ":" . $val['product_prodid'] . '">' . $val['savaccounts_account'] . ' (' . $val['product_prodid'] . ') ' . $val['balance'] . ' ' . $val['currency'] . '</option>';
+                    $accounts .= "<option id='" . $val['savaccounts_id'] . "' value ='" . $val['savaccounts_account'] . ":" . $val['product_prodid'] . "'>" . $val['savaccounts_account'] . ' (' . $val['product_prodid'] . ') ' . $val['balance'] . ' ' . $val['currency'] . "</option>";
                     }
                 }
 
-                $accounts .= '</select>';
+            $accounts .= "</select>";
 
                 return $accounts;
             } else {
-                return 'INFO ' . self::$lablearray['1206'];
-            }
-        } catch (Exception $ex) {
-
-            self::$error = $ex->getMessage();
-
-            throw new Exception(self::$error);
+            return self::$lablearray['1206'];
         }
+       
     }
 
     // This function is used to generate a transaction code for the user
@@ -2570,10 +2564,10 @@ class Common {
 
                             if ($ex_rate == "" || $ex_rate == 0) {
 
-                            throw new Exception(self::$lablearray['696'] . " <br><b>" . $value['PRODUCT_PRODID'] . "</b>");
+                            throw new Exception(self::$lablearray['696'] . " <br><b>" . $value['PRODUCT_PRODID '] . "</b>");
                     
                                 break 2;
-                                // throw new Exception(self::$lablearray['696']." ".$data_acc['CURRENCIES_ID']);
+                                
                             }
                         } else {
 
@@ -2586,7 +2580,7 @@ class Common {
                     case 'CA':     // cash
                         $_cash = self::$connObj->SQLSelect("SELECT chartofaccounts_accountcode,currencies_id FROM " . TABLE_CASHACCOUNTS . " WHERE  chartofaccounts_accountcode='" . $value['GLACC'] . "' AND branch_code='" . $value['BRANCHCODE'] . "'");
 
-                    if (($_cash[0]['chartofaccounts_accountcode']) ?? "" == "") {
+                    if (($_cash[0]['chartofaccounts_accountcode'] ?? "") == "") {
                             self::getlables("367", "", "", self::$connObj);
                             throw new Exception(self::$lablearray['367'] . ' ' . $value['GLACC']);
                         } else {
@@ -3402,21 +3396,27 @@ class Common {
                 self::getlables("42,311,382,1213,1202", "", "", self::$connObj);
 
                 // $lablearray1 = getlables("42,311,382,1213,1202");
-                $html_out = "<SELECT name='" . $fieldname . "' id='" . $fieldname . "'  onChange='" . $onChange . "'>
-                   <option id='NA' value=''" . (SETTING_PAYMODE == "" ? 'SELECTED' : "") . ">-------</option>
-                   <option id='CA' value='CA'" . (SETTING_PAYMODE == "CA" ? 'SELECTED' : "") . " >" . self::$lablearray['311'] . "</option>
-                   <option id='CQ' value='CQ'" . (SETTING_PAYMODE == "CQ" ? 'SELECTED' : "") . ">" . self::$lablearray['382'] . "</option>
-                   <option id='SAV' value='SA'" . (SETTING_PAYMODE == "SA" ? 'SELECTED' : "") . ">" . self::$lablearray['1213'] . "</option>
-                   <option id='DB' value='DB'" . (SETTING_PAYMODE == "DB" ? 'SELECTED' : "") . ">" . self::$lablearray['1202'] . "</option>
-           </SELECT>
-            <script>
-            // payment mode
-            $( '#PAYMODES' ).change(function() {
-                showValues('" . $frmid . "','modes','search','PAYMODES','load.php',$('#PAYMODES').val());
-            });
-            </script>
-            ";
-
+                $html_out = "<SELECT name='" . $fieldname . "' id='" . $fieldname . "'  onChange='" . $onChange .
+                "'>
+                   <option id='NA' value=''" . (SETTING_PAYMODE == "" ? 'SELECTED' : "") .
+                    ">-------</option>
+                   <option id='CA' value='CA'" . (SETTING_PAYMODE == "CA" ? 'SELECTED' : "") . " >" . self::$lablearray['311'] .
+                    "</option>
+                   <option id='CQ' value='CQ'" . (SETTING_PAYMODE == "CQ" ? 'SELECTED' : "") . ">" . self::$lablearray['382'] .
+                    "</option>
+                   <option id='SAV' value='SA'" . (SETTING_PAYMODE == "SA" ? 'SELECTED' : "") . ">" . self::$lablearray['1213'] .
+                    "</option>
+                   <option id='DB' value='DB'" . (SETTING_PAYMODE == "DB" ? 'SELECTED' : "") . ">" . self::$lablearray['1202'] .
+                    "</option>
+                </SELECT>
+                <script>
+                // payment mode
+                $( '#PAYMODES' ).change(function() {
+                    showValues('" . $frmid .
+                    "','modes','search','PAYMODES','load.php',$('#PAYMODES').val());
+                });
+                </script>";
+              //  showValues('frmsavaccounts', 'modes', 'search', 'PAYMODES', 'load.php', $('#PAYMODES').val());
                 break;
 
             case 'SAVTTYPES':

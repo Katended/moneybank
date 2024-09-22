@@ -20,7 +20,7 @@ table.dataTable {
   clear: both;
   border-collapse: collapse;
   border-spacing: 0;
-  font-size: 10px;
+  font-size: 10px;  
   /*
    * Header and footer styles
    */
@@ -504,8 +504,10 @@ table.dataTable td {
 .dataTables_wrapper .dataTables_scroll {
   clear: both;
 }
+
 .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
   -webkit-overflow-scrolling: touch;
+  max-height:500px;
 }
 .dataTables_wrapper
   .dataTables_scroll
@@ -576,7 +578,10 @@ table.dataTable td {
 }
 .dataTables_wrapper.no-footer .dataTables_scrollBody {
   border-bottom: 1px solid #111;
+  max-height:500px;
 }
+
+
 .dataTables_wrapper.no-footer div.dataTables_scrollHead table.dataTable,
 .dataTables_wrapper.no-footer div.dataTables_scrollBody > table {
   border-bottom: none;

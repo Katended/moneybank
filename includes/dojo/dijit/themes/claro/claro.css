@@ -717,7 +717,7 @@ body .dijitAlignClient {
 }
 .dj_ff3 .dj_a11y div.dijitSplitter:focus {
   outline-style: dotted;
-  outline-width: 2px;
+  outline-width: 1px;
 }
 .dijitSplitPane {
   position: absolute;
@@ -980,11 +980,8 @@ body .dijitAlignClient {
   position: relative;
   vertical-align: middle;
 }
-.dj_a11y .dijitMenuItemSelected {
-  border: 1px dotted black !important;
-}
 .dj_ff3 .dj_a11y .dijitMenuItem td {
-  padding: 0 !important;
+ padding: 0 !important;
   background: none !important;
 }
 .dj_ie8 .dj_a11y .dijitMenuItemLabel {
@@ -3835,13 +3832,14 @@ div.dijitTabDisabled,
   color: #000000;
 }
 .claro .dijitMenuBar .dijitMenuItem {
-  padding: 6px 10px 7px;
-  margin: -1px;
+  padding: 6px 11px 7px;
+  
 }
 .claro .dijitMenuBar .dijitMenuItemHover,
 .claro .dijitMenuBar .dijitMenuItemSelected {
   border: solid 1px #759dc0;
-  padding: 5px 9px 6px;
+  padding: 3px 10px 4px;
+  color:#000066
 }
 .claro .dijitMenuTable {
   border-collapse: separate;

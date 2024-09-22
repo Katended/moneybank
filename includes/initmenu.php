@@ -171,7 +171,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 case 'MSG':
                 case 'S':
                 case 'OK':
-                    cssClass = 'success information';
+                    cssClass = 'success information';                   
                     break;
                 case 'INFO':
                     cssClass = 'info information';
@@ -214,11 +214,11 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             search: {
                 value: ''
             },
-            ajaxdatadiv: null
+            elementId: null
         };
 
 
-        const showValues = (frm, ajaxdatadiv, action, pageparams, urlpage, keyparam, search, canInvokeCallback) => {
+        const showValues = (frm, elementId, action, pageparams, urlpage, keyparam, search, canInvokeCallback) => {
             const dfrd3 = jQuery.Deferred();
 
             // Set default page parameters
@@ -230,7 +230,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             // Store global parameters
             Object.assign(globalParameterStorage, {
                 frm: frm, // Replace with new frm value
-                ajaxdatadiv: ajaxdatadiv, // Replace with new ajaxdatadiv value
+                elementId: elementId, // Replace with new elementId value
                 action: action, // Replace with new action value
                 pageparams: pageparams, // Replace with new pageparams value
                 urlpage: urlpage, // Replace with new urlpage value
@@ -253,7 +253,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     keyparam: globalParameterStorage.keyparam,
                     frmid: globalParameterStorage.frm,
                     action: globalParameterStorage.action,
-                    ajaxdatadiv: globalParameterStorage.ajaxdatadiv,
+                    elementId: globalParameterStorage.elementId,
                     search: globalParameterStorage.search.value
                 })
                 .always(data => {
@@ -267,11 +267,11 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                             return;
                         }
 
-                        processResponseData(data, frm, action, ajaxdatadiv, dfrd3);
+                        processResponseData(data, frm, action, elementId, dfrd3);
 
                         // Call showValues again if action is 'edit' or 'add'
                         if (canInvokeCallback) {
-                            showValues(frm, ajaxdatadiv, action, pageparams, 'load.php', keyparam, search);
+                            showValues(frm, elementId, action, pageparams, 'load.php', keyparam, search);
                         }
 
                         $("#ajaxSpinnerImage").hide();
@@ -287,7 +287,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             return dfrd3.promise();
         };
 
-        const processResponseData = (data, frm, action, ajaxdatadiv, dfrd3) => {
+        const processResponseData = (data, frm, action, elementId, dfrd3) => {
 
             var trimmedData = data.trim();
 
@@ -299,7 +299,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     case 'data':
                         // Handle table data
 
-                        handleDataTable(jsonObj.table, ajaxdatadiv);
+                        handleDataTable(jsonObj, elementId);
                         break;
 
                     case 'ok':
@@ -309,7 +309,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     case 'form':
                         // Load form
-                        handleFormActions(action, frm, jsonObj, ajaxdatadiv);
+                        handleFormActions(action, frm, jsonObj, elementId);
                         break;
 
                     case 'err':
@@ -346,12 +346,12 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             }
         };
 
-        const populateFormElement = (frm, jsonObj, ajaxdatadiv) => {
+        const populateFormElement = (frm, jsonObj, elementId) => {
 
         };
 
 
-        const handleFormActions = (action, frm, jsonObj, ajaxdatadiv) => {
+        const handleFormActions = (action, frm, jsonObj, elementId) => {
             switch (action) {
                 case "loadform":
                 case "edit":
@@ -364,63 +364,75 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     }
 
                     break;
-                case "loadelement":
-                    handleDataTable(jsonObj.message, ajaxdatadiv);
-                    break;
                 case "eval":
                     eval(data);
                     break;
                 case "search":
+                case "loadelement":
                 default:
-                    handleDataTable(jsonObj, ajaxdatadiv);
+                    handleDataTable(jsonObj, elementId);
                     break;
             }
         };
 
-
+        const loadHtmlElement = (jsonObj, elementId) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = jsonObj.data;
+            }
+        }
 
         let dataTableInstances = []; // Array to hold multiple DataTable instances
 
-        const handleDataTable = (tableData, ajaxdatadiv) => {
+        const handleDataTable = (tableData, elementId) => {
             if (tableData instanceof Object && tableData !== null) {
                 // Initialize the DataTable and store the instance
 
-                $(`#grid_${ajaxdatadiv}`).prepend(`<caption style='font-size:16px;'>${tableData.caption}</caption>`);
+                // check see if its element data
+                if (tableData.data === null) {
 
-                const tableInstance = $('#grid_' + ajaxdatadiv).DataTable({
+                    $(`#grid_${elementId}`).prepend(`<caption style='font-size:16px;'>${tableData.table.caption}</caption>`);
 
-                    fixedHeader: true,
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-                    responsive: true,
-                    scrollResize: true,
-                    searchDelay: 100,
-                    scrollX: true,
-                    order: 3,
-                    scrollY: 100,
-                    data: tableData.data,
-                    columns: tableData.columns,
-                    scroller: {
-                        loadingIndicator: true
-                    },
-                    columnDefs: [{
-                        defaultContent: "-",
-                        targets: "_all",
-                        width: '15px',
-                        targets: 0,
-                    }],
-                    orderable: false,
-                    pageLength: 20,
-                    scrollCollapse: true,
-                    bDestroy: true,
-                });
+                    const tableInstance = $('#grid_' + elementId).DataTable({
 
-                dataTableInstances.push(tableInstance); // Store the instance in the array
+                        fixedHeader: true,
+                        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                        responsive: true,
+                        scrollResize: true,
+                        searchDelay: 100,
+                        scrollX: true,
+                        order: 3,
+                        scrollY: 100,
+                        data: tableData.table.data,
+                        columns: tableData.table.columns,
+                        scroller: {
+                            loadingIndicator: true
+                        },
+                        columnDefs: [{
+                            defaultContent: "-",
+                            targets: "_all",
+                            width: '15px',
+                            targets: 0,
+                        }],
+                        orderable: false,
+                        pageLength: 20,
+                        scrollCollapse: true,
+                        bDestroy: true,
+                    });
 
-                configureDataTableSearch(tableInstance);
-                // configureRowSelection(tableInstance, ajaxdatadiv);
+                    dataTableInstances.push(tableInstance); // Store the instance in the array
+
+                    configureDataTableSearch(tableInstance);
+                    // configureRowSelection(tableInstance, elementId);
+                } else {
+                    loadHtmlElement(tableData, elementId);
+                }
             } else {
                 tableData = tableData.replace("\\x3C", "<");
-                $("#" + ajaxdatadiv).html(tableData);
+
+                loadHtmlElement(tableData, elementId);
+
+                // $("#" + elementId).html(tableData.data);
             }
         };
 
@@ -448,7 +460,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     globalParameterStorage.search.value = this.querySelector('input').value;
                     showValues(
                         globalParameterStorage.frm,
-                        globalParameterStorage.ajaxdatadiv,
+                        globalParameterStorage.elementId,
                         globalParameterStorage.action,
                         globalParameterStorage.pageparams,
                         globalParameterStorage.urlpage,
@@ -464,8 +476,8 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             });
         };
 
-        // const configureRowSelection = (table, ajaxdatadiv) => {
-        //     const tbody = $(`#grid_${ajaxdatadiv} tbody`);
+        // const configureRowSelection = (table, elementId) => {
+        //     const tbody = $(`#grid_${elementId} tbody`);
 
         //     tbody.on('click', 'tr', function(event) {
         //         const target = $(event.target);
@@ -505,6 +517,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
          * @param {string[]} excludeIds - An array of IDs of elements to exclude from reset.
          */
         function resetFormExcluding(formId, excludeIds) {
+
             const form = document.getElementById(formId);
 
             if (!form) {
