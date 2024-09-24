@@ -193,64 +193,71 @@
                 
                 // determine if user has used a search term           
                 $searchterm =  (isset($_POST['searchterm'])?$_POST['searchterm']:$_POST['search']['value']??'');
-            
 
+                $sanitizedSearchTerm = htmlspecialchars($searchterm, ENT_QUOTES);
 
-                    $sanitizedSearchTerm = htmlspecialchars($searchterm, ENT_QUOTES);
+                $newgrid->queryoptions['searchterm'] = htmlspecialchars($searchterm, ENT_QUOTES);
 
-                    $newgrid->queryoptions['searchterm'] = htmlspecialchars($searchterm, ENT_QUOTES);
+                switch ($pageparams) {
+                    case 'MEMSAVACC':
+                        $conditions = [
+                            sprintf(
+                                "c.entity_idno LIKE '%%%s%%'",
+                                $sanitizedSearchTerm
+                            ),
+                            sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
+                        break;
 
-                
+                    case 'MEMSAVACC':
+                        $conditions = [
+                            sprintf(
+                                "c.entity_name LIKE '%%%s%%'",
+                                $sanitizedSearchTerm
+                            ),
+                            sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
+                        break;
 
-                    switch ($pageparams) {
-                        case 'MEMSAVACC':
-                            $conditions = [
-                                sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
-                            ];
-                            break;
-                    
-                        case 'MEMSAVACC':
-                            $conditions = [
-                                sprintf("c.entity_name LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
-                            ];
-                            break;
-                    
-                        case 'ADDINDLOANS':
-                        case 'IND':
-                            $conditions = [
-                                sprintf("c.client_firstname LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.client_surname LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.client_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.client_middlename LIKE '%%%s%%'", $sanitizedSearchTerm)
-                            ];
-                            break;
-                    
-                        case 'ADDGRPLOANS':
-                        case 'GRPLOANSREP':
-                        case 'GRP':
+                    case 'ADDINDLOANS':
+                    case 'IND':
+                        $conditions = [
+                            sprintf("c.client_firstname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_surname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_middlename LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
+                        break;
+
+                    case 'ADDGRPLOANS':
+                    case 'GRPLOANSREP':
+                    case 'GRP':
                     case 'BUSS':
-                            $conditions = [
-                                sprintf("c.entity_name LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm)
-                            ];
-                        break;                 
-                        default:
-                            $conditions = [
-                                sprintf("c.client_firstname LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.client_surname LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.client_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
-                                sprintf("c.client_middlename LIKE '%%%s%%'", $sanitizedSearchTerm)
-                            ];
-                            break;
-                    }
-                    
-                    $cWhere .= " AND (" . implode(' OR ', $conditions) . ")";
-                    // endif;
-            //  }
+                        $conditions = [
+                            sprintf(
+                                "c.entity_name LIKE '%%%s%%'",
+                                $sanitizedSearchTerm
+                            ),
+                            sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
+                        break;
 
+                    default:
+                        $conditions = [
+                            sprintf("c.client_firstname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_surname LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                            sprintf("c.client_middlename LIKE '%%%s%%'", $sanitizedSearchTerm)
+                        ];
+                        break;
+                }
+
+                $cWhere .= " AND (" . implode(
+                        ' OR ',
+                        $conditions
+                    ) . ")";
+                   
                 if ($newgrid->cpara != 'TRANSFERSAVINGS'):
                     $newgrid->cpara = $pageparams;
                 endif;
@@ -791,16 +798,28 @@
                     $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='G' ".$cWhere;
                 else:
                     $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='B' ".$cWhere;
-                endif;            
-        
-                Common::getlables("9,1093,1019,484,1665", "", "", $Conn);
-                NewGrid::$columntitle = array( Common::$lablearray['1093'],Common::$lablearray['9'], Common::$lablearray['1019'], Common::$lablearray['484']);
-            
-                NewGrid::$fieldlist = array('entity_idno','entity_name','entity_regdate','entity_enddate');
+                endif;
+
+                Common::getlables("9,1093,1019,484,1665,1023", "", "", $Conn);
+
+                NewGrid::$columntitle = array(
+                    Common::$lablearray['1093'],
+                    Common::$lablearray['9'],
+                    Common::$lablearray['1019'],
+                    Common::$lablearray['484']
+                );
+
+                NewGrid::$fieldlist = array(
+                    'entity_idno',
+                    'entity_name',
+                    'entity_regdate',
+                    'entity_enddate'
+                );
             
                 NewGrid::$grid_id = 'grid_'.($_POST['keyparam']??'');
                 NewGrid::$request = $_POST;
-                NewGrid::$sSQL = $query;       
+                NewGrid::$sSQL = $query;
+                NewGrid::$tableTitle = Common::$lablearray['1023'];      
                 NewGrid::$order =' ORDER BY c.entity_idno DESC ';
                 NewGrid::$searchcatparam = $pageparams;
 
@@ -809,6 +828,8 @@
                 echo $data;
 
                 exit();
+                
+                break;
 
             case 'IND':
 
@@ -1839,41 +1860,35 @@
                     break;
                     break;
             }
-            break;
-        case 'frmsavaccounts':
-            switch ($_POST['action']) {
             
-                case 'loadform':
-                case 'edit':
-                    $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_lastname) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);
-                    // $savacc_array = tep_db_fetch_array($savacc_query);
-                    Common::push_element_into_array($main_array, 'client_idno', $savacc_array[0]['client_idno']);
-                    Common::push_element_into_array($main_array, 'InfoBox', $savacc_array[0]['name'] . " : " . $savacc_array[0]['client_idno']);
-                    Common::push_element_into_array($main_array, 'action', 'add');
-                    Common::push_element_into_array($main_array, 'keyparam', '');
-                    Common::push_element_into_array($main_array, 'product_prodid', '');
-                    Common::push_element_into_array($main_array, 'txtOpenDate', '');
-                    Common::push_element_into_array($main_array, 'txtsavaccount', '');
+            break;
 
-                    echo Common::createResponse('form', '', [], $main_array);
+        case 'frmsavaccounts':
 
-                    break;
-             
-                default:
-                    $savacc_query = tep_db_query("SELECT CONCAT(client_surname,' ',client_firstname,' ',client_middlename) As Name,s.savaccounts_id,c.client_idno,savaccounts_account,s.product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_VCLIENTS . " c LEFT OUTER JOIN  " . TABLE_SAVACCOUNTS . " s ON c.client_idno=s.client_idno AND  s.client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'");
-                    $savacc_array = tep_db_fetch_array($savacc_query);
-                    Common::push_element_into_array($main_array, 'client_idno', $savacc_array['client_idno']);
-                    Common::push_element_into_array($main_array, 'action', 'update');
-                    Common::push_element_into_array($main_array, 'keyparam', $savacc_array['savaccounts_id']);
-                    Common::push_element_into_array($main_array, 'InfoBox', $savacc_array['Name'] . " : " . $savacc_array['client_idno']);
-                    Common::push_element_into_array($main_array, 'product_prodid', $savacc_array['product_prodid']);
-                    Common::push_element_into_array($main_array, 'txtOpenDate', Common::changeMySQLDateToPageFormat($savacc_array['savaccounts_opendate']));
-                    Common::push_element_into_array($main_array, 'txtsavaccount', $savacc_array['savaccounts_account']);
+            if (preg_match('[S]', $_POST['keyparam'])):
+                $savacc_query = tep_db_query("SELECT savaccounts_id,savaccounts_account,product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_SAVACCOUNTS . " WHERE savaccounts_account='" . tep_db_prepare_input($_POST['keyparam']) . "'");
+                $savacc_array = tep_db_fetch_array($savacc_query);
 
-                    echo Common::createResponse('form', '', [], $main_array);
+                Common::push_element_into_array($main_array, 'action', 'update');
+                Common::push_element_into_array($main_array, 'keyparam', $savacc_array['savaccounts_id']);
 
-                    break;              
-            }
+                Common::push_element_into_array($main_array, 'product_prodid', $savacc_array['product_prodid']);
+                Common::push_element_into_array($main_array, 'txtOpenDate', Common::changeMySQLDateToPageFormat($savacc_array['savaccounts_opendate']));
+                Common::push_element_into_array($main_array, 'txtsavaccount', $savacc_array['savaccounts_account']);
+
+            else:
+                $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_lastname) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);
+                $savacc_array = tep_db_fetch_array($savacc_query);
+                Common::push_element_into_array($main_array, 'client_idno', $savacc_array[0]['client_idno']);
+                Common::push_element_into_array($main_array, 'InfoBox', $savacc_array[0]['name'] . " : " . $savacc_array[0]['client_idno']);
+                Common::push_element_into_array($main_array, 'action', 'add');
+                Common::push_element_into_array($main_array, 'keyparam', '');
+                Common::push_element_into_array($main_array, 'product_prodid', '');
+                Common::push_element_into_array($main_array, 'txtOpenDate', '');
+                Common::push_element_into_array($main_array, 'txtsavaccount', '');
+            endif;
+
+            echo Common::createResponse('form', '', [], $main_array);                  
             
             break;
 

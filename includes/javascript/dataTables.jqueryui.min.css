@@ -1,6 +1,6 @@
 
 .dataTables_scrollBody {
-    max-height:500px !important;
+    max-height:100% !important;
 }
 
 table.dataTable{width:auto;margin:0 auto;clear:both;border-collapse:collapse;border-spacing: 0;}

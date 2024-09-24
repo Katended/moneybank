@@ -171,7 +171,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 case 'MSG':
                 case 'S':
                 case 'OK':
-                    cssClass = 'success information';                   
+                    cssClass = 'success information';
                     break;
                 case 'INFO':
                     cssClass = 'info information';
@@ -390,8 +390,9 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                 // check see if its element data
                 if (tableData.data === null) {
-
+                    
                     $(`#grid_${elementId}`).prepend(`<caption style='font-size:16px;'>${tableData.table.caption}</caption>`);
+                    $(`#grid_${elementId}`).find('caption').remove();
 
                     const tableInstance = $('#grid_' + elementId).DataTable({
 
@@ -401,6 +402,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                         scrollResize: true,
                         searchDelay: 100,
                         scrollX: true,
+                        serverSide: false,
                         order: 3,
                         scrollY: 100,
                         data: tableData.table.data,
@@ -417,7 +419,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                         orderable: false,
                         pageLength: 20,
                         scrollCollapse: true,
-                        bDestroy: true,
+                        bDestroy: true
                     });
 
                     dataTableInstances.push(tableInstance); // Store the instance in the array
