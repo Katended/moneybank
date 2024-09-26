@@ -3766,18 +3766,8 @@ class Common {
 
             case 'C': // Clients
                 self::getlables("886,1015,885,1090,1678", "", "", self::$connObj);
-//         $html= '<input  type="radio" id="radioind" name="client_type" value="I" checked onClick="newPage(\'\')">
-//        <label for="radioind">'. $lablearray['886'].' </label>
-//
-//        <input  onkeydown="" type="radio" id="radiogrp" name="client_type" value="G" onClick="newPage(\'\')">
-//        <label for="radiogrp">'. $lablearray['885'].'</label>
-//
-//        <input type="radio" id="radiobuss" name="client_type" value="B" onClick="newPage(\'\')">
-//        <label for="radiobuss">'. $lablearray['1015'].'</label>
-//
-//        <input type="radio" id="radiomem" name="client_type" value="M" onClick="newPage(\'\')">
-//        <label for="radiomem">'. $lablearray['1090'].'</label>';
-//         
+
+        
                 $html = '<span class="radiooptionsnew">
             <label for="radioind" data-balloon="' . self::$lablearray['886'] . '" data-balloon-pos="down">
            <input type="radio" id="radioind"  name="client_type" value="I"  onClick="newPage(\'I\')"/>

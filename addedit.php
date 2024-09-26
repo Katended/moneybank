@@ -1945,7 +1945,7 @@ Common::$lablearray['E01'] = '';
             case 'add':
             case 'update':
 
-                Common::getlables("1040,1199,218,1521,1435,1199,185", "", "", Common::$connObj);
+                Common::getlables("1752,1040,1199,218,1521,1435,1199,185,1198", "", "", Common::$connObj);
 
                 if ($formdata['branch_code'] == "") {
                     // getlables("1521");
@@ -2008,7 +2008,7 @@ Common::$lablearray['E01'] = '';
 
                 if ($formdata['REPAYSAVAMOUNT'] > 0 && $formdata['FREQ'] == "") {
 
-                    getlables("1198");
+                  //  getlables("1198");
                     echo Common::createResponse('ok', Common::$lablearray['1198']);
                   //  echo "MSG:" . $lablearray['1198'];
                     exit();
@@ -2049,12 +2049,29 @@ Common::$lablearray['E01'] = '';
                   //  echo 'ERR '.Common::$lablearray['E01'];
                     exit();
                 }
-                getlables("218");
-                echo Common::createResponse('ok', $lablearray['218']);   
+                //getlables("218");
+                echo Common::createResponse('ok', $lablearray['218']);
                 break 2;
+
+            case 'Delete':
+                $transactions  = Savings::getSavingsTransactions($_POST['keyparam']);
+
+                if ($transactions > 0) {
+                    echo Common::createResponse('info', Common::$lablearray['1752']);
+                    exit();
+                }
+
+                Savings::getSavingsDeleteAccount($_POST['keyparam']);
+
+                echo Common::createResponse('ok', $lablearray['218']);
+                
+                exit();
+
+                break 2;    
 
             case 'edit':
                 break 2;
+
             default:
                 break 2;
         }

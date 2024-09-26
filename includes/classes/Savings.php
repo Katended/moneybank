@@ -38,6 +38,29 @@ Class Savings extends ProductConfig {
      * This function is used to get Savings Accounts 
      * @$pageparams string 
      */
+    public static function getSavingsTransactions($savingsAccountID = '')
+    {
+        $acc_array = Common::$connObj->SQLSelect("SELECT savaccounts_account FROM " . TABLE_SAVTRANSACTIONS . " WHERE  savaccounts_account='" . $savingsAccountID . "' LIMIT 1");
+
+        if (isset($acc_array[0][1])):
+            return 0;
+        else:
+            return $acc_array['count'];
+        endif;
+    }
+
+    public static function getSavingsDeleteAccount($savingsAccountID = '')
+    {
+        Common::$connObj->SQLDelete(TABLE_SAVACCOUNTS, "savaccounts_account", $savingsAccountID);
+    }
+
+
+    /**
+     * getSavingsAccounts
+     * 
+     * This function is used to get Savings Accounts 
+     * @$pageparams string 
+     */
     public static function getSavingsAccounts($pageparams = '', $theid = '', $cWhere = '') {
         // Construct the WHERE clause based on pageparams and theid
         if ($theid != "") {

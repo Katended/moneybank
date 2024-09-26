@@ -21,23 +21,19 @@ $_parent = basename(__FILE__);
         radios.forEach((radio) => {
             radio.addEventListener('click', () => {
 
-                showValues('frmsavaccounts', 'gridata', 'search', radio.value, 'load.php');
+                const tableSelector = '#grid_accounts';
 
+                if ($.fn.DataTable.isDataTable(tableSelector)) {
+                    $(tableSelector).DataTable().clear().destroy();
+                    $(tableSelector).empty().removeAttr('style');
+                }
+
+                showValues('frmsavaccounts', 'gridata', 'search', radio.value, 'load.php');
             });
         });
     });
 
     $("#radioedit").click(function() {
-
-
-
-        //   if(document.getElementById('radioadd').checked){
-        //  act ='ADD';
-        //  $('#action').val('add');
-        //     $("#PAYMODES, #txtvoucher, #txtamount").prop( "disabled", false );
-        //   searchtext = $('input[name=radiosclient]:checked').val();		
-        //}
-
 
         act = 'EDIT';
         $('#action').val('update');

@@ -800,7 +800,7 @@
                     $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='B' ".$cWhere;
                 endif;
 
-                Common::getlables("9,1093,1019,484,1665,1023", "", "", $Conn);
+                Common::getlables("9,1093,1019,484,1665,885,1015", "", "", $Conn);
 
                 NewGrid::$columntitle = array(
                     Common::$lablearray['1093'],
@@ -815,11 +815,13 @@
                     'entity_regdate',
                     'entity_enddate'
                 );
-            
+
+                $tableTitle = Common::$lablearray[$pageparams == 'GRP' ? '885' : '1015'];
+
                 NewGrid::$grid_id = 'grid_'.($_POST['keyparam']??'');
                 NewGrid::$request = $_POST;
                 NewGrid::$sSQL = $query;
-                NewGrid::$tableTitle = Common::$lablearray['1023'];      
+                NewGrid::$tableTitle = $tableTitle;      
                 NewGrid::$order =' ORDER BY c.entity_idno DESC ';
                 NewGrid::$searchcatparam = $pageparams;
 
@@ -833,9 +835,8 @@
 
             case 'IND':
 
-                Common::getlables("1018,1019,1093,1023,240,484,1665,887", "", "", $Conn);
-
-                //  $query = Savings::getClientDetails($pageparams, "", $cWhere);
+                Common::getlables("1018,1019,1093,1178,240,484,1665,887", "", "", $Conn);
+          
                 $query = " FROM " . TABLE_CLIENTS . " c " . " WHERE 1=1 " . $cWhere;
 
                 NewGrid::$columntitle = array(
@@ -845,6 +846,7 @@
                     Common::$lablearray['1019'],
                     Common::$lablearray['484']
                 );
+
                 NewGrid::$fieldlist = array(
                     'client_idno',
                     'client_surname',
@@ -855,7 +857,7 @@
                     
                 NewGrid::$grid_id = 'grid_'.($_POST['keyparam']??'');
                 NewGrid::$request = $_POST;
-                NewGrid::$tableTitle = Common::$lablearray['1023'];
+                NewGrid::$tableTitle = Common::$lablearray['1178'];
                 NewGrid::$sSQL = $query;
                 NewGrid::$order = ' ORDER BY client_idno DESC ';
                 NewGrid::$searchcatparam = $pageparams;
@@ -1070,7 +1072,7 @@
                 NewGrid::$sSQL = $query;
                 NewGrid::$order = ' ORDER BY savaccounts_account DESC ';
                 NewGrid::$searchcatparam = $pageparams;
-
+                NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
                 $data = NewGrid::getData();
 
                 echo $data;

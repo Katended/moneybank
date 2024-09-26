@@ -55,9 +55,10 @@ class DataTable
 
 					$formId = self::$request['frmid'];
 					$dataValue = $data[$i][self::$columns[$j]['db'] ?? ''];
-					$ajaxDataDiv = self::$request['ajaxdatadiv'];
+					$elementId = self::$request['elementId'];
+					$pageparams = self::$request['pageparams'];
 
-					$function = sprintf("showValues('%s','%s','%s','','load.php','%s','',false)", $formId, $ajaxDataDiv, 'edit', $dataValue);
+					$function = sprintf("showValues('%s','%s','%s','','load.php','%s','',false)", $formId, $elementId, 'edit', $dataValue);
 
 					// usually the first column is the identity column
 					$row[0] = sprintf(
@@ -66,7 +67,7 @@ class DataTable
 						htmlspecialchars($function, ENT_QUOTES)
 					);
 
-					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','','load.php','%s','',true)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $ajaxDataDiv, 'Delete', $dataValue);
+					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',true)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $elementId, 'Delete', $pageparams, $dataValue);
 				}
 
 				if (isset($column['formatter'])) { // Is there a formatter?

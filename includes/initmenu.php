@@ -271,7 +271,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                         // Call showValues again if action is 'edit' or 'add'
                         if (canInvokeCallback) {
-                            showValues(frm, elementId, action, pageparams, 'load.php', keyparam, search);
+                            showValues(frm, elementId, 'search', pageparams, 'load.php', keyparam, search);
                         }
 
                         $("#ajaxSpinnerImage").hide();
@@ -387,15 +387,21 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         const handleDataTable = (tableData, elementId) => {
             if (tableData instanceof Object && tableData !== null) {
                 // Initialize the DataTable and store the instance
+                const tableSelector = `#grid_${elementId}`;
 
                 // check see if its element data
                 if (tableData.data === null) {
-                    
-                    $(`#grid_${elementId}`).prepend(`<caption style='font-size:16px;'>${tableData.table.caption}</caption>`);
-                    $(`#grid_${elementId}`).find('caption').remove();
+
+                    if ($.fn.DataTable.isDataTable(tableSelector)) {
+                        $(tableSelector).DataTable().clear().destroy();
+                    }
+
+                    $(tableSelector).empty().removeAttr('style'); // Clear all content
+
+                    // Add new caption
+                    $(tableSelector).prepend(`<caption style='font-size:16px;'>${tableData.table.caption}</caption>`);
 
                     const tableInstance = $('#grid_' + elementId).DataTable({
-
                         fixedHeader: true,
                         buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
                         responsive: true,
@@ -421,6 +427,9 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                         scrollCollapse: true,
                         bDestroy: true
                     });
+
+                    // Redraw the table
+                    tableInstance.draw();
 
                     dataTableInstances.push(tableInstance); // Store the instance in the array
 

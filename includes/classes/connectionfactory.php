@@ -1,14 +1,15 @@
 <?php
- 
+
 //Ps. Do not PASS NULL parameters
 //Ps. Do not concat NULL VARIABLES in SPs
-class ConnectionFactory {
+class ConnectionFactory
+{
 
     private static $factory;
-  
+
     private $stmt;
     private static $instances = [];
-    private static $key ;
+    private static $key;
 
     private $host = DB_SERVER;
     private $dbName = DB_DATABASE;
@@ -21,24 +22,26 @@ class ConnectionFactory {
     public $dateFields = array();
     public static $error;
     public static $allrows;
-    private $AutoCommit =false;
+    private $AutoCommit = false;
 
     //  public static $report_fields = array(); // THis array contains fields /columns selected from the report interface
     public $keyFields;
 
- 
-    public function setAutoCommit($commit = false){
+
+    public function setAutoCommit($commit = false)
+    {
         $this->AutoCommit = $commit;
     }
 
-    public function __construct() {
+    public function __construct()
+    {
 
-       self::$key = md5($this->host .$this->dbName .$this->user . $this->pass);
-       $this->connect();      
-     
+        self::$key = md5($this->host . $this->dbName . $this->user . $this->pass);
+        $this->connect();
     }
-    
-    private function connect() {
+
+    private function connect()
+    {
         $dsn = "mysql:host={$this->host};dbname={$this->dbName}";
         $options = [
             PDO::ATTR_PERSISTENT => false,
@@ -50,20 +53,23 @@ class ConnectionFactory {
         self::$instances[self::$key] = new PDO($dsn, $this->user, $this->pass, $options);
     }
 
-    public static function getInstance(){
-    
+    public static function getInstance()
+    {
+
         if (!isset(self::$instances[self::$key])) {
             $factory  = new self();
         }
 
         return $factory;
     }
-    
-    public function query($query) {
+
+    public function query($query)
+    {
         $this->stmt = self::$instances[self::$key]->prepare($query);
     }
 
-    public function bindValue($param, $value, $type = null) {
+    public function bindValue($param, $value, $type = null)
+    {
         if (is_null($type)) {
 
             switch (true) {
@@ -87,7 +93,8 @@ class ConnectionFactory {
         $this->stmt->bindValue($param, $value, $type);
     }
 
-    public function execute() {
+    public function execute()
+    {
 
         try {
             $results  = $this->stmt->execute();
@@ -99,7 +106,8 @@ class ConnectionFactory {
 
     // get column names of table
     // Note. May return error if table doesnot have Primary Keys
-    public function preparefieldList($cTable = '', $preparefieldlist = false) {
+    public function preparefieldList($cTable = '', $preparefieldlist = false)
+    {
 
         // check see if database uis defined
         if (!defined('DB_DATABASE')) {
@@ -133,7 +141,7 @@ class ConnectionFactory {
         // get all date fields we shall need to identify them when saving date and converting it to mysql format
         foreach ($temparray as $key => $val) {
 
-            if (($val['column_type']??'')== 'date') {
+            if (($val['column_type'] ?? '') == 'date') {
                 $this->dateFields[] = $val['column_name'];
             }
         }
@@ -143,7 +151,7 @@ class ConnectionFactory {
             $fields_array = call_user_func_array('array_merge', $fieldsTemp);
 
             // set '' as default value
-            return array_map(function($val) {
+            return array_map(function ($val) {
                 return '';
             }, $fields_array);
         } else {
@@ -153,7 +161,8 @@ class ConnectionFactory {
 
     // get primary keys 
     // This function may return an error message of table does not ave a primary key
-    private function getPrimaryKeys($cTable) {
+    private function getPrimaryKeys($cTable)
+    {
 
         $this->stmt = self::$instances[self::$key]->prepare("SELECT k.COLUMN_NAME FROM information_schema.TABLE_CONSTRAINTS t JOIN information_schema.KEY_COLUMN_USAGE k USING (CONSTRAINT_NAME, TABLE_SCHEMA, TABLE_NAME) WHERE t.CONSTRAINT_TYPE = 'PRIMARY KEY' AND t.TABLE_SCHEMA =:table_schema AND t.TABLE_NAME =:table_name");
         $this->stmt->bindValue(":table_name", $cTable);
@@ -166,14 +175,15 @@ class ConnectionFactory {
 
     // get entire result set
     //  FOR NOW WE CAN ONLY FEATH 2 RECORD SETS
-    public function resultset() {
+    public function resultset()
+    {
 
         try {
 
             $this->execute();
             $status = true;
             $nCount = 1;
-        //    $allrows = array();
+            //    $allrows = array();
             do {
 
                 $colcount = $this->stmt->columnCount();
@@ -190,58 +200,65 @@ class ConnectionFactory {
                     $status = $this->stmt->nextRowset();
                 endif;
             } while ($status);
-
         } catch (Exception $ex) {
             throw $ex;
         }
 
-        if(!isset($allrows)){
+        if (!isset($allrows)) {
             return array();
-        }elseif (count($allrows) > 1){
+        } elseif (count($allrows) > 1) {
             //   $this->stmt->$multiplerowsets =true;
             return $allrows;
-        }else{
+        } else {
             //  $this->stmt->$multiplerowsets =false;
             return $allrows[0];
         }
     }
 
-    public function single() {
+    public function single()
+    {
         $this->execute();
         return $this->stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function rowCount() {
+    public function rowCount()
+    {
         return $this->stmt->rowCount();
     }
 
-    public function lastInsertId() {
+    public function lastInsertId()
+    {
         return self::$instances[self::$key]->lastInsertId();
     }
 
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         if (!self::$instances[self::$key]->inTransaction()) {
             return self::$instances[self::$key]->beginTransaction();
         }
     }
 
-    public function endTransaction() {
+    public function endTransaction()
+    {
         if (self::$instances[self::$key]->inTransaction()) {
             return self::$instances[self::$key]->commit();
         }
     }
 
-    public function cancelTransaction() {
+    public function cancelTransaction()
+    {
         if (self::$instances[self::$key]->inTransaction()) {
             return self::$instances[self::$key]->rollBack();
         }
     }
 
-    public function debugDumpParams() {
+    public function debugDumpParams()
+    {
         return $this->stmt->debugDumpParams();
     }
 
-    public function queryError() {
+    public function queryError()
+    {
         $this->qError = self::$instances[self::$key]->errorInfo();
         if (!is_null($qError[2])) {
             echo $qError[2];
@@ -250,12 +267,13 @@ class ConnectionFactory {
 
     // this is used to insert values
     //public function SQLInsert($valuesToInsert, $table){
-    public function SQLInsert($valuesToInsert, $Autocommit = true) {
+    public function SQLInsert($valuesToInsert, $Autocommit = true)
+    {
 
         try {
 
             // check see if we are committing transaction right away
-          //  $this->AutoCommit = $Autocommit;
+            //  $this->AutoCommit = $Autocommit;
 
             // get tables to insert into
             $tables = array_keys($valuesToInsert);
@@ -269,7 +287,7 @@ class ConnectionFactory {
                 // check see if we have multiple rows	
                 // e.g array(array())- an array of daata containing another array
                 // and get table field names
-                if ($theData[0]??false) {
+                if ($theData[0] ?? false) {
                     $fieldnames = array_keys($valuesToInsert[$tname][0]);
                 } else {
                     $fieldnames = array_keys(call_user_func_array('array_merge', array($valuesToInsert[$tname])));
@@ -292,7 +310,7 @@ class ConnectionFactory {
 
                 // check see if we have multiple rows	
                 // eg array(array())
-                if (($theData[0]??false)) {
+                if (($theData[0] ?? false)) {
 
                     foreach ($theData as $key => $rowitem) {
                         foreach ($rowitem as $column => $value) {
@@ -336,180 +354,181 @@ class ConnectionFactory {
     }
 
     // public function SQLUpdate($tname, $fieldToChange, $fieldValue, $idField, $idValue){ 
-        public function SQLUpdate($valuesToInsert, $Autocommit) {
+    public function SQLUpdate($valuesToInsert, $Autocommit)
+    {
 
-            // check see if we are committing transaction right away
-            $this->AutoCommit = $Autocommit;
-    
-            // get tables to insert into
-            $tables = array_keys($valuesToInsert);
-    
-    
-            // check see if we have already an active transaction
-            if (!self::$instances[self::$key]->inTransaction()) {
-    
-                self::$instances[self::$key]->beginTransaction();
+        // check see if we are committing transaction right away
+        $this->AutoCommit = $Autocommit;
+
+        // get tables to insert into
+        $tables = array_keys($valuesToInsert);
+
+
+        // check see if we have already an active transaction
+        if (!self::$instances[self::$key]->inTransaction()) {
+
+            self::$instances[self::$key]->beginTransaction();
+        }
+
+
+        foreach ($tables as $key => $tname) {
+            if (count($this->ReferenceFieldList[$tname]) == 0) {
+                $this->ReferenceFieldList[$tname] = $this->preparefieldList($tname, true);
             }
-    
-    
-            foreach ($tables as $key => $tname) {
-                if (count($this->ReferenceFieldList[$tname]) == 0) {
-                    $this->ReferenceFieldList[$tname] = $this->preparefieldList($tname, true);
-                }
-                $wfield = array_keys($this->ReferenceFieldList[$tname]);
-    
-                //  prepare field list to insert it where clause
-                if (count($wfield) > 0) {
-                    array_walk_recursive($wfield, function(&$item, $key) {
-                        $item = $item . '=:' . $item;
-                    });
-    
-                    $place_holder_clause_fieldslist = implode(" AND ", $wfield);
-                }
-    
-    
-                if (count($wfield) <= 0) {
-                    $this->getPrimaryKeys($tname); // for some reason this statement takes alot of time in this function
-                }
-    
-                // create an array with fieldname elements 
-                $afield = array_keys($valuesToInsert[$tname]);
-    
-    
-                // remove primary ket in fieldlist-we shoul dnot update it
-                if (($key = array_search($this->keyFields[$tname], $afield)) !== false) {
-                    unset($afield[$key]);
-                }
-    
-                // prepare field list to insert in update clause
-                if (count($afield) > 0) {
-                    array_walk_recursive($afield, function(&$item, $key) {
-                        $item = $item . '=:' . $item;
-                    });
-    
-                    $place_holder_fieldslist = implode(",", $afield);
-                }
-    
-    
-                if (count($this->ReferenceFieldList) > 0) {
-    
-                    $this->stmt = self::$instances[self::$key]->prepare(sprintf("UPDATE " . $tname . " SET " . $place_holder_fieldslist . " WHERE " . $place_holder_clause_fieldslist));
+            $wfield = array_keys($this->ReferenceFieldList[$tname]);
+
+            //  prepare field list to insert it where clause
+            if (count($wfield) > 0) {
+                array_walk_recursive($wfield, function (&$item, $key) {
+                    $item = $item . '=:' . $item;
+                });
+
+                $place_holder_clause_fieldslist = implode(" AND ", $wfield);
+            }
+
+
+            if (count($wfield) <= 0) {
+                $this->getPrimaryKeys($tname); // for some reason this statement takes alot of time in this function
+            }
+
+            // create an array with fieldname elements 
+            $afield = array_keys($valuesToInsert[$tname]);
+
+
+            // remove primary ket in fieldlist-we shoul dnot update it
+            if (($key = array_search($this->keyFields[$tname], $afield)) !== false) {
+                unset($afield[$key]);
+            }
+
+            // prepare field list to insert in update clause
+            if (count($afield) > 0) {
+                array_walk_recursive($afield, function (&$item, $key) {
+                    $item = $item . '=:' . $item;
+                });
+
+                $place_holder_fieldslist = implode(",", $afield);
+            }
+
+
+            if (count($this->ReferenceFieldList) > 0) {
+
+                $this->stmt = self::$instances[self::$key]->prepare(sprintf("UPDATE " . $tname . " SET " . $place_holder_fieldslist . " WHERE " . $place_holder_clause_fieldslist));
+            } else {
+
+                $this->stmt = self::$instances[self::$key]->prepare(sprintf("UPDATE " . $tname . " SET " . $place_holder_fieldslist . " WHERE " . $this->keyFields[$tname] . "=:" . $this->keyFields[$tname]));
+            }
+
+            // post data
+            $theData = $valuesToInsert[$tname];
+
+            // check see if its date -chnage it to MySQl format
+            foreach ($theData as $column => $value) {
+
+                if (in_array($column, $this->dateFields)) {
+                    $this->stmt->bindValue(":" . $column, $this->changeDateFromPageToMySQLFormat($value, false));
                 } else {
-    
-                    $this->stmt = self::$instances[self::$key]->prepare(sprintf("UPDATE " . $tname . " SET " . $place_holder_fieldslist . " WHERE " . $this->keyFields[$tname] . "=:" . $this->keyFields[$tname]));
+                    $this->stmt->bindValue(":" . $column, $value);
                 }
-    
-                // post data
-                $theData = $valuesToInsert[$tname];
-    
-                // check see if its date -chnage it to MySQl format
-                foreach ($theData as $column => $value) {
-    
+            }
+
+            // update where clause
+            if (count($wfield) >= 0) {
+
+                $theDataWhere = $this->ReferenceFieldList[$tname];
+
+                foreach ($theDataWhere as $column => $value) {
+
                     if (in_array($column, $this->dateFields)) {
                         $this->stmt->bindValue(":" . $column, $this->changeDateFromPageToMySQLFormat($value, false));
                     } else {
                         $this->stmt->bindValue(":" . $column, $value);
                     }
                 }
-    
-                // update where clause
-                if (count($wfield) >= 0) {
-    
-                    $theDataWhere = $this->ReferenceFieldList[$tname];
-    
-                    foreach ($theDataWhere as $column => $value) {
-    
-                        if (in_array($column, $this->dateFields)) {
-                            $this->stmt->bindValue(":" . $column, $this->changeDateFromPageToMySQLFormat($value, false));
-                        } else {
-                            $this->stmt->bindValue(":" . $column, $value);
-                        }
-                    }
-                }
-    
-                $this->stmt->execute();
-    
-                $this->ReferenceFieldList = array();
             }
-    
-            //$this->stmt->closeCursor();
-            // commit data to database
-            if ($this->AutoCommit) {
-                self::$instances[self::$key]->commit();
-                $this->stmt->closeCursor();
-    
-                return true;
+
+            $this->stmt->execute();
+
+            $this->ReferenceFieldList = array();
+        }
+
+        //$this->stmt->closeCursor();
+        // commit data to database
+        if ($this->AutoCommit) {
+            self::$instances[self::$key]->commit();
+            $this->stmt->closeCursor();
+
+            return true;
+        } else {
+            //$this->stmt->closeCursor();	
+            return false;
+        }
+    }
+
+
+    public function SQLDelete($table, $idTable = '', $idValue = '')
+    {
+        try {
+            $fieldlist = $this->ReferenceFieldList[$table] ?? [];
+
+            // If there are reference fields, prepare the WHERE clause
+            if (!empty($fieldlist)) {
+                $wfield = array_keys($fieldlist);
+                array_walk(
+                    $wfield,
+                    function (&$item) {
+                        $item .= '=:' . $item;
+                    }
+                );
+                $place_holder_clause_fieldslist = implode(
+                    " AND ",
+                    $wfield
+                );
             } else {
-                //$this->stmt->closeCursor();	
-                return false;
+                // If no reference fields, determine primary key
+                if (empty($idTable)) {
+                    $this->getPrimaryKeys($table);
+                    $idTable = $this->keyFields[$table];
+                }
+                $place_holder_clause_fieldslist = "$idTable = :value";
             }
-        }
-    
 
-        public function SQLDelete($table, $idTable = '', $idValue = '') {
+            // Prepare the DELETE statement
+            $sql = sprintf("DELETE FROM %s WHERE %s", $table, $place_holder_clause_fieldslist);
+            $this->stmt  = self::$instances[self::$key]->prepare($sql);
 
-            try {
-    
-                $fieldlist = $this->ReferenceFieldList[$table];
-    
-                if (count($fieldlist) > 0) {
-                    $wfield = array_keys($fieldlist);
-                }
-    
-                if (count($wfield) > 0) {
-                    array_walk_recursive($wfield, function(&$item, $key) {
-                        $item = $item . '=:' . $item;
-                    });
-                    $place_holder_clause_fieldslist = implode(" AND ", $wfield);
-                } else {
-                    if ($idTable == "") {
-                        $this->getPrimaryKeys($table);
-                        $idTable = $this->keyFields[$table];
-                    }
-                }
-    
-                if (count($this->ReferenceFieldList) > 0) {
-    
-    
-                    $this->stmt = self::$instances[self::$key]->prepare(sprintf("DELETE FROM " . $table . " WHERE " . $place_holder_clause_fieldslist));
-    
-                    // check see if we have already an active transaction
-                    if (!self::$instances[self::$key]->inTransaction()) {
-                        self::$instances[self::$key]->beginTransaction();
-                    }
-    
-                    // update where clause
-                    if (count($wfield) >= 0) {
-    
-                        $theDataWhere = $this->ReferenceFieldList[$table];
-    
-                        foreach ($theDataWhere as $column => $value) {
-    
-                            if (in_array($column, $this->dateFields)) {
-                                $this->stmt->bindValue(":" . $column, $this->changeDateFromPageToMySQLFormat($value, false));
-                            } else {
-                                $this->stmt->bindValue(":" . $column, $value);
-                            }
-                        }
-                    }
-                } else {
-    
-                    $query = sprintf("DELETE FROM %s WHERE %s = :value", $table, $idTable);
-                    $this->stmt = self::$instances[self::$key]->prepare($query);
-                    $this->stmt->bindParam(":value", $idValue);
-                }
-    
-                $this->stmt->execute();
-    
-                if ($this->AutoCommit) {
-                    self::$instances[self::$key]->commit();
-                    $this->stmt->closeCursor();
-                }
-            } catch (Exception $e) {
-                throw $e;
+            // Begin transaction if not already in one
+            if (!self::$instances[self::$key]->inTransaction()) {
+                self::$instances[self::$key]->beginTransaction();
             }
+
+            // Bind values based on the reference fields
+            if (!empty($fieldlist)) {
+                foreach ($fieldlist as $column => $value) {
+                    $boundValue = in_array($column, $this->dateFields)
+                        ? Common::changeDateFromPageToMySQLFormat($value, false)
+                        : $value;
+                    $this->stmt->bindValue(":" . $column, $boundValue);
+                }
+            } else {
+                $this->stmt->bindParam(":value", $idValue);
+            }
+
+            // Execute the statement
+            $this->stmt->execute();
+
+            // Check if any rows were affected         
+            self::$instances[self::$key]->commit();           
+            
+        } catch (Exception $e) {
+            // Rollback transaction on error if needed
+            if (self::$instances[self::$key]->inTransaction()) {
+                self::$instances[self::$key]->rollBack();
+                $this->stmt->closeCursor();
+            }
+            throw $e;
         }
-    
+    }
+
 
     /**
      * This function is used to call stored procedures
@@ -517,7 +536,8 @@ class ConnectionFactory {
      * $parameters: Parameters passed from the interface
      *  default value for column addtemptable for some sps
      */
-    public function sp_call($parameters, $format = '') {
+    public function sp_call($parameters, $format = '')
+    {
 
         switch ($parameters['code']) {
 
@@ -647,19 +667,19 @@ class ConnectionFactory {
                 $var_sp = 'sp_get_savers_statement';
                 break;
 
-            case 'SAVBALRPT':// Savings Balnces Report
+            case 'SAVBALRPT': // Savings Balnces Report
                 $var_sp = 'sp_get_savings_balances_detail';
                 break;
 
-            case 'SAVBALS':// Savings Balnces Report
+            case 'SAVBALS': // Savings Balnces Report
                 $var_sp = 'sp_get_savings_balances';
                 break;
 
-            case 'SAVBALSBYID':// Savings Balnces Report
+            case 'SAVBALSBYID': // Savings Balnces Report
                 $var_sp = 'sp_get_savings_balances_by_id';
                 break;
 
-            case 'SAVTILL':// Savings Tillsheet
+            case 'SAVTILL': // Savings Tillsheet
                 $var_sp = 'sp_get_savings_tillsheet';
                 break;
 
@@ -674,7 +694,7 @@ class ConnectionFactory {
                 break;
 
             case 'GUARANTORS': // Report on guarantors
-                $var_sp = 'sp_get_loan_guarantors';                
+                $var_sp = 'sp_get_loan_guarantors';
                 break;
 
             case 'UPDLOANSETTINGS': // Update loan settings
@@ -714,7 +734,7 @@ class ConnectionFactory {
                 $var_sp = 'sp_get_balance_sheet';
                 break;
 
-            case 'GENERATEID':// generate ID
+            case 'GENERATEID': // generate ID
                 $var_sp = 'sp_generate_id_wrapper';
                 break;
 
@@ -726,7 +746,7 @@ class ConnectionFactory {
                 endif;
                 break;
 
-            case 'REVERSETRAN':// Reverse Transaction
+            case 'REVERSETRAN': // Reverse Transaction
                 $var_sp = 'sp_reverse_transactions_wrapper';
                 break;
 
@@ -838,16 +858,16 @@ class ConnectionFactory {
         switch ($parameters['code']) {
 
             case 'PORTRSK': // Portfolio At Risk
-            case 'SAVBALRPT':// Savings Balnces Report
+            case 'SAVBALRPT': // Savings Balnces Report
                 $parameters['addtemptable'] = 1;
-                break;         
+                break;
 
             case 'CLIENTRPTS': // Client Report
                 $parameters['addtemptable'] = 0;
-                break;     
+                break;
             case 'SAVSTAT': // Savers Statement
             case 'RECALINT': // 
-            
+
             case 'OUTBAL': // Loan Outstanding Balances
             case 'DISBURSEMENTS': // Disbursements
             case 'MLLCARD': // MUltiple Loan ledgercard
@@ -867,7 +887,7 @@ class ConnectionFactory {
         $field_list_str = '';
         $nCount = 1;
         $nlen = count($sp_meta_data);
-       
+
         foreach ($sp_meta_data as $key => $value) {
             if ($nCount != $nlen) {
                 $field_list_str .= ":" . $value['parameter_name'] . ",";
@@ -902,8 +922,10 @@ class ConnectionFactory {
             return $recordset_array;
         }
     }
-   
-    public function SQLSelect($query = '', $returnresults = true) {
+
+    public function SQLSelect($query = '', $returnresults = true)
+    {
+
         try {
 
             $this->stmt = self::$instances[self::$key]->prepare($query);
@@ -914,8 +936,9 @@ class ConnectionFactory {
 
                 $array_results = $this->resultset();
 
-                if (count($array_results) > 0) {
-
+                if (
+                    count($array_results) > 0
+                ) {
                     return $array_results;
                 } else {
                     return array(array('1' => '1'));
@@ -923,24 +946,27 @@ class ConnectionFactory {
             } else {
                 $this->stmt->execute();
             }
-        } catch (Exception $e) {           
+        } catch (Exception $e) {
             throw $e;
         }
     }
 
-    public function RowsAffected() {
+    public function RowsAffected()
+    {
         return self::$instances[self::$key]->Rows;
     }
 
     // decode data frm Jason
-    public function json_decodeData($cString) {
+    public function json_decodeData($cString)
+    {
 
         $jason = preg_replace("{\\\}", "", $cString);
 
         return json_decode($jason, true);
     }
 
-    public function prepareData($tables, $data) {
+    public function prepareData($tables, $data)
+    {
 
         $objects = json_decodeData($data);
         // $ob is null because the json cannot be decoded
@@ -987,5 +1013,4 @@ class ConnectionFactory {
 
         return $this->finaldata;
     }
-
-}?>
+}
