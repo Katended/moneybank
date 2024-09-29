@@ -33,60 +33,17 @@ $_parent = basename(__FILE__);
         });
     });
 
-    $("#radioedit").click(function() {
-
-        act = 'EDIT';
-        $('#action').val('update');
-
-        $("#PAYMODES, #txtvoucher, #txtamount").prop("disabled", true);
-        searchtext = $('input[name=radiosclient]:checked').val() + 'SAVACC';
-        // }          
-
-        showValues('frmsavaccounts', 'gridata', 'search', searchtext, 'load.php?act=' + act);
-
-    });
-
-    $("#radioadd").click(function() {
-        act = 'ADD';
-        $('#action').val('add');
-        $("#PAYMODES, #txtvoucher, #txtamount").prop("disabled", false);
-        searchtext = $('input[name=radiosclient]:checked').val();
-        showValues('frmsavaccounts', 'gridata', 'search', searchtext, 'load.php?act=' + act);
-
-    });
-
-    function getinfo(frm_id, theid, action, pagedata, urlpage, element) {
-
-        $("#action").val(action);
-
-        if (action === 'add') {
-            action = 'loadform';
-            urlpage = 'load.php';
-        }
-        $("#grid_gridata").empty();
-
-        // showValues(frm,theid,action,pageparams,urlpage,keyparam)
-        showValues('frmsavaccounts', theid, action, pagedata, urlpage, element).done(
-
-            function() {
-                $(function() {
-                    populateForm('frmsavaccounts', jsonObj['data']);
-                });
-            });
-    }
-
     // Listen for click events on the entire document
     document.addEventListener('click', function(event) {
 
         // Check if the clicked element is a checkbox with the class 'row-checkbox'
         if (event.target.matches('input[type="checkbox"].row-checkbox')) {
-            const checkboxValue = event.target;
-            loadSavingAccount();
+            if (event.target.checked) loadSavingAccounts();
         }
 
     });
 
-    function loadSavingAccount() {
+    function loadSavingAccounts() {
 
         var tags = document.getElementsByName('radiosclient');
         var TXTPAGE = '';
@@ -186,12 +143,12 @@ getlables("20,1515,1403,271,1751,21,1516,24,300,1161,1024,373,299,317,1197,1096,
             var data1 = JSON.stringify(JSON.parse('{"pageinfo":' + pageinfo + "}"));
 
             showValues('frmsavaccounts', '', $('#action').val(), data1, 'addedit.php', $('#theid').val()).done(function() {
-
-                loadSavingAccount();
-                resetFormExcluding("frmsavaccounts", ["client_idno", "action", "branch_code"])
+                $("#btnSave").prop('disabled', false);
+                loadSavingAccounts();
+                //  resetFormExcluding("frmsavaccounts", ["client_idno", "action", "branch_code"]);
             });
 
-            $(this).prop('disabled', false);
+
         });
 
     });

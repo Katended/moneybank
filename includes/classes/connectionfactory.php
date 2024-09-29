@@ -936,8 +936,7 @@ class ConnectionFactory
 
                 $array_results = $this->resultset();
 
-                if (
-                    count($array_results) > 0
+                if (count($array_results) > 0
                 ) {
                     return $array_results;
                 } else {

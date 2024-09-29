@@ -69,8 +69,8 @@ Class Clients extends ProductConfig {
     }
 
 
-     /**
-     * updateClient
+    /**
+     * updateRenameKeys
      * 
      * This function is used to update keys
      * @param array $formdata: Data from the form    

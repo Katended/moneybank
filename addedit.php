@@ -1940,12 +1940,22 @@ Common::$lablearray['E01'] = '';
         
         break;
     case 'frmsavaccounts':
+
+        Common::getlables("1752,1040,1753,1199,218,1521,1435,1199,185,1198", "", "", Common::$connObj);
+
         switch ($_POST['action']) {
 
             case 'add':
             case 'update':
 
-                Common::getlables("1752,1040,1199,218,1521,1435,1199,185,1198", "", "", Common::$connObj);
+
+                $prodid_array = $Conn->SQLSelect("SELECT product_prodid FROM " . TABLE_SAVACCOUNTS . " WHERE  client_idno='" . $formdata['client_idno'] . "' AND product_prodid='" . $formdata['product_prodid'] . "'");
+
+
+                if (isset($prodid_array[0]['product_prodid'])) {
+                    echo Common::createResponse('info', Common::$lablearray['1753']);
+                    exit();
+                }
 
                 if ($formdata['branch_code'] == "") {
                     // getlables("1521");
@@ -1972,45 +1982,29 @@ Common::$lablearray['E01'] = '';
                 $formdata['txtrepaysavtamount'] = Common::number_format_locale_compute($formdata['txtrepaysavtamount']);
 
                 // replace invalid key
-
-                Common::replace_key_function($formdata, 'txtOpenDate', 'DATE');
-                Common::replace_key_function($formdata, 'txtvoucher', 'VOUCHER');
-                Common::replace_key_function($formdata, 'txtamount', 'AMOUNT');
-                Common::replace_key_function($formdata, 'product_prodid', 'PRODUCT_PRODID');
-                Common::replace_key_function($formdata, 'PAYMODES', 'MODE');
-                Common::replace_key_function($formdata, 'CMBFREQUENCY', 'FREQ');
-                Common::replace_key_function($formdata, 'txtrepaysavtamount', 'RSAMOUNT');
-                Common::replace_key_function($formdata, 'LOANPROD', 'LPRODID');
-                Common::replace_key_function($formdata, 'client_idno', 'CLIENTIDNO');
-                Common::replace_key_function($formdata, 'branch_code', 'BRANCHCODE');
-
+                Savings::updateRenameKeys($formdata);
+               
                 $formdata['REPAYSAVAMOUNT']= $formdata['REPAYSAVAMOUNT']??0;
                 $formdata['TTYPE'] = $formdata['TTYPE']??'';
 
-                if($formdata['MODE'] == 'CA'){
-                    Common::replace_key_function($formdata, 'cashaccounts_code', 'GLACC'); 
-                  
-                }
-                
-                if ($formdata['MODE'] == 'CQ') {
-                    Common::replace_key_function($formdata, 'cheques_no', 'CHEQNO');
 
+                if ($formdata['MODE'] == 'CQ') {
+                   
                     if ($formdata['CHEQNO'] == "") {                       
                         echo Common::createResponse('info', Common::$lablearray['185']);
-                      //  echo "INFO." . $lablearray['185'];
+
                         exit();
                     }
 
-                    Common::replace_key_function($formdata, 'bankbranches_id', 'BACCNO');
+                  
                 }
 
                 $formdata['TTYPE'] = (($formdata['AMOUNT'] > 0) ? 'SD' : '' );
 
                 if ($formdata['REPAYSAVAMOUNT'] > 0 && $formdata['FREQ'] == "") {
 
-                  //  getlables("1198");
                     echo Common::createResponse('ok', Common::$lablearray['1198']);
-                  //  echo "MSG:" . $lablearray['1198'];
+                 
                     exit();
                 }
 
@@ -2024,17 +2018,13 @@ Common::$lablearray['E01'] = '';
                 if($acc_array[0]['productconfig_value']=='1'):
                     $formdata['SAVACC'] = $formdata['CLIENTIDNO'];                
                 else: 
-                     $formdata['SAVACC'] = Common::generateID($formdata['CLIENTIDNO'], 'S','SAVACC',$formdata['CLIENTIDNO']);                
-                endif;   
+                     $formdata['SAVACC'] = Common::generateID($formdata['CLIENTIDNO'], 'S','SAVACC',$formdata['CLIENTIDNO']);
+                endif;  
                      
                
                 $formdata['CTYPE'] = Common::getClientType($formdata['CLIENTIDNO']);
             
-                // if ($formdata['action'] == 'update') {
-                //     echo "MSG:" . Common::$lablearray['E01'];
-                //     break 2;
-                // }
-                
+               
                 $formdata['TTYPE']='OSA';
                 
                 if($formdata['AMOUNT']>0){                    
@@ -2045,11 +2035,11 @@ Common::$lablearray['E01'] = '';
                 Savings::updateSavings($form_data);
 
                 if (Common::$lablearray['E01'] != "") {
-                    echo Common::createResponse('ok', Common::$lablearray['E01']);                
-                  //  echo 'ERR '.Common::$lablearray['E01'];
+                    echo Common::createResponse('fail', Common::$lablearray['E01']);                
+
                     exit();
                 }
-                //getlables("218");
+               
                 echo Common::createResponse('ok', $lablearray['218']);
                 break 2;
 
@@ -2063,7 +2053,7 @@ Common::$lablearray['E01'] = '';
 
                 Savings::getSavingsDeleteAccount($_POST['keyparam']);
 
-                echo Common::createResponse('ok', $lablearray['218']);
+                echo Common::createResponse('ok', Common::$lablearray['218']);
                 
                 exit();
 

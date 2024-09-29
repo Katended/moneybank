@@ -192,8 +192,8 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             $(elementId).append(`<div class='notediv ${cssClass}'>${message}<div class='close-btn'>&nbsp;x</div></div>`);
 
             // If the state suggests fading out, apply fadeOut effect after a delay
-            const fadeOutDelay = (state.toUpperCase() === 'ERR' || state.toUpperCase() === 'ERROR') ? 9000 : 6000;
-            $(".notediv").last().fadeOut(fadeOutDelay, function() {
+            //  const fadeOutDelay = (state.toUpperCase() === 'ERR' || state.toUpperCase() === 'ERROR') ? 9000 : 6000;
+            $(".notediv").last().fadeOut(17000, function() {
                 $(this).detach();
             });
         }
@@ -218,7 +218,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         };
 
 
-        const showValues = (frm, elementId, action, pageparams, urlpage, keyparam, search, canInvokeCallback) => {
+        const showValues = (frm, elementId, action, pageparams, urlpage, keyparam, search, callback) => {
             const dfrd3 = jQuery.Deferred();
 
             // Set default page parameters
@@ -269,13 +269,15 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                         processResponseData(data, frm, action, elementId, dfrd3);
 
-                        // Call showValues again if action is 'edit' or 'add'
-                        if (canInvokeCallback) {
-                            showValues(frm, elementId, 'search', pageparams, 'load.php', keyparam, search);
+                        // Check if the provided argument is a function
+                        if (typeof callback === 'function') {
+                            callback();
                         }
 
                         $("#ajaxSpinnerImage").hide();
+
                         return dfrd3.resolve();
+
                     } catch (e) {
                         return dfrd3.resolve();
                         console.error('Invalid JSON:', e);
@@ -314,6 +316,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     case 'err':
                     case 'war':
+                    case 'info':
                         // Display error message
                         displaymessage(frm, jsonObj.message, jsonObj.status);
                         break;

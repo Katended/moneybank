@@ -1,4 +1,4 @@
-    <?php
+<?php
     require_once('includes/application_top.php');
     require_once('includes/classes/GibberishAES.php');
     require_once('includes/classes/productconfig.php');
@@ -134,7 +134,6 @@
             $pageparams = Common::tep_db_prepare_input($_POST['pageparams']);
             $newgrid->queryoptions['pageparams'] = $pageparams;
         }
-
 
         // prepare links
         $actionlinks = Common::prepareLinks($_POST['frmid'], $action, $pageparams);
@@ -1073,6 +1072,7 @@
                 NewGrid::$order = ' ORDER BY savaccounts_account DESC ';
                 NewGrid::$searchcatparam = $pageparams;
                 NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
+                
                 $data = NewGrid::getData();
 
                 echo $data;
@@ -1868,9 +1868,9 @@
         case 'frmsavaccounts':
 
             if (preg_match('[S]', $_POST['keyparam'])):
+                
                 $savacc_query = tep_db_query("SELECT savaccounts_id,savaccounts_account,product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_SAVACCOUNTS . " WHERE savaccounts_account='" . tep_db_prepare_input($_POST['keyparam']) . "'");
-                $savacc_array = tep_db_fetch_array($savacc_query);
-
+            $savacc_array = tep_db_fetch_array($savacc_query);
                 Common::push_element_into_array($main_array, 'action', 'update');
                 Common::push_element_into_array($main_array, 'keyparam', $savacc_array['savaccounts_id']);
 
@@ -1879,8 +1879,8 @@
                 Common::push_element_into_array($main_array, 'txtsavaccount', $savacc_array['savaccounts_account']);
 
             else:
-                $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_lastname) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);
-                $savacc_array = tep_db_fetch_array($savacc_query);
+
+            $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_lastname) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);              
                 Common::push_element_into_array($main_array, 'client_idno', $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'InfoBox', $savacc_array[0]['name'] . " : " . $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'action', 'add');

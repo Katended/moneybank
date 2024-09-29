@@ -33,6 +33,51 @@ Class Savings extends ProductConfig {
     }
 
     /**
+     * updateRenameKeys
+     * 
+     * This function is used to update keys
+     * @param array $formdata: Data from the form    
+     */
+    public static function updateRenameKeys(&$formdata, $ctype = '')
+    {
+
+        $replacements = [
+            'txtOpenDate' => 'DATE',
+            'txtvoucher' => 'VOUCHER',
+            'txtamount' => 'AMOUNT',
+            'product_prodid' => 'PRODUCT_PRODID',
+            'PAYMODES' => 'MODE',
+            'CMBFREQUENCY' => 'FREQ',
+            'txtrepaysavtamount' => 'RSAMOUNT',
+            'LOANPROD' => 'LPRODID',
+            'client_idno' => 'CLIENTIDNO',
+            'branch_code' => 'BRANCHCODE',
+            'cashaccounts_code' => 'GLACC',
+            'cheques_no' => 'CHEQNO',
+            'bankbranches_id' => 'BACCNO',
+
+        ];
+
+        $dateFields = ['DATE'];
+
+        foreach ($formdata as $key => $value) {
+
+            if (isset($replacements[$key])):
+                $formdata[$replacements[$key]] = $value;
+
+                if (in_array($replacements[$key], $dateFields)) {
+                    $formdata[$replacements[$key]] = !empty($formdata[$replacements[$key]])
+                        ? Common::changeDateFromPageToMySQLFormat($value)
+                        : '';
+                }
+                unset($formdata[$key]);
+
+            endif;
+        }
+
+        return $formdata;
+    }
+    /**
      * getSavingsAccounts
      * 
      * This function is used to get Savings Accounts 
@@ -45,7 +90,7 @@ Class Savings extends ProductConfig {
         if (isset($acc_array[0][1])):
             return 0;
         else:
-            return $acc_array['count'];
+            return 1;
         endif;
     }
 

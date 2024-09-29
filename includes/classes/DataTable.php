@@ -67,7 +67,9 @@ class DataTable
 						htmlspecialchars($function, ENT_QUOTES)
 					);
 
-					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',true)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $elementId, 'Delete', $pageparams, $dataValue);
+					$callbackFunction = sprintf("() => {showValues('%s','%s','%s','%s','load.php','%s','',false)}", $formId, $elementId, 'search', $pageparams, self::$request['keyparam']);
+
+					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',%s)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $elementId, 'Delete', $pageparams, $dataValue, $callbackFunction);
 				}
 
 				if (isset($column['formatter'])) { // Is there a formatter?
