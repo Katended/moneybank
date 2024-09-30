@@ -364,9 +364,14 @@ Class Savings extends ProductConfig {
                 $ctype1 = (isset($value['CLIENTIDNO']) ? Common::getClientType($value['CLIENTIDNO']) : Common::getClientType($value['SAVACC']));
 
                 //CHECK SEE IF WE ARE POSTING TO SLs ONLY
-               // if ($value['POSTTOSL']):
+                // if ($value['POSTTOSL']):
+                if ($value['AMOUNT'] > 0) {
                     $value['TABLE'] = TABLE_SAVTRANSACTIONS;
                     Bussiness::covertArrayToXML(array($value), false);
+                } else {
+                    continue;
+                }
+                   
                // endif;
             // TEMPORARY DISABLING THIS 21-MAR-2024
             // DO NOT SEE ITS VALUE IN THE MOMOMENT

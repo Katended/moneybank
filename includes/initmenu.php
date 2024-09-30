@@ -831,7 +831,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     }));
                     pLoans.addChild(new MenuSeparator());
                     pLoans.addChild(new MenuItem({
-                        label: "<div style='padding:0;width:12px;height:1px;position:relative;margin;0px;'><?php echo $lablearray['1042']; ?></div><div style='padding:0px;width:4px;float:right;margin:0px;'><img src='/images/icons/page-next.gif' border='0' stle='margin:0px;padding:0px;'></div>",
+                        label: "<div style='padding:0;width:12px;height:1px;position:relative;margin;0px;'><?php echo $lablearray['1042']; ?></div><div style='padding:0px;width:4px;float:right;margin:0px;'><img src='images/icons/page-next.gif' border='0' stle='margin:0px;padding:0px;'></div>",
                         popup: loanrepayoption
 
                     }));
@@ -919,7 +919,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     pAccounting.addChild(new MenuSeparator())
 
                     pAccounting.addChild(new MenuItem({
-                        label: "<div><div style='padding:0;width:10px;height:3px;position:relative;'><?php echo $lablearray['98']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div></div>",
+                        label: "<div><div style='padding:0;width:10px;height:3px;position:relative;'><?php echo $lablearray['98']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div></div>",
                         popup: GlTransactionpop1
 
                     }));
@@ -927,7 +927,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     pAccounting.addChild(new MenuSeparator())
 
                     pAccounting.addChild(new MenuItem({
-                        label: "<div><div style='padding:0;width:10px;height:3px;position:relative;'><?php echo $lablearray['311']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div></div>",
+                        label: "<div><div style='padding:0;width:10px;height:3px;position:relative;'><?php echo $lablearray['311']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div></div>",
                         popup: cashentriespop
 
                     }));
@@ -954,7 +954,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     <?php if (in_array('COA', $modules)) { ?>
                         pAccounting.addChild(new MenuSeparator())
                         pAccounting.addChild(new MenuItem({
-                            label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['109']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div></div>",
+                            label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['109']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div></div>",
                             popup: pchartpop
                         }));
                     <?php } ?>
@@ -1118,7 +1118,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     pSettings.addChild(new MenuSeparator());
                     pSettings.addChild(new MenuItem({
-                        label: "<div><div style='padding:0;width:8px;height:3px;'><?php echo $lablearray['1170']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div></div>",
+                        label: "<div><div style='padding:0;width:8px;height:3px;'><?php echo $lablearray['1170']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div></div>",
                         popup: prodsettingspop
                     }));
 
@@ -1126,7 +1126,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     <?php if (in_array('CASH', $modules)) { ?>
                         pSettings.addChild(new MenuItem({
-                            label: "<div><div style='padding:0;width:8px;height:3px;'><?php echo $lablearray['26']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div></div>",
+                            label: "<div><div style='padding:0;width:8px;height:3px;'><?php echo $lablearray['26']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div></div>",
                             popup: cashaccpop
 
                         }));
@@ -1136,7 +1136,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     pSettings.addChild(new MenuSeparator());
                     pSettings.addChild(new MenuItem({
-                        label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['155']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div>",
+                        label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['155']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div>",
                         popup: bankspop
 
                     }));
@@ -1186,7 +1186,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     }));
 
                     pSettings.addChild(new MenuItem({
-                        label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['159']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div>",
+                        label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['159']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div>",
                         popup: userspop1
                     }));
 
@@ -1194,7 +1194,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     <?php if (in_array('TAX', $modules)) { ?>
                         pSettings.addChild(new MenuSeparator());
                         pSettings.addChild(new MenuItem({
-                            label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['163']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div></div>",
+                            label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['163']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div></div>",
                             popup: taxespop
                         }));
                     <?php } ?>
@@ -1202,7 +1202,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     pSettings.addChild(new MenuSeparator());
                     pSettings.addChild(new MenuItem({
-                        label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['652']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div></div>",
+                        label: "<div><div style='padding:0;width:6px;height:3px;'><?php echo $lablearray['652']; ?></div><div style='padding:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div></div>",
                         popup: currencypop
                     }));
 
@@ -1251,7 +1251,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                     // Modems
                     pSMS.addChild(new MenuItem({
-                        label: "<div><div style='padding:0;width:auto;height:3px;'><?php echo $lablearray['1645']; ?></div><div style='padding:0px;margin:0px;width:4px;float:right;'><img src='/images/icons/page-next.gif' border='0'></div>",
+                        label: "<div><div style='padding:0;width:auto;height:3px;'><?php echo $lablearray['1645']; ?></div><div style='padding:0px;margin:0px;width:4px;float:right;'><img src='images/icons/page-next.gif' border='0'></div>",
                         popup: smspop1
                     }));
 

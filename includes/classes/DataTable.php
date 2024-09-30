@@ -205,8 +205,10 @@ class DataTable
 	{
 		$globalSearch = array();
 		$columnSearch = array();
+
 		$dtColumns = self::pluck(self::$columns, 'dt');
-		if (isset($request['search']) && $request['search']['value'] != '') {
+
+		if (isset($request['search']) && isset($request['search']['value'])) {
 			$str = $request['search']['value'];
 			for ($i = 0, $ien = count($request['columns']); $i < $ien; $i++) {
 				$requestColumn = $request['columns'][$i];
@@ -227,7 +229,7 @@ class DataTable
 				$requestColumn = $request['columns'][$i];
 				//	$columnIdx = array_search( $requestColumn['data'], $dtColumns );
 				$column = self::$columns[$columnIdx];
-				$str = $request['search']['value'];
+				$str = ($request['search']['value']) ?? "";
 				if ($str != '') {
 					$binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
 					$columnSearch[] = "`" . $column['db'] . "` LIKE " . $binding;
