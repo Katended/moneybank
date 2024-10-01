@@ -221,7 +221,16 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
             searchterm = $("input[type=search]").val();
         }
 
-        loadValues(searchterm, ajaxdatadiv);
+        const params = {
+            formId: 'frmClients',
+            ajaxDataDiv: ajaxdatadiv,
+            action: 'search',
+            txtPage: TXTPAGE, // Ensure TXTPAGE is defined in your scope
+            keyparam: '',
+            searchTerm: '' // Replace with the actual search term
+        };
+
+        loadClients(params);
 
         return true;
 
@@ -229,13 +238,24 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
 
     }
 
-    function loadValues(searchterm, ajaxdatadiv) {
-        return showValues('frmClients', ajaxdatadiv, 'search', TXTPAGE, `load.php?searchterm=${searchterm}`);
-    }
+    // function loadValues(searchterm, ajaxdatadiv) {
+    //     return showValues('frmClients', ajaxdatadiv, 'search', TXTPAGE, `load.php?searchterm=${searchterm}`);
+    // }
 
     function loadGroupMembers() {
 
-        return showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', $('#client_idno').val());
+        const params = {
+            formId: 'frmClients',
+            ajaxDataDiv: 'members',
+            action: 'search',
+            txtPage: TXTPAGE, // Ensure TXTPAGE is defined in your scope
+            keyparam: '',
+            searchTerm: '' // Replace with the actual search term
+        };
+
+        loadClient(params);
+
+        // return showValues('frmClients', 'members', 'search', 'GMEM', 'load.php', $('#client_idno').val());
 
     }
 

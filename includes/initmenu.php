@@ -559,6 +559,30 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             forms.forEach(form => form.reset());
         }
 
+        // This functin is used to load clients
+        function loadClients({
+            formId,
+            ajaxDataDiv,
+            action,
+            txtPage,
+            keyparam,
+            searchTerm
+        }) {
+            return showValues(formId, ajaxDataDiv, action, txtPage, `load.php?searchterm=${searchTerm}`, c);
+        }
+
+        function loadMembers({
+            formId,
+            ajaxDataDiv,
+            action,
+            txtPage,
+            keyparam,
+            searchTerm
+        }) {
+            return showValues(formId, ajaxDataDiv, action, txtPage, `load.php?searchterm=${searchTerm}`, keyparam);
+        }
+
+
         function populateForm(frm, jobj) {
 
             var dfrd1 = $.Deferred();

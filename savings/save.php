@@ -22,8 +22,9 @@ getlables("21,1097,300,1161,20,1199,1608");
 
 
     function getClients(searchtext) {
-        alert();
-        //  searchtext = $('input[name=radiosclient]:checked').val() + 'SAVACC';
+
+        var searchtext = $('input[name=radiosclient]:checked').val() + 'SAVACC';
+
         if ($("#ttype").val() == "SA" && $("#txtsavaccount").val() != "") {
 
             if (searchtext == 'GRPSAVACC') {
@@ -34,16 +35,25 @@ getlables("21,1097,300,1161,20,1199,1608");
             return;
         }
 
-        act = 'EDIT';
         $('#action').val('edit');
 
+        // alert(searchtext);
 
-        showValues('frmSave', 'toppanel', 'search', searchtext, 'load.php?act=' + act).done(
-            function() {
-                $('#toppanel').show();
-            });
+        // showValues('frmSave', 'toppanel', 'search', searchtext, 'load.php').done(
+        //     function() {
+        //         $('#grid_toppanel').show();
+        //     });
 
+        const params = {
+            formId: 'frmSave',
+            ajaxDataDiv: 'toppanel',
+            action: 'search',
+            txtPage: searchtext, // Ensure TXTPAGE is defined in your scope
+            keyparam: '',
+            searchTerm: '' // Replace with the actual search term
+        };
 
+        loadClients(params);
     }
 
 
@@ -343,26 +353,26 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
                                 <td><?php echo $lablearray['654']; ?><br><input type="text" id="client_idno" name="client_idno" value="" readonly="readonly"></td>
                                 <td>
                                     <?php echo $lablearray['299']; ?><br>
-                                    <input type="text" id="txtvoucher" name="txtvoucher" value=""><?php echo TEXT_FIELD_REQUIRED; ?>
+                                    <input type="text" id="txtvoucher" name="txtvoucher" value="">
                                 </td>
                     </td>
                 </tr>
                 <tr>
-                    <td><?php echo $lablearray['298']; ?><br><input type="us-date" class='date' id="txtDate" name="txtDate" value=""><?php echo TEXT_FIELD_REQUIRED; ?></td>
-                    <td><?php echo $lablearray['1096']; ?><br><?php echo Common::DrawComboFromArray(array(), 'product_prodid', 'S0000', 'SAVPROD', 'SAVPROD'); ?><?php echo TEXT_FIELD_REQUIRED; ?></td>
-                    <td><?php echo $lablearray['24']; ?><br><?php echo Common::DrawComboFromArray(array(), 'PAYMODES', '', 'PAYMODES', '', 'PAYMODES', 'frmSave'); ?><?php echo TEXT_FIELD_REQUIRED; ?></td>
+                    <td><?php echo $lablearray['298']; ?><br><input type="us-date" class='date' id="txtDate" name="txtDate" value=""></td>
+                    <td><?php echo $lablearray['1096']; ?><br><?php echo Common::DrawComboFromArray(array(), 'product_prodid', 'S0000', 'SAVPROD', 'SAVPROD'); ?></td>
+                    <td><?php echo $lablearray['24']; ?><br><?php echo Common::DrawComboFromArray(array(), 'PAYMODES', '', 'PAYMODES', '', 'PAYMODES', 'frmSave'); ?></td>
                 </tr>
 
 
                 <tr>
                     <td>
                         <?php echo $lablearray['1208']; ?><br>
-                        <?php echo Common::DrawComboFromArray(array(), 'ttype', '', 'SAVTTYPES', '', 'SAVTTYPES', 'frmSave'); ?><?php echo TEXT_FIELD_REQUIRED; ?>
+                        <?php echo Common::DrawComboFromArray(array(), 'ttype', '', 'SAVTTYPES', '', 'SAVTTYPES', 'frmSave'); ?>
 
 
                     <td>
                         <?php echo $lablearray['271']; ?><br>
-                        <input class="total" type="numeric" id="txtamount" name="txtamount" value="0.0" <?php echo (SETTING_CURRENCY_DENO != '' ? 'readonly=true' : ''); ?> size="20"><?php echo TEXT_FIELD_REQUIRED; ?>
+                        <input class="total" type="numeric" id="txtamount" name="txtamount" value="0.0" <?php echo (SETTING_CURRENCY_DENO != '' ? 'readonly=true' : ''); ?> size="20">
 
                     </td>
                     <td>
