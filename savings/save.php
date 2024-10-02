@@ -23,12 +23,12 @@ getlables("21,1097,300,1161,20,1199,1608");
 
     function getClients(searchtext) {
 
-        var searchtext = $('input[name=radiosclient]:checked').val() + 'SAVACC';
+        var searchtext = $('input[name=radiosclient]:checked').val();
 
         if ($("#ttype").val() == "SA" && $("#txtsavaccount").val() != "") {
 
-            if (searchtext == 'GRPSAVACC') {
-                searchtext = 'MEMSAVACC';
+            if (searchtext == 'GRP') {
+                searchtext = 'GMEM';
             }
 
             $("#product_prodidto").trigger("change");
@@ -43,14 +43,15 @@ getlables("21,1097,300,1161,20,1199,1608");
         //     function() {
         //         $('#grid_toppanel').show();
         //     });
-
+        // (frm, elementId, action, pageparams, urlpage, keyparam, search, callback)
         const params = {
             formId: 'frmSave',
-            ajaxDataDiv: 'toppanel',
+            elementId: 'toppanel',
             action: 'search',
-            txtPage: searchtext, // Ensure TXTPAGE is defined in your scope
+            pageparams: searchtext,
+            urlpage: '',
             keyparam: '',
-            searchTerm: '' // Replace with the actual search term
+            search: ''
         };
 
         loadClients(params);
@@ -74,7 +75,7 @@ getlables("21,1097,300,1161,20,1199,1608");
             action = 'edit';
         }
 
-        $("#toppanel").hide();
+        $("#grid_toppanel").hide();
         var pageinfo = JSON.stringify($("#theid, #txtsavaccount, #product_prodid").serializeArray());
 
         var data1 = JSON.stringify(JSON.parse('{"pageinfo":' + pageinfo + "}"));
@@ -405,9 +406,9 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
         </div>
 
     </div>
+    <table id="grid_toppanel" width="100%">
+    </table>
 
-    <div id="toppanel">
-    </div>
 </form>
 <script type="text/javascript">
     $().w2destroy('LoanApptabs');
@@ -513,9 +514,9 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
                     // showValues('frmSave','savdata','search','SAVTRAN','load.php?act=edit&acc='+$("#txtsavaccount").val()+'&product_prodid='+$("#product_prodid").val()).done(
                     // function(){ 
                     //TODO: catch validation messages so that omr doe snot refreh
-                    console.log(data1);
+                    //      console.log(data1);
 
-                    $("#toppanel").hide();
+                    $("#grid_toppanel").hide();
                     $("#txtamount, #txtvoucher, .AMT").val("");
                     $("#txtamount, #txtvoucher, .AMT").val('0');
 

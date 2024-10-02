@@ -217,8 +217,8 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             elementId: null
         };
 
-
         const showValues = (frm, elementId, action, pageparams, urlpage, keyparam, search, callback) => {
+
             const dfrd3 = jQuery.Deferred();
 
             // Set default page parameters
@@ -562,24 +562,24 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         // This functin is used to load clients
         function loadClients({
             formId,
-            ajaxDataDiv,
+            elementId,
             action,
-            txtPage,
+            pageparams,
             keyparam,
             searchTerm
         }) {
-            return showValues(formId, ajaxDataDiv, action, txtPage, `load.php?searchterm=${searchTerm}`, c);
+            return showValues(formId, elementId, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
         }
 
         function loadMembers({
             formId,
             ajaxDataDiv,
             action,
-            txtPage,
+            pageparams,
             keyparam,
             searchTerm
         }) {
-            return showValues(formId, ajaxDataDiv, action, txtPage, `load.php?searchterm=${searchTerm}`, keyparam);
+            return showValues(formId, ajaxDataDiv, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
         }
 
 

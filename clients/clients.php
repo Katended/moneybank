@@ -221,11 +221,13 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
             searchterm = $("input[type=search]").val();
         }
 
+
         const params = {
             formId: 'frmClients',
-            ajaxDataDiv: ajaxdatadiv,
+            elementId: ajaxdatadiv,
             action: 'search',
-            txtPage: TXTPAGE, // Ensure TXTPAGE is defined in your scope
+            pageparams: TXTPAGE, // Ensure TXTPAGE is defined in your scope
+            urlpage: '',
             keyparam: '',
             searchTerm: '' // Replace with the actual search term
         };
