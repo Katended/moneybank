@@ -1044,8 +1044,9 @@
             case 'MEMSAVACC':
             case 'INDSAVACC':
             case 'GRPSAVACC':
-            case 'BUSSAVACC': // Client Savings Accounts
-
+        case 'BUSSAVACC': 
+                
+                // Client Savings Accounts
                 Common::getlables("391,1096,1628,1245", "", "", $Conn);
 
                 $query = Savings::getSavingsAccounts($pageparams, $_POST['keyparam'] ?? "", $cWhere);
@@ -1870,7 +1871,7 @@
             if (preg_match('[S]', $_POST['keyparam'])):
                 
                 $savacc_query = tep_db_query("SELECT savaccounts_id,savaccounts_account,product_prodid,savaccounts_opendate,savaccounts_closedate FROM " . TABLE_SAVACCOUNTS . " WHERE savaccounts_account='" . tep_db_prepare_input($_POST['keyparam']) . "'");
-            $savacc_array = tep_db_fetch_array($savacc_query);
+                $savacc_array = tep_db_fetch_array($savacc_query);
                 Common::push_element_into_array($main_array, 'action', 'update');
                 Common::push_element_into_array($main_array, 'keyparam', $savacc_array['savaccounts_id']);
 
@@ -1880,7 +1881,7 @@
 
             else:
 
-            $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_lastname) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);              
+                $savacc_array = $Conn->SQLSelect("SELECT client_idno,CONCAT(client_surname,' ',client_firstname,' ',client_lastname) As Name FROM " . TABLE_VCLIENTS . "  WHERE client_idno='" . tep_db_prepare_input($_POST['keyparam']) . "'", TRUE);              
                 Common::push_element_into_array($main_array, 'client_idno', $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'InfoBox', $savacc_array[0]['name'] . " : " . $savacc_array[0]['client_idno']);
                 Common::push_element_into_array($main_array, 'action', 'add');
@@ -1938,13 +1939,16 @@
             echo $jason;
 
             break;
+            
         case 'frmSave':
+
             $formdata = Common::decodeSerialisedPagedata($_POST['pageparams']);
 
             switch ($_POST['action']) {
 
                 case 'edit':
                 case 'add':
+
                     Common::getlables("1664,1694,1199,470", "", "", $Conn);
 
                     if (!isset($_POST['keyparam'])):
@@ -1959,6 +1963,7 @@
                     Savings::getSavingsBalance();
 
                     $balarray = Savings::$bal_array[0];
+
                     if (isset($balarray['client_idno'])):
 
                         Common::push_element_into_array($main_array, 'client_idno', $balarray['client_idno']);
@@ -1986,8 +1991,8 @@
 
                     endif;
 
-                    // denominations for currecny
-                    if(SETTING_CURRENCY_DENO=='checked'):
+                // denominations for currecny
+                if (SETTING_CURRENCY == 'checked'):
                 
                 
     //                    $denom_array = $Conn->SQLSelect("SELECT currencydeno_deno deno,(SELECT currencies_code from ".TABLE_CURRENCIES." c WHERE c.currencies_id=cd.currencies_id) ccode FROM " . TABLE_CURRENCYDENO . " cd ,".TABLE_PRODUCTCONFIG." pc WHERE cd.currencies_id=pc.productconfig_value  AND pc.productconfig_paramname='CURRENCIES_ID' AND product_prodid='".$balarray['product_prodid']."'");

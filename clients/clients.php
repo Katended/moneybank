@@ -214,13 +214,12 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
         if (cpar == '') {
             return;
         }
-        var searchterm = '';
 
+        var searchterm = '';
 
         if (typeof($("input[type=search]").val()) !== 'undefined') {
             searchterm = $("input[type=search]").val();
         }
-
 
         const params = {
             formId: 'frmClients',
@@ -370,11 +369,8 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
 
     <table width="100%" border="0" cellpadding='0'>
         <tr>
-
             <td colspan="2" align="center">
-
                 <?php echo Common::clientOptions("C"); ?>
-
             </td>
 
         </tr>

@@ -3869,15 +3869,15 @@ ol {
 .input-container,
 .grid-options,
 .grid-pagination,
-.debit-credit {
+.debit-credit,
+.savings-container {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   column-gap: 1em;
   padding: 0.1em;
-  flex-grow: 1;
-  
+  flex-grow: 1;  
   flex-wrap: wrap;
 }
 .grid-options > div {  
@@ -3929,6 +3929,12 @@ ol {
 }
 
 .clientcat-item {
+  flex: 1;
+  /* or you can use width: 50%; */
+  box-sizing: border-box;
+}
+
+.item {
   flex: 1;
   /* or you can use width: 50%; */
   box-sizing: border-box;

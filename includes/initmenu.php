@@ -553,6 +553,26 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             });
         }
 
+        function getCategory(code) {
+
+            if (code.includes('I')) {
+                return 'IND';
+
+            } else if (code.includes('G')) {
+                return 'GRP';
+
+            } else if (code.includes('B')) {
+                return 'BUSS';
+
+            } else if (code.includes('M')) {
+                return 'GRM';
+
+            } else {
+                return null;
+            }
+
+        }
+
         // Function to reset all forms on the page      
         function resetAllForms() {
             const forms = document.querySelectorAll('form');
@@ -580,6 +600,34 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             searchTerm
         }) {
             return showValues(formId, ajaxDataDiv, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
+        }
+
+
+        // Function to load and execute JavaScript from a file
+        async function loadScript(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not okay');
+                }
+                const scriptContent = await response.text();
+                eval(scriptContent); // Evaluate the script content
+            } catch (error) {
+                console.error('Error loading script:', error);
+            }
+        }
+
+        function getCurrentFormId() {
+            // Get the currently focused element
+            const activeElement = document.activeElement;
+
+            // Check if the active element is inside a form
+            if (activeElement && activeElement.closest('form')) {
+                // Return the ID of the form
+                return activeElement.closest('form').id;
+            }
+            alert('current form name not found')
+            //  return null; // Return null if no form is found
         }
 
 

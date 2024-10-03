@@ -221,22 +221,20 @@ Class Savings extends ProductConfig {
 
         return $query;
     }
-
-
-    /**
+    
+    /*     
      * getSavingsBalance
-     * 
      * This function is used to get Savings Balance of a Savings Account
-     * @param string $prodid :Savings Product
-     * @param string $acc  :Savings Account
+     * @param string $prodid : Savings Product
+     * @param string $acc  : Savings Account
      * @param date $ddate  : As at
      * Returns array
-     */
-    // public static function getSavingsBalance($prodid = '', $savacc = '', $ddate = '',$memid) {
+    */  
     public static function getSavingsBalance($amount = 0) {
 
         // check savings balance
         $parameters = array();
+
         Common::prepareParameters($parameters, 'asat', self::$asatdate);
 
         if (self::$savaccid != ""):
@@ -245,27 +243,27 @@ Class Savings extends ProductConfig {
             Common::prepareParameters($parameters, 'code', 'SAVBALSBYID');
             self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
 
-            $balarray = self::$bal_array[0];
-            reset($balarray);
-            $balance = array_sum(array_column($balarray, 'balance'));
-            
-            if($balance==0):
-                $balance   = $balarray['balance'];
-            endif;
-
-        //  $balance = Common::sum_array('members_idno', self::$membershipid, 'balance', self::$bal_array[1]);
-
+            if (isset(self::$bal_array)) {
+                $balance = array_sum(array_column(self::$bal_array, 'balance'));
+            } else {
+                $balance = 0;
+            }         
+      
         else:
 
             Common::prepareParameters($parameters, 'productid', self::$prodid);
             Common::prepareParameters($parameters, 'account', self::$savacc);
             Common::prepareParameters($parameters, 'memid', self::$membershipid);
             Common::prepareParameters($parameters, 'asat', self::$asatdate);
-            Common::prepareParameters($parameters, 'code', 'SAVBALS');           
-            
+            Common::prepareParameters($parameters, 'code', 'SAVBALS');                       
             
             self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, true);
-            $balance = self::$bal_array['balance'];
+
+            if (isset(self::$bal_array['balance'])) {
+                $balance = self::$bal_array['balance'];
+            } else {
+                $balance = 0;
+            }           
 
         endif;
 

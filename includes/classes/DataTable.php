@@ -62,9 +62,8 @@ class DataTable
 
 					// usually the first column is the identity column
 					$row[0] = sprintf(
-						'<input type="checkbox" class="row-checkbox" value="%s" onClick="if (this.checked) { %s; }">',
-						htmlspecialchars($dataValue, ENT_QUOTES),
-						htmlspecialchars($function, ENT_QUOTES)
+						'<input type="checkbox" class="row-checkbox" value="%s" >',
+						htmlspecialchars($dataValue, ENT_QUOTES)
 					);
 
 					$callbackFunction = sprintf("() => {showValues('%s','%s','%s','%s','load.php','%s','',false)}", $formId, $elementId, 'search', $pageparams, self::$request['keyparam']);

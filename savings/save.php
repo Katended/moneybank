@@ -313,92 +313,85 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
         font-family: sans-serif;
         font-size: 12px;
         box-shadow: none;
-
     }
 </style>
-
-
 <form id="frmSave" name='frmSave'>
-
     <input id="action" name="action" type="hidden" value="add">
     <input id="theid" name="theid" type="hidden" value="">
-
     <div class="client_options ">
         <?php echo Common::clientOptions(); ?>
-
     </div>
     <div class="client_options ">
         <span><?php echo $lablearray['249']; ?><input type="text" id="txtBalance" name="txtBalance" value="0.0" style="background:#EEEEEE;text-align:right;"></span>
         <a class='icons button-tran' id="radiotran" data-balloon="<?php echo $lablearray['1682']; ?>" data-balloon-pos="down">&nbsp;</a>
         <a class='icons button-acount' id="radioedit" onclick="getClients();" data-balloon="<?php echo $lablearray['1681']; ?>" data-balloon-pos="down">&nbsp;</a>
-
     </div>
     <div class="client_options ">
         <span id='div_name'> </span>
     </div>
     <div id="savdata"></div>
-
-
     <div id="tab-example" style="margin-top:0px;">
         <div id="LoanApptabs" style="width:100%;padding:0px;float:center;margin:0px;"></div>
         <div id="tab1" class="tab" style="overflow-x:auto;">
-            <table cellpadding="2" width="100%" cellspacing="0">
-                <tr>
-                    <td valign="top">
+            <div class="general-container">
+                <table cellpadding="1" width="100%" cellspacing="0" class="item">
+                    <tr>
+                        <td valign="top">
 
-                        <table cellpadding="2" width="100%">
+                            <table cellpadding="2" width="100%">
 
-                            <tr>
-                                <td><?php echo $lablearray['1197']; ?><br><input type="text" id="txtsavaccount" name="txtsavaccount" value="" readonly="readonly"></td>
+                                <tr>
+                                    <td><?php echo $lablearray['1197']; ?><br><input type="text" id="txtsavaccount" name="txtsavaccount" value="" readonly="readonly"></td>
 
-                                <td><?php echo $lablearray['654']; ?><br><input type="text" id="client_idno" name="client_idno" value="" readonly="readonly"></td>
-                                <td>
-                                    <?php echo $lablearray['299']; ?><br>
-                                    <input type="text" id="txtvoucher" name="txtvoucher" value="">
-                                </td>
-                    </td>
+                                    <td><?php echo $lablearray['654']; ?><br><input type="text" id="client_idno" name="client_idno" value="" readonly="readonly"></td>
+                                    <td>
+                                        <?php echo $lablearray['299']; ?><br>
+                                        <input type="text" id="txtvoucher" name="txtvoucher" value="">
+                                    </td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><?php echo $lablearray['298']; ?><br><input type="us-date" class='date' id="txtDate" name="txtDate" value=""></td>
+                        <td><?php echo $lablearray['1096']; ?><br><?php echo Common::DrawComboFromArray(array(), 'product_prodid', 'S0000', 'SAVPROD', 'SAVPROD'); ?></td>
+                        <td><?php echo $lablearray['24']; ?><br><?php echo Common::DrawComboFromArray(array(), 'PAYMODES', '', 'PAYMODES', '', 'PAYMODES', 'frmSave'); ?></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            <?php echo $lablearray['1208']; ?><br>
+                            <?php echo Common::DrawComboFromArray(array(), 'ttype', '', 'SAVTTYPES', '', 'SAVTTYPES', 'frmSave'); ?>
+
+
+                        <td>
+                            <?php echo $lablearray['271']; ?><br>
+                            <input class="total" type="numeric" id="txtamount" name="txtamount" value="0.0" <?php echo (SETTING_CURRENCY_DENO != '' ? 'readonly=true' : ''); ?> size="20">
+
+                        </td>
+                        <td>
+                            <?php echo $lablearray['1379']; ?><br>
+                            <input type="numeric" id="txtchargeamount" name="txtchargeamount" value="0.0" size="20">
+                        </td>
+                    </tr>
+                </table>
+                </td>
+                <td valign="top">
+                    <div id="modes"></div>
+                    <p><?php echo $lablearray['1305']; ?><br><span data-balloon="<?php echo $lablearray['1667']; ?>" data-balloon-pos="down" data-balloon-length="fit"><?php echo DrawComboFromArray(array(), 'product_prodidto', '', 'SAVPROD', '', 'SAVPROD'); ?></span></p>
+
+                    <div id="section2"></div>
+                    <div id="transferacc"></div>
+                </td>
                 </tr>
-                <tr>
-                    <td><?php echo $lablearray['298']; ?><br><input type="us-date" class='date' id="txtDate" name="txtDate" value=""></td>
-                    <td><?php echo $lablearray['1096']; ?><br><?php echo Common::DrawComboFromArray(array(), 'product_prodid', 'S0000', 'SAVPROD', 'SAVPROD'); ?></td>
-                    <td><?php echo $lablearray['24']; ?><br><?php echo Common::DrawComboFromArray(array(), 'PAYMODES', '', 'PAYMODES', '', 'PAYMODES', 'frmSave'); ?></td>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        <?php echo $lablearray['1208']; ?><br>
-                        <?php echo Common::DrawComboFromArray(array(), 'ttype', '', 'SAVTTYPES', '', 'SAVTTYPES', 'frmSave'); ?>
-
-
-                    <td>
-                        <?php echo $lablearray['271']; ?><br>
-                        <input class="total" type="numeric" id="txtamount" name="txtamount" value="0.0" <?php echo (SETTING_CURRENCY_DENO != '' ? 'readonly=true' : ''); ?> size="20">
-
-                    </td>
-                    <td>
-                        <?php echo $lablearray['1379']; ?><br>
-                        <input type="numeric" id="txtchargeamount" name="txtchargeamount" value="0.0" size="20">
-                    </td>
-                </tr>
-
-            </table>
-
-            </td>
-            <td valign="top">
-                <div id="modes"></div>
-                <p><?php echo $lablearray['1305']; ?><br><span data-balloon="<?php echo $lablearray['1667']; ?>" data-balloon-pos="down" data-balloon-length="fit"><?php echo DrawComboFromArray(array(), 'product_prodidto', '', 'SAVPROD', '', 'SAVPROD'); ?></span></p>
-
-                <div id="section2"></div>
-                <div id="transferacc"></div>
-            </td>
-            </tr>
-            </table>
+                </table>
+                <table id="grid_accounts" width="100%" class="item"></table>
+            </div>
             <div class="button-container">
                 <span><button type="reset" class="btn" name="Go" type="button"><?php echo $lablearray['2']; ?></button> </span>
                 <span><button class="btn" name="Go" type="button" onClick="CloseDialog(vFloatingPane.id);" id="btnscancel"><?php echo $lablearray['300']; ?></button></span>
                 <span><button class="btn" name="btnSave" type="button" id="btnSave"><?php echo $lablearray['20']; ?></button></span>
             </div>
+
         </div>
 
         <div id="tab2" class="tab" style="overflow-x:auto;">
@@ -410,6 +403,7 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
     </table>
 
 </form>
+<script type="text/javascript" src='./includes/javascript/savings/savings.js'></script>
 <script type="text/javascript">
     $().w2destroy('LoanApptabs');
 
@@ -434,6 +428,8 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
         });
     }
     $(document).ready(function() {
+
+        initEventListeners();
 
         var config = {
             tabs: {
@@ -512,7 +508,7 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
                     //   showValues('frmSave','savdata','search','SAVTRAN','load.php?act=edit&account='+$("#txtsavaccount").val()+'&product_prodid='+$("#product_prodid").val()+'&memid='+$("#memids").val()).done(
 
                     // showValues('frmSave','savdata','search','SAVTRAN','load.php?act=edit&acc='+$("#txtsavaccount").val()+'&product_prodid='+$("#product_prodid").val()).done(
-                    // function(){ 
+                    // function(){
                     //TODO: catch validation messages so that omr doe snot refreh
                     //      console.log(data1);
 

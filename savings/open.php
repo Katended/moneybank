@@ -9,14 +9,12 @@ spl_autoload_register(function ($class_name) {
 $_parent = basename(__FILE__);
 //getlables("21,1097,300,1161,20");
 ?>
-<script type="text/javascript">
+
+<script type="module">
     var searchtext = '';
     var act = '';
-
     $(document).ready(function() {
-
         $("#PAYMODES").trigger("change");
-
         const radios = document.getElementsByName("radiosclient");
         radios.forEach((radio) => {
             radio.addEventListener('click', () => {
@@ -33,29 +31,29 @@ $_parent = basename(__FILE__);
         });
     });
 
-    // Listen for click events on the entire document
-    document.addEventListener('click', function(event) {
+    // // Listen for click events on the entire document
+    // document.addEventListener('click', function(event) {
 
-        // Check if the clicked element is a checkbox with the class 'row-checkbox'
-        if (event.target.matches('input[type="checkbox"].row-checkbox')) {
-            if (event.target.checked) loadSavingAccounts();
-        }
+    //     // Check if the clicked element is a checkbox with the class 'row-checkbox'
+    //     if (event.target.matches('input[type="checkbox"].row-checkbox')) {
+    //         if (event.target.checked) loadSavingAccounts();
+    //     }
 
-    });
+    // });
 
-    function loadSavingAccounts() {
+    // function loadSavingAccounts() {
 
-        var tags = document.getElementsByName('radiosclient');
-        var TXTPAGE = '';
+    //     var tags = document.getElementsByName('radiosclient');
+    //     var TXTPAGE = '';
 
-        for (var i = 0; i < tags.length; ++i) {
-            if (tags[i].checked) {
-                TXTPAGE = tags[i].value + "SAVACC";
-            }
-        }
+    //     for (var i = 0; i < tags.length; ++i) {
+    //         if (tags[i].checked) {
+    //             TXTPAGE = tags[i].value + "SAVACC";
+    //         }
+    //     }
 
-        return showValues('frmsavaccounts', 'accounts', 'search', TXTPAGE, 'load.php', $('#client_idno').val());
-    }
+    //     return showValues('frmsavaccounts', 'accounts', 'search', TXTPAGE, 'load.php', $('#client_idno').val());
+    // }
 </script>
 <?php
 require('../' . DIR_WS_INCLUDES . 'pageheader.php');
@@ -127,8 +125,12 @@ getlables("20,1515,1403,271,1751,21,1516,24,300,1161,1024,373,299,317,1197,1096,
     <table id="grid_gridata" width="100%" syle="max-height:500px;">
     </table>
 </form>
+<script type="text/javascript" src='./includes/javascript/savings/savings.js'>
+</script>
 <script type="text/javascript">
     $(document).ready(function() {
+
+        initEventListeners();
 
         $('input[type=us-date]').w2field('date', {
             format: '<?php echo SETTING_DATE_FORMAT ?>'
