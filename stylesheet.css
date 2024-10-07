@@ -3934,6 +3934,11 @@ ol {
   box-sizing: border-box;
 }
 
+#div_name{
+  color: #97b1d4;
+  font-size: 2rem;
+}
+
 .item {
   flex: 1;
   /* or you can use width: 50%; */

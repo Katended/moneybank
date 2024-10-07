@@ -1964,64 +1964,38 @@
 
                     $balarray = Savings::$bal_array[0];
 
-                    if (isset($balarray['client_idno'])):
+                // if (isset($balarray['client_idno'])):
 
-                        Common::push_element_into_array($main_array, 'client_idno', $balarray['client_idno']);
-                        Common::push_element_into_array($main_array, 'action', 'add');
-                        Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
-                        Common::push_element_into_array($main_array, 'product_prodid', $balarray['product_prodid']);
-                        Common::push_element_into_array($main_array, 'div_name', $balarray['name']);
+                Common::push_element_into_array($main_array, 'client_idno', $balarray['client_idno']);
+                Common::push_element_into_array($main_array, 'action', 'add');
+                Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
+                Common::push_element_into_array($main_array, 'product_prodid', $balarray['product_prodid']);
+                Common::push_element_into_array($main_array, 'div_name', $balarray['name']);
 
-                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display($balarray['balance']));
-                        Common::push_element_into_array($main_array, 'txtsavaccount', $balarray['savaccounts_account']);
+                Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display($balarray['balance']));
+                Common::push_element_into_array($main_array, 'txtsavaccount', $balarray['savaccounts_account']);
 
-                        $members_array = Savings::$bal_array[1];
+                //     $members_array = Savings::$bal_array[1];
 
-                    else:
+                // else:
 
-                        Common::push_element_into_array($main_array, 'client_idno', $balarray[0]['client_idno']);
-                        Common::push_element_into_array($main_array, 'action', 'add');
-                        Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
-                        Common::push_element_into_array($main_array, 'product_prodid', $balarray[0]['product_prodid']);
-                        Common::push_element_into_array($main_array, 'div_name', $balarray[0]['name']);
+                //         Common::push_element_into_array($main_array, 'client_idno', $balarray[0]['client_idno']);
+                //         Common::push_element_into_array($main_array, 'action', 'add');
+                //         Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
+                //         Common::push_element_into_array($main_array, 'product_prodid', $balarray[0]['product_prodid']);
+                //         Common::push_element_into_array($main_array, 'div_name', $balarray[0]['name']);
 
-                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display($balarray[0]['balance']));
-                        Common::push_element_into_array($main_array, 'txtsavaccount', $balarray[0]['savaccounts_account']);
+                //         Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display($balarray[0]['balance']));
+                //         Common::push_element_into_array($main_array, 'txtsavaccount', $balarray[0]['savaccounts_account']);
 
 
-                    endif;
+                //     endif;
 
                 // denominations for currecny
-                if (SETTING_CURRENCY == 'checked'):
-                
-                
-    //                    $denom_array = $Conn->SQLSelect("SELECT currencydeno_deno deno,(SELECT currencies_code from ".TABLE_CURRENCIES." c WHERE c.currencies_id=cd.currencies_id) ccode FROM " . TABLE_CURRENCYDENO . " cd ,".TABLE_PRODUCTCONFIG." pc WHERE cd.currencies_id=pc.productconfig_value  AND pc.productconfig_paramname='CURRENCIES_ID' AND product_prodid='".$balarray['product_prodid']."'");
-    //                    $deno = "<script>"
-    //                            . "$('.qty1').keyup(function() {
-    //                                var vsum =0;
-    //                                $('.qty1').each(function(){
-    //                                    var deno = $(this).attr('id');   
-    //                                    if(!isNaN(deno)){
-    //                                        var cur = parseFloat($(this).val()*deno);
-    //                                        vsum = vsum + cur;
-    //                                      
-    //                                    }
-    //                                });
-    //                                
-    //                              alert(vsum)
-    //                              $('.total').val(vsum);
-    //                                
-    //                            });</script><fieldset><legend>".Common::$lablearray['1694']."</legend><table cellpadding='0' width='100%' cellspacing='0'>";
-    //                    foreach ($denom_array AS $dkey => $dval):
-    //
-    //                        $deno.="<tr><td align=right>".$dval['ccode']." ".$dval['deno']." x </td><td align=right><input class='qty1' id='" . $dval['deno'] . "' name='".$dval['deno']."' value=0></td></tr>";
-    //
-    //                    endforeach;
-    //                 
-    //                    $deno .="</table></fieldset>"; 
-
+                if (SETTING_CURRENCY_DENO == 'checked'):
+    
                         Common::push_element_into_array($main_array, 'section2', Common::displayDenominations($balarray['product_prodid']));
-                        
+
                     endif; 
                     // CHECK SEE IF ITS A GROUP MEMBERS
                     if (preg_match('[G]', $balarray[0]['client_idno'])):
@@ -2042,16 +2016,12 @@
 
                         $mems .= "</table></div>" . $combo;
 
-                    endif;
-
                     Common::push_element_into_array($main_array, 'section1', $mems);
+                endif;
 
-                    $jason = json_encode(array('data' => $main_array));
 
-                    $jason = str_replace("\\\\", '', $jason);
-
-                    echo $jason;
-
+                echo Common::createResponse('form', '', [], $main_array);
+                exit();
                     break 2;
                 default:
                     break;

@@ -243,7 +243,7 @@ Class Savings extends ProductConfig {
             Common::prepareParameters($parameters, 'code', 'SAVBALSBYID');
             self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
 
-            if (isset(self::$bal_array)) {
+            if (self::$bal_array??''!=="") {
                 $balance = array_sum(array_column(self::$bal_array, 'balance'));
             } else {
                 $balance = 0;
