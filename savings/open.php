@@ -67,7 +67,7 @@ getlables("20,1515,1403,271,1751,21,1516,24,300,1161,1024,373,299,317,1197,1096,
             </td>
         </tr>
         <tr>
-            <td id='InfoBox' align="center"></td>
+            <td id='div_name' align="center"></td>
         </tr>
     </table>
     <fieldset class="grid-options">
@@ -78,7 +78,7 @@ getlables("20,1515,1403,271,1751,21,1516,24,300,1161,1024,373,299,317,1197,1096,
                     <td colspan="3">
                         <input id="action" name="action" type="hidden" value="add">
                         <input id="theid" name="theid" type="hidden" value="">
-                        <span id="Name"></span>
+                        <span id="name"></span>
                     </td>
                 </tr>
                 <tr>

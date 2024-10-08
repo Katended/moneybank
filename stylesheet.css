@@ -3880,6 +3880,11 @@ ol {
   flex-grow: 1;  
   flex-wrap: wrap;
 }
+
+.savings-container {
+  padding:4px;
+  align-items: flex-start;
+}
 .grid-options > div {  
   padding: 5px;
   flex:1;

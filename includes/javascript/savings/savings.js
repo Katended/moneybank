@@ -17,9 +17,14 @@ function handleCheckboxClick(event) {
         searchterm: "",
       };
 
-      loadClients(params).done((formId) => {
-        loadSavingAccounts(formId);
-      });
+      // Check if the checkbox value contains 'I' or 'S'
+      if (checkbox.value.includes("I")) {
+        loadClients(params).done((formId) => {
+          loadSavingAccounts(formId);
+        });
+      } else {
+        loadAccount(checkbox.value);
+      }
     }
   }
 }
@@ -50,4 +55,10 @@ function loadSavingAccounts(formId) {
     "load.php",
     $("#client_idno").val()
   );
+}
+
+function loadAccount(accountId) {
+  var formId = getCurrentFormId();
+
+  return showValues(formId, "", "add", accountId, "load.php", accountId);
 }

@@ -41,6 +41,7 @@ class DataTable
 	public static function data_output($data)
 	{
 		$out = array();
+
 		for ($i = 0, $ien = count($data); $i < $ien; $i++) {
 
 			$row = array();
@@ -54,7 +55,10 @@ class DataTable
 				if ($j == 0) {
 
 					$formId = self::$request['frmid'];
-					$dataValue = $data[$i][self::$columns[$j]['db'] ?? ''];
+
+					$dataValue = !empty(self::$keyfield) ?
+					($data[$i][self::$keyfield] ?? '') : ($data[$i][self::$columns[$j]['db']] ?? '');
+					
 					$elementId = self::$request['elementId'];
 					$pageparams = self::$request['pageparams'];
 
@@ -70,6 +74,7 @@ class DataTable
 
 					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',%s)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $elementId, 'Delete', $pageparams, $dataValue, $callbackFunction);
 				}
+				
 
 				if (isset($column['formatter'])) { // Is there a formatter?
 					$row[$column['dt'] + 1] = $column['formatter']($data[$i][$column['db']], $data[$i]);
@@ -374,6 +379,10 @@ class DataTable
 			//   $query =  "SELECT COUNT(".self::$keyfield.") AS reccount".self::$sSQL;  
 
 			// $results_query = $this->Conn->SQLSelect($query); 
+
+			if (!empty(self::$keyfield)) {
+				self::$fieldlist[] = self::$keyfield;
+			}
 
 			self::$sSQL = "SELECT " . implode(",", self::$fieldlist) . " " . self::$sSQL . " " . self::$where_condition . " " . self::$order . " " . $limit . " ; SELECT COUNT(*) AS reccount " . self::$sSQL . " " . self::$where_condition . ";";
 			// echo self::$sSQL = "SELECT ".implode(",",self::$fieldlist)." ".self::$sSQL." ".self::$where_condition." ".self::$order." ".$limit." ; SELECT COUNT(".self::$keyfield.") AS reccount ".self::$sSQL." ".self::$where_condition.";";                    

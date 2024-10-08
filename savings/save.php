@@ -333,7 +333,7 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
     <div id="tab-example" style="margin-top:0px;">
         <div id="LoanApptabs" style="width:100%;padding:0px;float:center;margin:0px;"></div>
         <div id="tab1" class="tab" style="overflow-x:auto;">
-            <div class="general-container">
+            <div class="savings-container">
                 <table cellpadding="1" width="50%" cellspacing="0" class="item">
                     <tr>
                         <td valign="top">

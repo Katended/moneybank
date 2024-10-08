@@ -1060,7 +1060,7 @@
                     Common::$lablearray['1245']
                 );
 
-                NewGrid::$fieldlist = array(                
+            NewGrid::$fieldlist = array(                             
                     'savaccounts_account',                    
                     'product_prodid',
                     'savaccounts_opendate',
@@ -1073,6 +1073,7 @@
                 NewGrid::$order = ' ORDER BY savaccounts_account DESC ';
                 NewGrid::$searchcatparam = $pageparams;
                 NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
+            NewGrid::$keyfield = 'savaccounts_id';              
                 
                 $data = NewGrid::getData();
 
@@ -1956,25 +1957,27 @@
                         exit();
                     endif;
 
-                    Savings::$asatdate = '';
+                if (preg_match('/[IBG]/', $_POST['keyparam'])) {
+                    Clients::$clientid = $_POST['keyparam'];
+                    Clients::getClientDetails();
+                    Common::push_element_into_array($main_array, 'client_idno', Clients::$client_array[0]['client_idno']);
+                    Common::push_element_into_array($main_array, 'div_name', Clients::$client_array[0]['name']);
+                } else {
+
                     Savings::$savaccid = Common::tep_db_prepare_input($_POST['keyparam']);
-
-
                     Savings::getSavingsBalance();
 
-                    $balarray = Savings::$bal_array[0];
+                    $balarray = (Savings::$bal_array[0] ?? 0);
 
-                // if (isset($balarray['client_idno'])):
+                    Common::push_element_into_array($main_array, 'client_idno', $balarray['client_idno']);
+                    Common::push_element_into_array($main_array, 'action', 'add');
+                    //  Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
+                    Common::push_element_into_array($main_array, 'product_prodid', $balarray['product_prodid']);
 
-                Common::push_element_into_array($main_array, 'client_idno', $balarray['client_idno']);
-                Common::push_element_into_array($main_array, 'action', 'add');
-                Common::push_element_into_array($main_array, 'keyparam', Savings::$savaccid);
-                Common::push_element_into_array($main_array, 'product_prodid', $balarray['product_prodid']);
-                Common::push_element_into_array($main_array, 'div_name', $balarray['name']);
 
-                Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display($balarray['balance']));
-                Common::push_element_into_array($main_array, 'txtsavaccount', $balarray['savaccounts_account']);
-
+                    Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display($balarray['balance']));
+                    Common::push_element_into_array($main_array, 'txtsavaccount', $balarray['savaccounts_account']);
+                }    
                 //     $members_array = Savings::$bal_array[1];
 
                 // else:
@@ -2018,7 +2021,6 @@
 
                     Common::push_element_into_array($main_array, 'section1', $mems);
                 endif;
-
 
                 echo Common::createResponse('form', '', [], $main_array);
                 exit();

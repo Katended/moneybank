@@ -239,7 +239,7 @@ Class Savings extends ProductConfig {
 
         if (self::$savaccid != ""):
 
-            Common::prepareParameters($parameters, 'savaccountsid', self::$savaccid);
+            Common::prepareParameters($parameters, 'accountid', self::$savaccid);
             Common::prepareParameters($parameters, 'code', 'SAVBALSBYID');
             self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
 
@@ -252,7 +252,7 @@ Class Savings extends ProductConfig {
         else:
 
             Common::prepareParameters($parameters, 'productid', self::$prodid);
-            Common::prepareParameters($parameters, 'account', self::$savacc);
+            Common::prepareParameters($parameters, 'accountid', self::$savacc);
             Common::prepareParameters($parameters, 'memid', self::$membershipid);
             Common::prepareParameters($parameters, 'asat', self::$asatdate);
             Common::prepareParameters($parameters, 'code', 'SAVBALS');                       
