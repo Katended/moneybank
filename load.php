@@ -208,16 +208,16 @@
                         ];
                         break;
 
-                    case 'MEMSAVACC':
-                        $conditions = [
-                            sprintf(
-                                "c.entity_name LIKE '%%%s%%'",
-                                $sanitizedSearchTerm
-                            ),
-                            sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
-                            sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
-                        ];
-                        break;
+                    // case 'MEMSAVACC':
+                    //     $conditions = [
+                    //         sprintf(
+                    //             "c.entity_name LIKE '%%%s%%'",
+                    //             $sanitizedSearchTerm
+                    //         ),
+                    //         sprintf("c.entity_idno LIKE '%%%s%%'", $sanitizedSearchTerm),
+                    //         sprintf("sa.product_prodid LIKE '%%%s%%'", $sanitizedSearchTerm)
+                    //     ];
+                    //     break;
 
                     case 'ADDINDLOANS':
                     case 'IND':
@@ -333,7 +333,7 @@
                 $gridcolumnnames = array(Common::$lablearray['578']);
 
                 break;
-
+            
             case 'USERS': // Users
                 $actionlinks = "<a href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$('body').data('gridchk'),'eval','','addedit.php')\" ><img src='images/edit.png' border='0'></a><a href='#'  onClick=\"getinfo('" . $frmid . "',$('body').data('gridchk'),'delete','','addedit.php')\"><img src='images/delete.png' border='0'></a>";
 
@@ -560,20 +560,18 @@
                 NewGrid::$keyfield = 'currencydeno_id';
                 NewGrid::$columntitle = array('',Common::$lablearray['1693']);
                 NewGrid::$fieldlist = array('currencydeno_id','currencydeno_id', 'currencydeno_deno','currencies_id');
-                NewGrid::$sSQL = " FROM " . TABLE_CURRENCYDENO; 
+            NewGrid::$sSQL = TABLE_CURRENCYDENO; 
                 NewGrid::$searchcatparam = $pageparams;
                 NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
                 NewGrid::$request = $_POST;
-                
+
             // if(isset($_POST['keyparam'])):
-                    DataTable::$where_condition =" currencies_id ='".Common::tep_db_prepare_input($_POST['keyparam'])."'";             
-                //endif;
-                    
-                if (isset($_POST['grid_id'])):
-                    echo NewGrid::getData();
-                else:
-                    echo NewGrid::generateDatatableHTML();
-                endif;
+            DataTable::$where_condition = " currencies_id ='" . Common::tep_db_prepare_input($_POST['keyparam']) . "'";
+            //endif;
+
+
+            echo NewGrid::getData();
+              
 
                 exit();
                 
@@ -600,7 +598,7 @@
                 NewGrid::$keyfield = 'currencies_id';
                 NewGrid::$columntitle = array('',Common::$lablearray['9'], Common::$lablearray['654'], Common::$lablearray['657'], Common::$lablearray['658']);
                 NewGrid::$fieldlist = array('currencies_id','currencies_id', 'currencies_name', 'currencies_code', 'currencies_decimalplaces', 'currencies_isbase');
-                NewGrid::$sSQL = " FROM " . TABLE_CURRENCIES; 
+            NewGrid::$sSQL =  TABLE_CURRENCIES; 
                 NewGrid::$searchcatparam = $pageparams;
                 NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
 
@@ -794,9 +792,9 @@
             case 'GRP': 
 
                 if($pageparams=='GRP' || $pageparams=='ADDGRPLOANS'):
-                    $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='G' ".$cWhere;
+                $query = TABLE_ENTITY . " c  WHERE entity_type='G' " . $cWhere;
                 else:
-                    $query = " FROM " . TABLE_ENTITY . " c  WHERE entity_type='B' ".$cWhere;
+                $query =  TABLE_ENTITY . " c  WHERE entity_type='B' " . $cWhere;
                 endif;
 
                 Common::getlables("9,1093,1019,484,1665,885,1015", "", "", $Conn);
@@ -835,8 +833,8 @@
             case 'IND':
 
                 Common::getlables("1018,1019,1093,1178,240,484,1665,887", "", "", $Conn);
-          
-                $query = " FROM " . TABLE_CLIENTS . " c " . " WHERE 1=1 " . $cWhere;
+
+            $query = TABLE_CLIENTS . " c " . " WHERE 1=1 " . $cWhere;
 
                 NewGrid::$columntitle = array(
                     Common::$lablearray['1093'],
@@ -890,7 +888,7 @@
                 $clientId = $_POST['keyparam'];
                 $searchValue = $_POST['search']['value'];
 
-                $query = sprintf(" FROM " . TABLE_MEMBERS . " WHERE  entity_idno ='%s' AND (members_no LIKE'%%%s%%'  OR members_firstname LIKE'%%%s%%' OR members_lastname LIKE'%%%s%%')", $clientId, $searchValue, $searchValue, $searchValue);
+            $query = sprintf(TABLE_MEMBERS . " WHERE  entity_idno ='%s' AND (members_no LIKE'%%%s%%'  OR members_firstname LIKE'%%%s%%' OR members_lastname LIKE'%%%s%%')", $clientId, $searchValue, $searchValue, $searchValue);
                 Common::getlables("1159,1241,887,900,1019,1071", "", "", $Conn);
                 NewGrid::$columntitle = array(
                     Common::$lablearray['1159'],
@@ -946,70 +944,53 @@
                 NewGrid::$keyfield = 'transactioncode';
                 NewGrid::$columntitle = array('',  Common::$lablearray['317'], Common::$lablearray['298'], Common::$lablearray['1383'], Common::$lablearray['1707'], Common::$lablearray['1384']);
                 NewGrid::$fieldlist = array('transactioncode', 'transactioncode', 'tday', 'noofshares', 'norminalval', 'sharevalue');
-                NewGrid::$sSQL = " FROM " . TABLE_SHATRANSACTIONS; //." WHERE savaccounts_account='".$_GET['account']."' AND product_prodid='".$_GET['product_prodid']."' AND members_idno='".Common::replaces_underscores($_GET['memid'])."'";
+            NewGrid::$sSQL =  TABLE_SHATRANSACTIONS; //." WHERE savaccounts_account='".$_GET['account']."' AND product_prodid='".$_GET['product_prodid']."' AND members_idno='".Common::replaces_underscores($_GET['memid'])."'";
                 NewGrid::$searchcatparam = $pageparams;
                 NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
 
                 NewGrid::$request = $_POST;
 
-                if (isset($_POST['grid_id'])):
-                    echo NewGrid::getData();
-                else:
-                    echo NewGrid::generateDatatableHTML();
-                endif;
+            echo NewGrid::getData();
 
                 exit();
 
                 break;
 
             case 'SAVTRAN':
-                
-                Common::getlables("317,301,1208,271,1287,1265,1287,249,1199", "", "", $Conn);
 
-    //            if ($_POST['keyparam'] == 'savdata'):
-    //                echo "MSG " . Common::$lablearray['1199'];
-    //                exit();
-    //            endif;
+            Common::getlables("301,298,1208,271,24936", "", "", $Conn);
 
-                NewGrid::$actionlinks = "<a class='divlinks' href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'reverse','','addedit.php')\" title ='" . $grid_lables_lablearray['272'] . "'><img src='images/icons/withdraw.png' border='0'></a>";
-    //            toolbar
-    //            $newgrid->Conn = $Conn;            
-    //            $newgrid->sp_code = 'SAVTRAN';
-    //            
-    //            $newgrid->sp_parameters[] = array('name' => 'code', 'value' => 'SAVTRAN');  
-    //            $newgrid->sp_parameters[] = array('name' => 'account', 'value' =>$_GET['account']);
-    //            $newgrid->sp_parameters[] = array('name' => 'productid', 'value' =>$_GET['product_prodid']);
-    //            $newgrid->sp_parameters[] = array('name' => 'memid', 'value' =>Common::replaces_underscores($_GET['memid']));
-    //            $newgrid->sp_parameters[] = array('name' => 'asat', 'value' =>'');
-    //            
-    //            $fieldlist = array('savtransactions_tday', 'transactioncode', 'transactiontypes_code', 'savtransactions_amount', 'savtransactions_balance', 'cheqs_no');
-    //           
-    //            $newgrid->keyfield = 'transactioncode';            
-    //            $newgrid->queryoptions['productid'] = $_GET['product_prodid'];
-    //            $newgrid->queryoptions['account'] = $_GET['account'];
-    //            $newgrid->queryoptions['memid'] = Common::replaces_underscores($_GET['memid']);
-    //            $newgrid->queryoptions['asat'] = '';
-    //            $newgrid->queryoptions['container'] = 'section2';
-    //            
-    //            
-    //            $gridcolumnnames = array(Common::$lablearray['317'], Common::$lablearray['301'], Common::$lablearray['1208'], Common::$lablearray['271'], Common::$lablearray['1287'], Common::$lablearray['1265']);
-            
-                DataTable::$where_condition =" savaccounts_account='".$formdata['txtsavaccount']."' AND product_prodid='".$formdata['product_prodid']."' AND members_idno='".Common::replaces_underscores($_GET['memid'])."'";
-                NewGrid::$order =' ORDER BY savtransactions_tday DESC ';
-                NewGrid::$keyfield = 'transactioncode';
-                NewGrid::$columntitle = array('',  Common::$lablearray['317'], Common::$lablearray['1208'], Common::$lablearray['271'], Common::$lablearray['249'], Common::$lablearray['1265']);
-                NewGrid::$fieldlist = array('transactioncode', 'transactioncode', 'savtransactions_tday', 'transactiontypes_code', 'savtransactions_amount', 'savtransactions_balance', 'cheqs_no');
-                NewGrid::$sSQL = " FROM " . TABLE_SAVTRANSACTIONS; //." WHERE savaccounts_account='".$_GET['account']."' AND product_prodid='".$_GET['product_prodid']."' AND members_idno='".Common::replaces_underscores($_GET['memid'])."'";
+            NewGrid::$columntitle = array(
+                Common::$lablearray['301'],
+                Common::$lablearray['298'],
+                Common::$lablearray['1208'],
+                Common::$lablearray['271'],
+                Common::$lablearray['249'],
+                Common::$lablearray['36']
+            );
+
+            NewGrid::$fieldlist = array(
+                'transactioncode',
+                'savtransactions_tday',
+                'transactiontypes_code',
+                'savtransactions_amount',
+                'savtransactions_balance',
+                'cheqs_no'
+            );
+
+            NewGrid::$tableTitle = 'Transactions';
+            NewGrid::$request = $_POST;
+            NewGrid::$sSQL = TABLE_SAVTRANSACTIONS;
+            NewGrid::$order = ' ORDER BY savtransactions_tday DESC ';
+            DataTable::$where_condition = " savaccounts_account='" . $_POST['keyparam'] . "'";
+
                 NewGrid::$searchcatparam = $pageparams;
                 NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
+            NewGrid::$keyfield = 'transactioncode';
 
-                NewGrid::$request = $_POST;
+            // NewGrid::$actionlinks = "<a class='divlinks' href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'reverse','','addedit.php')\" title ='" . $grid_lables_lablearray['272'] . "'><img src='images/icons/withdraw.png' border='0'></a>";
 
-                if (isset($_POST['grid_id'])):
-                    echo NewGrid::getData();
-                else:
-                    echo NewGrid::generateDatatableHTML();
-                endif;
+            echo NewGrid::getData();             
 
                 exit();
 
@@ -1044,28 +1025,52 @@
             case 'MEMSAVACC':
             case 'INDSAVACC':
             case 'GRPSAVACC':
-        case 'BUSSAVACC': 
-                
-                // Client Savings Accounts
-                Common::getlables("391,1096,1628,1245", "", "", $Conn);
+        case 'BUSSAVACC':
+
+            Common::getlables("391,1096,1628,1245,1159,1241,9", "", "", $Conn);
 
                 $query = Savings::getSavingsAccounts($pageparams, $_POST['keyparam'] ?? "", $cWhere);
             
                 NewGrid::$actionlinks = "<a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='large'>&nbsp;<img src='images/plus.gif' border='0' >&nbsp;</span>";
 
+
+            if ($pageparams == 'GRPSAVACC') {
+
                 NewGrid::$columntitle = array(
-                    Common::$lablearray['391'],                   
+                    Common::$lablearray['1159'],
+                    Common::$lablearray['1241'],
+                    Common::$lablearray['9'],
+                    Common::$lablearray['391'],
                     Common::$lablearray['1096'],
                     Common::$lablearray['1628'],
                     Common::$lablearray['1245']
                 );
 
-            NewGrid::$fieldlist = array(                             
-                    'savaccounts_account',                    
+                NewGrid::$fieldlist = array(
+                    'c.members_idno `members_idno` ',
+                    'members_no',
+                    'CONCAT(members_firstname," ",members_middlename," ",members_lastname) `name`',
+                    'savaccounts_account',
                     'product_prodid',
                     'savaccounts_opendate',
                     'savaccounts_closedate'
                 );
+            } else {
+
+                NewGrid::$columntitle = array(
+                    Common::$lablearray['391'],
+                    Common::$lablearray['1096'],
+                    Common::$lablearray['1628'],
+                    Common::$lablearray['1245']
+                );
+                NewGrid::$fieldlist = array(
+                    'savaccounts_account',
+                    'product_prodid',
+                    'savaccounts_opendate',
+                    'savaccounts_closedate '
+                );
+            }
+               
        
                 NewGrid::$tableTitle ='Savings Accounts';
                 NewGrid::$request = $_POST;
@@ -1999,9 +2004,9 @@
     
                         Common::push_element_into_array($main_array, 'section2', Common::displayDenominations($balarray['product_prodid']));
 
-                    endif; 
-                    // CHECK SEE IF ITS A GROUP MEMBERS
-                    if (preg_match('[G]', $balarray[0]['client_idno'])):
+                endif;
+                // CHECK SEE IF ITS A GROUP MEMBERS
+                if (preg_match('[G]', $balarray['client_idno'])):
 
                         $mems = "<div  style='overflow:scroll; height:200px;padding:5x;'  >";
                         $mems .= "<table cellpadding='0' width='100%' cellspacing='0' id='customers'>";

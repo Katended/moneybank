@@ -52,37 +52,11 @@ class NewGrid
         self::$request = $pagerequest;
         self::$grid_id = '';
 
-        if ($fetchdata):
-            return self::getData();
-        else:
-            return self::generateDatatableHTML();
-        endif;
+
+        return self::getData();
     }
 
-    /* DESCRIPTION:  THIS FUNCTION IS USED GENERATE HTML FOR A DATATABLE */
-    public static function generateDatatableHTML()
-    {
-
-        $html = "<input type='hidden' value='" . self::$searchcatparam . "' id='CODE'>"
-        . "<div id='expo_bar_" . self::$grid_id . "' style='width:auto;text-align: center;padding:1px;margin: auto;'>" . self::$actionlinks . "</div>"
-        . "<table id='" . self::$grid_id . "' border='0' class='fancyTable' cellspacing='0' cellspacing='0' style='width:auto;'>"
-        . "<thead>"
-        . "<tr>"
-        . "<th></th><th>"
-        . implode("</th><th>", self::$columntitle)
-            . "</th></tr>"
-            . "</thead>"
-        . "<tfoot>"
-            . "<tr>"
-        . "<th></th><th>"
-        . implode("</th><th>", self::$columntitle)
-            . "</th></tr>"
-            . "</tfoot>"
-            . "</table>";
-
-        return $html;
-    }
-
+    
     public static function getData()
     {
 
@@ -92,14 +66,14 @@ class NewGrid
                 Datatable::prepareFieldList(self::$fieldlist);
             endif;
 
+            self::$request['columntitle'] = self::$columntitle;
+            self::$request['columns'] = self::$fieldlist;
+            self::$request['actionlinks'] = self::$actionlinks;
             Datatable::$fieldlist = self::$fieldlist;
             Datatable::$order = self::$order;
             Datatable::$keyfield = self::$keyfield;
             Datatable::$sSQL = self::$sSQL;
-            Datatable::$tableTitle = self::$tableTitle;
-            self::$request['columntitle'] = self::$columntitle;
-            self::$request['columns'] = self::$fieldlist;
-            self::$request['actionlinks'] = self::$actionlinks;
+            Datatable::$tableTitle = self::$tableTitle;           
 
             $data = Datatable::simple(self::$request);
 

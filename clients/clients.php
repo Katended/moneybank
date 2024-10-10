@@ -111,22 +111,62 @@ $_SESSION['security_number'] = rand(10000, 99999);
 getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,1242,1640,208,1641,68,1243,1090,42,1244,1245,1095,885,585,1094,447,888,540,1093,1092,1091,1090,1069,224,225,260,20,1089,1017,886,1089,1086,1086,887,1015,1016,887,888,1016,1019,199,484,1018,316,1020,1021,1022,21,887,899,900,905,628,905,1049,1050,11,1052,1053,1054,1056,1057,1058,1060,1061,1062,1063,1064,1065,1066,1067,1068,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,888");
 ?>
 <script language="javascript">
+    function getClientType() {
+        const tags = document.getElementsByName('client_type');
+        const checkedTag = Array.from(tags).find(tag => tag.checked);
+
+        let clientType = checkedTag ? checkedTag.value : '';
+
+        switch (clientType) {
+            case 'I':
+                return 'IND';
+            case 'G':
+                return 'GRP';
+            case 'M':
+                return 'GMEM';
+            case 'B':
+                return 'BUSS';
+            default:
+                return '';
+        }
+    }
+
+
+    function getElementId() {
+
+        const tags = document.getElementsByName('client_type');
+
+        const checkedTag = Array.from(tags).find(tag => tag.checked);
+
+        let clientType = checkedTag ? checkedTag.value : '';
+
+        switch (clientType) {
+            case 'I':
+                return 'individuals';
+                break;
+            case 'G':
+                return 'groups';
+            case 'M':
+                return 'members';
+                break;
+            case 'B':
+                return 'business';
+                break;
+            default:
+                return '';
+        }
+    }
+
     function newPage(cpar) {
 
-        var tags = document.getElementsByName('client_type');
-        var ajaxdatadiv = '';
 
-        // destroyAllDataTables();
+        var ajaxdatadiv = getElementId();
 
-        for (var i = 0; i < tags.length; ++i) {
-            if (tags[i].checked) {
-                TXTPAGE = tags[i].value;
-            }
-        }
+        TXTPAGE = getClientType();
 
         switch (TXTPAGE) {
 
-            case 'I':
+            case 'IND':
 
                 //  $("#frmClients" ).reset();
                 $("#Indfieldset").show("slow");
@@ -148,30 +188,31 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                 $("#mem_details").children().prop('disabled', true);
 
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
-                TXTPAGE = 'IND';
-                ajaxdatadiv = 'individuals';
+
+
                 break;
 
-            case 'G':
-                $("#Grpfieldset").show("slow");
+            case 'GRP':
+
+                $("#Grpfieldset").show();
+                $("#Indfieldset").hide();
                 $('#memdetails').removeAttr('disabled');
+
+                $("#div_individuals").hide();
+                $("#div_groups").show();
+                $("#div_business").hide();
+
                 dojo.style(dijit.byId("mem_details").controlButton.domNode, {
                     display: "inline-block"
                 });
                 $("#mem_details").children().prop('disabled', false);
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
 
-                $("#div_individuals").hide();
-                $("#div_groups").show();
-                $("#div_business").hide();
-
-                TXTPAGE = 'GRP';
-                ajaxdatadiv = 'groups';
                 break;
 
-            case 'B':
-                //   $("#frmClients" ).reset();
-                $("#Grpfieldset").show("slow");
+            case 'BUSS':
+
+                $("#Grpfieldset").hide();
                 $('#memdetails').removeAttr('disabled');
                 $("#Indfieldset").hide();
                 dijit.byId('regtabs').selectChild(dijit.byId('idgrpbuss'));
@@ -180,13 +221,9 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                 $("#div_groups").hide();
                 $("#div_business").show();
 
-                //   dojo.style(dijit.byId("mem_details").controlButton.domNode,{display:"none"});       
-                TXTPAGE = 'BUSS';
-
-                ajaxdatadiv = 'business';
                 break;
 
-            case 'M':
+            case 'GMEM':
 
                 $('#memdetails').removeAttr('disabled');
                 dojo.style(dijit.byId("mem_details").controlButton.domNode, {
@@ -199,7 +236,7 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                 $("#Indfieldset").hide();
                 TXTPAGE = 'GRP';
 
-                ajaxdatadiv = 'members';
+
                 break;
 
             default:
@@ -329,33 +366,49 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
 
     // Listen for click events on the entire document
     document.addEventListener('click', function(event) {
+
         // Check if the clicked element is a checkbox with the class 'row-checkbox'
         if (event.target.matches('input[type="checkbox"].row-checkbox')) {
 
+            const ajaxdatadiv = getElementId();
+
             const checkboxValue = event.target;
 
+            if (checkboxValue.checked) {
 
-            if (checkboxValue.value.includes('G')) {
-                $('#memdetails').removeAttr('disabled');
-                dojo.style(dijit.byId("mem_details").controlButton.domNode, {
-                    display: "inline-block"
-                });
+                const params = {
+                    formId: 'frmClients',
+                    elementId: ajaxdatadiv,
+                    action: 'edit',
+                    pageparams: TXTPAGE, // Ensure TXTPAGE is defined in your scope
+                    urlpage: '',
+                    keyparam: checkboxValue.value,
+                    searchTerm: '' // Replace with the actual search term
+                };
 
-                dijit.byId('regtabs').selectChild(dijit.byId('mem_details'));
-                !checkboxValue.value.includes('M') && loadGroupMembers(checkboxValue.value);
+                loadClients(params);
+
+                // if (checkboxValue.value.includes('G')) {
+                //     $('#memdetails').removeAttr('disabled');
+                //     dojo.style(dijit.byId("mem_details").controlButton.domNode, {
+                //         display: "inline-block"
+                //     });
+
+                //     dijit.byId('regtabs').selectChild(dijit.byId('mem_details'));
+                //     !checkboxValue.value.includes('M') && loadGroupMembers(checkboxValue.value);
+
+
+                // }
+
+                // setTimeout(function() {
+                //     loadLoans(checkboxValue.value).done(() => {
+                //         return loadSavings(checkboxValue.value);
+                //     });
+                // }, 2000);
+
+
+
             }
-
-            // get loans
-
-            // get savings
-
-            setTimeout(function() {
-                loadLoans(checkboxValue.value).done(() => {
-                    return loadSavings(checkboxValue.value);
-                });
-            }, 2000);
-
-
 
         }
 
@@ -375,13 +428,11 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
 
         </tr>
         <tr>
-            <td align="center">
+            <td align="center" colspan="2">
                 <?php echo $lablearray['316']; ?><?php echo DrawComboFromArray('branch_code', 'branch_code', '', 'operatorbranches', '', ''); ?>
 
-            </td>
-            <td id='div_name' align="center">
 
-            </td>
+                <span id='div_name'> </span>
 
         </tr>
 
@@ -448,9 +499,9 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                     </table>
                 </fieldset>
 
-                <fieldset id="Grpfieldset" style="display:none; padding:5px;">
+                <fieldset id="Grpfieldset" style="display:none;width:100%;padding:5px;">
                     <legend><?php echo $lablearray['1020']; ?></legend>
-                    <table width="100%" border="0" cellpadding="2" cellspacing="2">
+                    <table width=" 100%" border="0" cellpadding="2" cellspacing="2">
                         <tr>
                             <td>
                                 <?php echo $lablearray['1021']; ?><br>
@@ -661,7 +712,6 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
                                     <legend><?php echo $lablearray['1017']; ?></legend>
                                     <table width="100%" border="0">
                                         <tr>
-
                                             <td>&nbsp;</td>
 
                                             <td>&nbsp;<?php echo $lablearray['1081']; ?><?php echo $lablearray['1511']; ?></td>
@@ -711,9 +761,6 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
 </div>
 <script type="text/javascript">
     var data = '';
-
-
-
     $("#btnAddMemDocs").click(function() {
 
         var doccsarray = $("#iddocs *").serializeArray()
@@ -733,36 +780,35 @@ getlables("1199,1733,1511,730,1241,391,9,1036,260,447,1635,1219,1259,1582,886,12
     });
 
     $("#btnSave, #btnAddMem").click(function(event) {
+
         const tags = document.getElementsByName('client_type');
-        // let TXTPAGE = Array.from(tags).find(tag => tag.checked)?.value || '';
+
+        var divGridId = getElementId();
+
+        const action = $('#action').val();
+
+
+        TXTPAGE = getClientType();
 
         if (event.target.id === 'btnAddMem' && TXTPAGE) {
             TXTPAGE = 'GMEM';
+            divGridId ='members';
             tags.forEach(tag => tag.checked && (tag.value = 'M'));
         }
 
-        const action = $('#action').val();
-        showValues('frmClients', '', action).done(function() {
-            const client_idno = document.getElementById("client_idno").value;
-            const divGridId = getDivGridId(TXTPAGE);
 
-            showValues('frmClients', divGridId, 'search', TXTPAGE, 'load.php', client_idno).done(function() {
-                resetAllForms();
+        showValues('frmClients', '', action).done(() => {
+
+            const client_idno = document.getElementById("client_idno").value;
+
+            showValues('frmClients', divGridId, 'search', TXTPAGE, 'load.php', client_idno).done(() => {
+                resetAllForms(['client_type','action']);
             });
 
 
         });
     });
 
-    function getDivGridId(TXTPAGE) {
-        const mapping = {
-            'Grp': 'groups',
-            'GMEM': 'members',
-            'IND': 'individuals',
-            'BUSS': 'business'
-        };
-        return mapping[TXTPAGE] || '';
-    }
 
     $(document).ready(function() {
         w2utils.date(new Date());

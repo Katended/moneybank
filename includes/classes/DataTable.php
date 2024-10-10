@@ -22,14 +22,53 @@ class DataTable
 	public static $_instance;
 	public static $tableTitle;
 
+	const PAGEPARAM_SAVTRAN = 'SAVTRAN';
+	const RESPONSE_REVERSE = 'reverse';
+	const RESPONSE_DELETE = 'Delete';
+
+	const TRASH_ICON = 'trash.png';
+	const REVERSE_ICON = 'reverse.png';
+
 	public static function getInstance()
 	{
-
-
 		if (self::$_instance === null) {
 			self::$_instance = new self;
 		}
 		return self::$_instance;
+	}
+
+
+	/**
+	 * Return grid action based    	
+	 */
+	public static function checkPageParams(): string
+	{
+		// Check if the pageparams key exists and matches the expected value
+		if (isset(self::$request['pageparams']) && self::$request['pageparams'] === self::PAGEPARAM_SAVTRAN) {
+			return self::RESPONSE_REVERSE;
+		}
+
+		return self::RESPONSE_DELETE;
+	}
+
+
+	/**
+	 * Returns the appropriate action based on the pageparams check.
+	 *
+	 * @return string The action to display (icon or text).
+	 */
+	public static function getIcon(): string
+	{
+		$response = self::checkPageParams();
+
+		switch ($response) {
+			case self::RESPONSE_REVERSE:
+				return self::REVERSE_ICON; // Return the response or handle accordingly
+			case self::RESPONSE_DELETE:
+				return self::TRASH_ICON; // Return the path to the trash icon
+			default:
+				return 'Unknown action';
+		}
 	}
 
 	/**
@@ -41,6 +80,8 @@ class DataTable
 	public static function data_output($data)
 	{
 		$out = array();
+
+		self::prepareFieldListForDisplay();
 
 		for ($i = 0, $ien = count($data); $i < $ien; $i++) {
 
@@ -72,7 +113,10 @@ class DataTable
 
 					$callbackFunction = sprintf("() => {showValues('%s','%s','%s','%s','load.php','%s','',false)}", $formId, $elementId, 'search', $pageparams, self::$request['keyparam']);
 
-					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',%s)\"><img src='images/icons/trash.png' title='Delete' ></a>", $formId, $elementId, 'Delete', $pageparams, $dataValue, $callbackFunction);
+					$action = self::checkPageParams();
+					$icon  = self::getIcon();
+
+					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',%s)\"><img src='images/icons/%s' title='%s' ></a>", $formId, $elementId, $action, $pageparams, $dataValue, $callbackFunction, $icon, $icon);
 				}
 				
 
@@ -135,6 +179,34 @@ class DataTable
 			$nCount++;
 		endforeach;
 	}
+
+
+	//        $columns = array(    
+	//               array( 'db' => 'checkbox', 'dt' => 0 ),
+	//               array( 'db' => 'primary key', 'dt' => 1 ),
+	//               array( 'db' => 'client_surname',  'dt' => 2 ),
+	//               array( 'db' => 'client_firstname',   'dt' => 3 ),
+	//               array( 'db' => 'client_middlename',     'dt' => 4 ))
+	public static function prepareFieldListForDisplay($fieldlist = array())
+	{
+		// self::$columns = array();
+
+		$nCount = 0;
+
+		foreach ($fieldlist as $value):
+			// Use regex to find the value within backticks
+			if (preg_match('/`([^`]+)`/', $value, $matches)) {
+				$extractedValue = $matches[1]; // This will contain the value inside backticks
+			} else {
+				$extractedValue = $value; // If no backticks found, use the original value
+			}
+
+			self::$columns[] = array('db' => $extractedValue, 'dt' => $nCount);
+			$nCount++;
+
+		endforeach;
+	}
+
 
 	//	/**
 	//	 * Paging
@@ -384,11 +456,10 @@ class DataTable
 				self::$fieldlist[] = self::$keyfield;
 			}
 
-			self::$sSQL = "SELECT " . implode(",", self::$fieldlist) . " " . self::$sSQL . " " . self::$where_condition . " " . self::$order . " " . $limit . " ; SELECT COUNT(*) AS reccount " . self::$sSQL . " " . self::$where_condition . ";";
+			self::$sSQL = "SELECT SQL_CALC_FOUND_ROWS  " . implode(",", self::$fieldlist) . " FROM " . self::$sSQL . " " . self::$where_condition . " " . self::$order . " " . $limit . " ; SELECT FOUND_ROWS() reccount;";
 			// echo self::$sSQL = "SELECT ".implode(",",self::$fieldlist)." ".self::$sSQL." ".self::$where_condition." ".self::$order." ".$limit." ; SELECT COUNT(".self::$keyfield.") AS reccount ".self::$sSQL." ".self::$where_condition.";";                    
 			// exit();
 			$results_query = Common::$connObj->SQLSelect(self::$sSQL);
-
 
 			if (count($results_query) > 1):
 

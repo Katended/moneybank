@@ -311,8 +311,8 @@ Class Clients extends ProductConfig {
             }
 
             Bussiness::$Conn->endTransaction();
-
-            return Common::createResponse('ok', '');
+            Common::getlables("218", "", "", $Conn);
+            return Common::createResponse('ok', Common::$lablearray['218']);
 
         } catch (Exception $e) {
             Bussiness::$Conn->cancelTransaction();

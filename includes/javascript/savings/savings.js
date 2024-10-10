@@ -7,23 +7,31 @@ function handleCheckboxClick(event) {
     var formId = getCurrentFormId();
 
     if (checkbox.checked) {
+      var ctype = getCategory(checkbox.value);
+
+      var tid = checkbox.value;
+
       const params = {
         formId: formId,
         elementId: "div_name",
         action: "add",
-        pageparams: getCategory(checkbox.value),
+        pageparams: ctype,
         urlpage: "",
-        keyparam: checkbox.value,
+        keyparam: tid,
         searchterm: "",
       };
 
+      const isChecked = ["I", "G", "B"].some((letter) =>
+        checkbox.value.includes(letter)
+      );
+
       // Check if the checkbox value contains 'I' or 'S'
-      if (checkbox.value.includes("I")) {
-        loadClients(params).done((formId) => {
-          loadSavingAccounts(formId);
+      if (isChecked) {
+        loadClients(params).done(tid, () => {
+          loadSavingAccounts(tid);
         });
       } else {
-        loadAccount(checkbox.value);
+        loadAccount(tid);
       }
     }
   }
@@ -37,7 +45,7 @@ function initEventListeners() {
 // Get savings accounts
 // The page should have table called 'accounts' where the accounts will be loaded
 // The page should have an input element with id client_idno used to store the clientId
-function loadSavingAccounts(formId) {
+function loadSavingAccounts(sid) {
   var tags = document.getElementsByName("radiosclient");
   var TXTPAGE = "";
 
@@ -46,19 +54,32 @@ function loadSavingAccounts(formId) {
       TXTPAGE = tags[i].value + "SAVACC";
     }
   }
+  var formId = getCurrentFormId();
 
-  return showValues(
-    formId,
-    "accounts",
-    "search",
-    TXTPAGE,
-    "load.php",
-    $("#client_idno").val()
-  );
+  return showValues(formId, "accounts", "search", TXTPAGE, "load.php", sid);
 }
 
 function loadAccount(accountId) {
   var formId = getCurrentFormId();
 
-  return showValues(formId, "", "add", accountId, "load.php", accountId);
+  return showValues(formId, "", "add", accountId, "load.php", accountId).done(
+    () => {
+      loadTransactions();
+    }
+  );
+}
+
+function loadTransactions() {
+  var formId = getCurrentFormId();
+  return showValues(
+    formId,
+    "savdata",
+    "search",
+    "SAVTRAN",
+    "load.php?act=edit&acc=" +
+      $("#txtsavaccount").val() +
+      "&product_prodid=" +
+      $("#product_prodid").val(),
+    $("#txtsavaccount").val()
+  );
 }

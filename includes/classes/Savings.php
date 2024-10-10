@@ -117,7 +117,7 @@ Class Savings extends ProductConfig {
 
                 case 'GRPSAVACC':
                 case 'MEMSAVACC':
-                    $cWhere = " AND (c.entity_idno='" . $theid . "' OR c.members_idno='" . $theid . "')";
+                    $cWhere = " AND (c.entity_idno='" . $theid . "' )";
                     break;
 
                 default:
@@ -125,20 +125,20 @@ Class Savings extends ProductConfig {
             }
         }
 
-        // Construct the query based on pageparams
         $query = '';
+
         switch ($pageparams) {
-            case 'INDSAVACC':
-            case 'GRPSAVACC':
+            case 'INDSAVACC':            
             case 'BUSSAVACC':
 
-                $query = " FROM " . TABLE_SAVACCOUNTS . " sa 
-                          JOIN " . TABLE_VCLIENTS . " c ON sa.client_idno = c.client_idno";
+                $query =  TABLE_SAVACCOUNTS . " sa 
+                          JOIN " . TABLE_VCLIENTS . " c ON sa.client_idno = c.client_idno" . $cWhere;
                 break;
     
             case 'MEMSAVACC':
-                $query = " FROM " . TABLE_SAVACCOUNTS . " sa 
-                          JOIN " . TABLE_MEMBERS . " c ON sa.client_idno = c.client_idno" . $cWhere;
+            case 'GRPSAVACC':
+                $query =  TABLE_SAVACCOUNTS . " sa 
+                          JOIN " . TABLE_MEMBERS . " c ON sa.client_idno = c.entity_idno" . $cWhere;
                 break;
     
             default:
@@ -536,9 +536,10 @@ Class Savings extends ProductConfig {
 //            endif;
             
         } catch (Exception $e) {
-            
-            Bussiness::$Conn->cancelTransaction();
+
+            Bussiness::$Conn->cancelTransaction();   
             Common::$lablearray['E01'] = $e->getMessage();
+            return Common::createResponse('err', $e->getMessage());
         }
     }
 

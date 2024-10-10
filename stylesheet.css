@@ -3882,7 +3882,7 @@ ol {
 }
 
 .savings-container {
-  padding:4px;
+  padding:2px;
   align-items: flex-start;
 }
 .grid-options > div {  
@@ -4037,7 +4037,7 @@ ol {
 
 caption { 
 	line-height: .1.5em;
-	color: #000000;
+	color:#444;
 	font-weight: 100;  
-  background: #e9e9e9;
+  background: linear-gradient(90deg, rgba(255,255,255,1) 10%, rgba(171,214,255,1) 39%, rgba(166,212,255,1) 64%, rgba(255,255,255,1) 88%);
 }

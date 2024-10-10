@@ -64,7 +64,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             if (keynum == 8 || typeof(keynum) === 'undefined') {
                 return;
             }
-            //alert(keynum);
+
             keychar = String.fromCharCode(keynum)
             numcheck = /\d/
             haystack = document.getElementById(elementid).value;
@@ -321,7 +321,6 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                         displaymessage(frm, jsonObj.message, jsonObj.status);
                         break;
 
-
                     default:
                         // Handle unexpected status
                         console.log('Unexpected status:', jsonObj.status);
@@ -332,7 +331,8 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
 
             } catch (e) {
-                console.log('Parsing error:', e);
+                displaymessage(frm, data, 'err');
+                console.log(data, e);
             }
         };
 
@@ -574,9 +574,29 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         }
 
         // Function to reset all forms on the page      
-        function resetAllForms() {
+        function resetAllForms(elementIdsToPreserve) {
             const forms = document.querySelectorAll('form');
-            forms.forEach(form => form.reset());
+            forms.forEach(form => {
+                // Store the values of the elements to preserve
+                const preservedValues = {};
+                elementIdsToPreserve.forEach(id => {
+                    const element = form.querySelector(`#${id}`);
+                    if (element) {
+                        preservedValues[id] = element.value;
+                    }
+                });
+
+                // Reset the form
+                form.reset();
+
+                // Restore the preserved values
+                for (const id in preservedValues) {
+                    const element = form.querySelector(`#${id}`);
+                    if (element) {
+                        element.value = preservedValues[id];
+                    }
+                }
+            });
         }
 
         // This functin is used to load clients
@@ -588,6 +608,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             keyparam,
             searchTerm
         }) {
+
             return showValues(formId, elementId, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
         }
 
@@ -626,8 +647,6 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 // Return the ID of the form
                 return activeElement.closest('form').id;
             }
-            alert('current form name not found')
-            //  return null; // Return null if no form is found
         }
 
 
@@ -1426,7 +1445,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 var element_id = 'grid_checkbox_' + eID;
 
                 if ($(this).attr('id') != eID && $(this).attr('id') != element_id) {
-                    //  alert($(this).attr('id'));  
+
                     if (checkmultiple === 0) {
 
                         $(this).prop('checked', false);

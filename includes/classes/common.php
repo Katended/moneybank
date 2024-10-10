@@ -1531,7 +1531,7 @@ class Common {
         $banks .= '</select>';
 
         if ($ttype == 'CQ'):
-            $banks .= $lablearraybanks['36'] . "<input id='cheques_no' name='cheques_no' value='' type='text' size='15'>";
+            $banks .= "<br>" . $lablearraybanks['36'] . "<input id='cheques_no' name='cheques_no' value='' type='text' size='15'>";
 
         endif;
         return $banks;
@@ -2354,7 +2354,9 @@ class Common {
 
         $account[] = array();
 
-            self::getlables("1613,1614,1622,1470,171,1504,1240,1402,704,1229,1230,1105,1216,1203,1028,1193,1202,311,1203,1203,1027,1204,1205,772,67,696,970,704,1144,1145,1105,1181", "", "", self::$connObj);
+        self::getlables("1613,1614,1622,1470,171,1504,1240,1402,704,1229,1230,1105,1216,1203,1028,1193,1202,311,1203,1203,1027,1204,1205,772,67,696,970,704,1144,1145,1105,1181", "", "", self::$connObj);
+
+        try {
 
             foreach ($aLines as $key => &$value) {
 
@@ -2497,8 +2499,12 @@ class Common {
                         $_pararesult = self::$connObj->SQLSelect("SELECT productconfig_paramname,productconfig_value,productconfig_ind,productconfig_grp FROM " . TABLE_PRODUCTCONFIG . " WHERE  productconfig_paramname IN ('PRINCIPAL_OUTSTANDING_ACC','INT_RECEIVED_ACC','COMM_RECEIVED_ACC','CURRENCIES_ID','PEN_RECEIVED_ACC','STAT_RECEIVED_ACC','VAT_ACC','LOAN_OVERPAYMENT_ACC','SERVICE_FEE_ACC') AND product_prodid='" . $value['PRODUCT_PRODID'] . "' AND branch_code='" . $value['BRANCHCODE'] . "'");
 
                         $data_acc = self::searchArray($_pararesult, 'productconfig_paramname', 'CURRENCIES_ID');
+                        if (array_key_exists('productconfig_value', $data_acc)) {
                         $currency = $data_acc['productconfig_value'];
-
+                        } else {
+                            throw new Exception("Currency not configured for branch product");
+                        }
+                        
                         if ($value['TTYPE'] == 'PRI') {
                             $data_acc = self::searchArray($_pararesult, $column1, 'PRINCIPAL_OUTSTANDING_ACC');
                         throw new Exception(self::$lablearray['1144'] . ' ' . self::$lablearray['1470'] . ' ' . $value['PRODUCT_PRODID']);
@@ -2547,6 +2553,10 @@ class Common {
                         self::$lablearray['E01'] = "";
 
                         $data_acc = self::searchArray($_pararesult, $column1, 'CURRENCIES_ID');
+
+                        if (!array_key_exists('productconfig_value', $data_acc)) {
+                            throw new Exception("Currency not configured for branch product");
+                        }
 
                         // check see if user is transacting in foregn currency	
                         if (SETTTING_CURRENCY_ID != $data_acc['productconfig_value']) {
@@ -2599,6 +2609,10 @@ class Common {
                         $_pararesult = self::$connObj->SQLSelect("SELECT productconfig_paramname,productconfig_value,productconfig_ind,productconfig_grp FROM " . TABLE_PRODUCTCONFIG . " WHERE  productconfig_paramname IN ('SUSPENCE_ACC','CURRENCIES_ID') AND product_prodid='" . $value['PRODUCT_PRODID'] . "' AND branch_code='" . $value['BRANCHCODE'] . "'");
                         $_result = self::searchArray($_pararesult, 'productconfig_paramname', 'CURRENCIES_ID');
 
+                        if (!array_key_exists('productconfig_value', $_result)) {
+                            throw new Exception("Currency not configured for branch product");
+                        }
+
 
                         $currency = $_result['productconfig_value'];
 
@@ -2606,6 +2620,11 @@ class Common {
 
                         $data_acc = self::searchArray($_pararesult, 'productconfig_paramname', 'SUSPENCE_ACC');
 
+                        if (!array_key_exists('productconfig_value', $data_acc)) {
+                            throw new Exception("Suspence account not configured for branch product");
+                        }
+
+                        
                         $value['GLACC'] = $data_acc['productconfig_value'];
 
                         if ($value['GLACC'] == '') {
@@ -2686,9 +2705,12 @@ class Common {
                                 break;
 
                         endswitch;
-
-
                         $_result = self::searchArray($query_array, 'productconfig_paramname', 'CURRENCIES_ID');
+
+                        if (!array_key_exists('productconfig_value', $_result)) {
+                            throw new Exception("Currency not configured for branch product");
+                        }
+                        
                         $currency = $_result['productconfig_value'];
 
 
@@ -2721,16 +2743,28 @@ class Common {
                             case 'TW':
                             case 'TR':
                                 $data_acc = self::searchArray($query_array, $column1, 'TIMEDEPOSIT_ACC');
+                                if (!array_key_exists('productconfig_value', $data_acc)) {
+                                    throw new Exception("Time Deposit Account not configured for branch product");
+                                }
                                 break;
                             case 'SC':
                                 $data_acc = self::searchArray($query_array, $column1, 'SERVICE_FEE_ACC');
+                                if (!array_key_exists('productconfig_value', $data_acc)) {
+                                    throw new Exception("Service fee Account not configured for branch product");
+                                }
                                 break;
                             case 'DINT':
                                 $data_acc = self::searchArray($query_array, $column1, 'INT_TD_ACC');
+                                if (!array_key_exists('productconfig_value', $data_acc)) {
+                                    throw new Exception("Interest on Time Deposit Account not configured for branch product");
+                                }
                                 break;
 
                             default:
                                 $data_acc = self::searchArray($query_array, $column1, 'SAVINGS_ACC');
+                                if (!array_key_exists('productconfig_value', $data_acc)) {
+                                    throw new Exception("Savings Account not configured for branch product");
+                                }
                                 break;
 
                         endswitch;
@@ -2742,6 +2776,7 @@ class Common {
                             break 2;
                             // throw new Exception(self::$lablearray['772'].' '.$value['PRODUCT_PRODID']);
                         }
+
                         $value['GLACC'] = $data_acc[$column2];
 
 
@@ -2779,6 +2814,9 @@ class Common {
                 $value['TRANCODE'] = $_trancode;
 
                 $value['FXID'] = $forexrates_id;
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
        
     }
@@ -2855,13 +2893,13 @@ class Common {
 
     // This function is used to search for an array element within an array        
     public static function searchArray($array, $key, $value) {
-
+        
         if (is_array($array)) {
 
             foreach ($array as $k => $val) {
 
                 if (is_array($val)) {
-                    if ($val[$key] == $value) {
+                    if (($val[$key] ?? "") == $value) {
                         return $val;
                         break;
                     } else {
@@ -3672,42 +3710,38 @@ class Common {
      */
 
     public static function reverseTransaction($transactioncode_array, $modules, $user_id, &$Conn) {
-        Bussiness::$Conn->AutoCommit = false;
 
-        Bussiness::$Conn->beginTransaction();
+        try {
 
-        $thearray['TABLE'] = TABLE_DELETEDTRANS;
-        $thearray['TCODE'] = implode(",", $transactioncode_array);
-        $thearray['MODULE'] = $modules;
-        $thearray['BRCODE'] = '';
-        $thearray['UID'] = $_SESSION['user_id'];
+            Bussiness::$Conn->beginTransaction();
 
-        Bussiness::covertArrayToXML(array($thearray), false);
+            $thearray['TABLE'] = TABLE_DELETEDTRANS;
+            $thearray['TCODE'] = implode(",", $transactioncode_array);
+            $thearray['MODULE'] = $modules;
+            $thearray['BRCODE'] = '';
+            $thearray['UID'] = $_SESSION['user_id'];
 
-//        $parameters_final['branch_code'] = '';
-//        $parameters_final['transactioncodes'] = trim($transactioncodes);
-//        $parameters_final['ttype'] = '';       
-//        $parameters_final['userid'] = $_SESSION['user_id'];
-//        $parameters_final['plang'] = P_LANG;
-//
-//        // reverse client transaction?      
-//        $parameters_final['ttype'] = $modules;
+            Bussiness::covertArrayToXML(array($thearray), false);
 
-        $thearray['MODULE'] = 'G';
+            $thearray['MODULE'] = 'G';
 
-        Bussiness::covertArrayToXML(array($thearray), true);
+            Bussiness::covertArrayToXML(array($thearray), true);
 
-        $tabledata['xml_data'] = Common::$xml;
+            $tabledata['xml_data'] = Common::$xml;
 
-        // save 
-        Bussiness::PrepareData(array("FORMDATA" => $tabledata, "OPTIONS" => array('' => 1)), TABLE_XMLTRANS, false);
+            // save 
+            Bussiness::PrepareData(array("FORMDATA" => $tabledata, "OPTIONS" => array('' => 1)), TABLE_XMLTRANS, false);
 
-        Bussiness::$Conn->endTransaction();
+            Bussiness::$Conn->endTransaction();
 
-        // $parameters_final['code'] = 'REVERSETRAN';
-        // $resuts = self::$connObj->sp_call($parameters_final, '');
+            echo Common::createResponse('ok', Common::$lablearray['218']);
+        } catch (Exception $e) {
 
-        return true;
+            Bussiness::$Conn->cancelTransaction();
+
+            echo Common::createResponse('err', $e->getMessage());
+        }
+
     }
 
     // get several columns from associative array of a results set. For example geting specific columns from array beloe
