@@ -2409,8 +2409,6 @@ class Common {
                         break;
                 }
 
-
-
                 $options['GLACC'] = (isset($_glaccount) ? $_glaccount : '' );
 
                 if ($value['DESC'] == "") {

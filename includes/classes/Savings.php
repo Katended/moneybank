@@ -159,6 +159,7 @@ Class Savings extends ProductConfig {
         }
     
         return $query;
+
         } catch (Exception $e) {
             Common::$lablearray['E01'] = $e->getMessage();
             return Common::createResponse('err', $e->getMessage());
@@ -345,6 +346,25 @@ Class Savings extends ProductConfig {
         }
     }
 
+    /*     
+     * getCurrentBalances
+     * This function is used to get Savings Balance for Group members 
+     * 
+    */
+    public static function getCurrentBalances()
+    {
+
+        try {
+            $total = 0;
+            foreach (self::$bal_array as $item) {
+                $total += $item['balance'];
+            }
+
+            return $total;
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+        }
+    }
 
 
     /**
@@ -568,7 +588,7 @@ Class Savings extends ProductConfig {
 
             Bussiness::$Conn->cancelTransaction();   
             Common::$lablearray['E01'] = $e->getMessage();
-            return Common::createResponse('err', $e->getMessage());
+           
         }
     }
 

@@ -293,7 +293,11 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             var trimmedData = data.trim();
 
             try {
-                //debugger;
+
+                trimmedData.includes("Warning") && (() => {
+                    throw new Error(trimmedData);
+                })();
+
                 var jsonObj = isValidJsonString(trimmedData);
 
                 switch (jsonObj.status) {
@@ -329,7 +333,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
             } catch (error) {
 
-                displaymessage(frm, error, 'err');
+                displaymessage(frm, error.message, 'err');
                 console.log(error);
             }
         };
@@ -467,12 +471,12 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             dataTableInstances.forEach((instance) => {
                 if (instance) {
                     const tableNode = instance.table().node(); // Get the table node
-
-                    instance.destroy(); // Destroy the DataTable instance
-
                     // Clear the table body and optionally reset headers
                     $(tableNode).empty(); // Clear the table
                     $(tableNode).append('<thead></thead><tbody></tbody>'); // Optionally reset headers
+                    // instance.destroy(); // Destroy the DataTable instance
+
+
                 }
             });
 

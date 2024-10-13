@@ -4,7 +4,7 @@ function handleCheckboxClick(event) {
 
   // Check if the clicked element is a checkbox with the class 'row-checkbox'
   if (checkbox.matches('input[type="checkbox"].row-checkbox')) {
-    // destroyAllDataTables();
+
     var formId = getCurrentFormId();
 
     if (checkbox.checked) {

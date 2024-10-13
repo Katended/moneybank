@@ -733,7 +733,6 @@ Common::$lablearray['E01'] = '';
                         break 2;
                     }
 
-
                     // check mode of payment
                     if ($data[3] == '') {
                         $errormsg.="<div style='padding:2px;'>" . Common::$lablearray['293'] . ' <b>' . Common::$lablearray['24'] . '</b> ' . Common::$lablearray['1451'] . ' ' . ($tot - 1) . ' ' . Common::$lablearray['1452'] . " 4<div>";
@@ -2632,24 +2631,19 @@ Common::$lablearray['E01'] = '';
                if ($formdata['ttype'] == 'SA'):
                     $formdata['MODE'] ='';
                endif;
-               
-                
+                Savings::$asatdate = $formdata['txtDate'];
+                Savings::$savacc = $formdata['txtsavaccount'];
+                Savings::$prodid  = $formdata['product_prodid'];
+                Savings::getGroupSavingsBalances();
+                $balance = Savings::getCurrentBalances();
+
                 if ($formdata['ttype'] == 'SA' || $formdata['ttype'] == 'SW'):
                     
                     $nTotwithdraw = $formdata['txtamount'] + $formdata['CHARGE'];
-                   
-                
-                    Savings::$savaccid = $formdata['keyparam'];
-                
-                 
-                   // Savings::$prodid = $formdata['product_prodid'];
-                  //  Savings::$asatdate = $formdata['txtDate'];
-                    
-                   
-                    if (!Savings::getSavingsBalance($nTotwithdraw)) {
-                        getlables("1216");
-                        echo  Common::createResponse('info', $lablearray['1216'] . ' - ' . $grpbalance);
 
+                    if ($nTotwithdraw > $balance) {
+                        Common::getlables("1216", "", "", $Conn);
+                        echo  Common::createResponse('info', Common::$lablearray['1216'] . ' - ' . $grpbalance);
                         exit();
                     }
                     
@@ -2765,7 +2759,7 @@ Common::$lablearray['E01'] = '';
                             $formdata['POSTTOGL']= false;
                             $formdata['POSTTOSL']= true;
                             
-                            $mem_bal_array = Savings::$bal_array[1];
+                            //$mem_bal_array = Savings::$bal_array[1];
                                
                             foreach ($memamounts as $key => $val):
                                
@@ -2776,16 +2770,17 @@ Common::$lablearray['E01'] = '';
                                 $formdata['AMOUNT'] = -1 * abs($formdata['AMOUNT']); 
                                 
                                 if ($formdata['TTYPE'] == 'SA' || $formdata['TTYPE'] == 'SW'):
-                               
-                                    $membalance = Common::sum_array('members_idno', $formdata['MEMID'], 'balance',$mem_bal_array);
+
+                                $membalance = Common::sum_array('members_idno', $formdata['MEMID'], 'balance', Savings::$bal_array);
 
                                     if ($membalance < abs($formdata['AMOUNT'])):
 
-                                        $memname = Common::sum_array('members_idno', $formdata['MEMID'], 'name',$mem_bal_array);
+                                    $memname = Common::sum_array('members_idno', $formdata['MEMID'], 'name', Savings::$bal_array);
 
                                         getlables("1666");
+
                                     echo  Common::createResponse('err', $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID']);
-                                        // echo "ERR " . $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID'];
+                                        
                                         exit();
 
                                     endif;
@@ -2849,8 +2844,7 @@ Common::$lablearray['E01'] = '';
                     Savings::updateSavings($form_data);                    
 
                     if (Common::$lablearray['E01'] != ''):
-                        echo  Common::createResponse('err', Common::$lablearray['E01']);
-                  
+                        echo  Common::createResponse('info', Common::$lablearray['E01']);                  
                         exit();
                     endif;
                 }

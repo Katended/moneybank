@@ -477,13 +477,11 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
                 () => {
 
 
-                    loadTransactions()
-                    $("#grid_toppanel").hide();
-                    $("#txtamount, #txtvoucher, .AMT").val("");
-                    $("#txtamount, #txtvoucher, .AMT").val('');
-
-
-
+                    loadTransactions($("#theid").val()).done(() => {
+                        $("#grid_toppanel").hide();
+                        $("#txtamount, #txtvoucher, .AMT").val("");
+                        $("#txtamount, #txtvoucher, .AMT").val('');
+                    });
                 });
 
 

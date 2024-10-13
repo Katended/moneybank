@@ -832,7 +832,7 @@
 
             case 'IND':
 
-                Common::getlables("1018,1019,1093,1178,240,484,1665,887", "", "", $Conn);
+            Common::getlables("1018,1019,1093,1178,240,484,1665,887", "", "", $Conn);
 
             $query = TABLE_CLIENTS . " c " . " WHERE 1=1 " . $cWhere;
 
@@ -963,7 +963,6 @@
             SavingS::$savaccid = $_POST['keyparam'];
 
             $query = Savings::getSavingsTransactionsById();
-            
 
             NewGrid::$columntitle = array(
                 Common::$lablearray['301'],
@@ -993,11 +992,11 @@
 
             // NewGrid::$actionlinks = "<a class='divlinks' href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'reverse','','addedit.php')\" title ='" . $grid_lables_lablearray['272'] . "'><img src='images/icons/withdraw.png' border='0'></a>";
 
-            echo NewGrid::getData();             
+            echo NewGrid::getData();
 
-                exit();
+            exit();
 
-                break;
+            break;
 
             case 'TDS':
 
@@ -1951,9 +1950,17 @@
                 
                 } else {
 
-                    Savings::$savaccid = $_POST['keyparam'];
+                    $keyparam = $_POST['keyparam'] ?? $_POST['theid'];
+
+                    Savings::$savaccid = $keyparam;
+
                     Savings::getSavingsBalance();
 
+                    if ($_POST['keyparam'] != "") {
+                        Common::push_element_into_array($main_array, 'theid', $_POST['keyparam']);
+                    }
+                    
+                    
                     $balarray = (Savings::$bal_array[0] ?? 0);
 
                     if (preg_match(
@@ -1962,7 +1969,7 @@
                     )) {
 
                         Savings::getGroupSavingsBalances();
-
+                        Common::push_element_into_array($main_array, 'theid', $keyparam);
                         Common::push_element_into_array($main_array, 'client_idno', Savings::$clientidno);
                         Common::push_element_into_array($main_array, 'action', 'add');
                         Common::push_element_into_array($main_array, 'product_prodid', Savings::$prodid);
