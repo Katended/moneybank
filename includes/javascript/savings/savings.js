@@ -4,9 +4,12 @@ function handleCheckboxClick(event) {
 
   // Check if the clicked element is a checkbox with the class 'row-checkbox'
   if (checkbox.matches('input[type="checkbox"].row-checkbox')) {
+    // destroyAllDataTables();
     var formId = getCurrentFormId();
 
     if (checkbox.checked) {
+
+
       var ctype = getCategory(checkbox.value);
 
       var tid = checkbox.value;
@@ -63,23 +66,24 @@ function loadAccount(accountId) {
   var formId = getCurrentFormId();
 
   return showValues(formId, "", "add", accountId, "load.php", accountId).done(
+    accountId,
     () => {
-      loadTransactions();
+      loadTransactions(accountId);
     }
   );
 }
 
-function loadTransactions() {
+function loadTransactions(accountId) {
+  // Get the current form ID
   var formId = getCurrentFormId();
-  return showValues(
-    formId,
-    "savdata",
-    "search",
-    "SAVTRAN",
+
+  // Construct the URL for loading transactions
+  var url =
     "load.php?act=edit&acc=" +
-      $("#txtsavaccount").val() +
-      "&product_prodid=" +
-      $("#product_prodid").val(),
-    $("#txtsavaccount").val()
-  );
+    $("#txtsavaccount").val() +
+    "&product_prodid=" +
+    $("#product_prodid").val();
+
+  // Call the showValues function with the constructed parameters
+  return showValues(formId, "savdata", "search", "SAVTRAN", url, accountId);
 }

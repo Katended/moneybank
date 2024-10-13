@@ -7,10 +7,12 @@ require_once('financial_class.php');
 Class Savings extends ProductConfig {
 
     Public static $connObj;
-    Public static $membershipid;
-    Public static $asatdate;
-    Public static $savacc;
+    public static $membershipid;
+    public static $asatdate;
+    public static $savacc;
     Public static $prodid;
+    public static $clientidno;
+    public static $balance;
     Public static $savaccid;
     public static $bal_array = array();
     Public static $aLines = null;
@@ -24,12 +26,20 @@ Class Savings extends ProductConfig {
         return self::$_instance;
     }
 
-    public static function setProps($savacc, $prodid, $membershipid, $asatdate) {
-
-        self::$savacc = $savacc;
-        self::$prodid = $prodid;
-        self::$membershipid = $membershipid;
-        self::$asatdate = $asatdate;
+    /**
+     * setProps
+     * Sets properties for savings account details based on the provided balance array.
+     *
+     * @param array $balanceArray        Array containing savings account details
+     */
+    public static function setProps(array $balanceArray)
+    {
+        self::$savacc = $balanceArray[0]['savaccounts_account'] ?? '';
+        self::$prodid = $balanceArray[0]['product_prodid'] ?? ''; // Assuming 'product_id' is in the array
+        self::$clientidno = $balanceArray[0]['client_idno'] ?? '';
+        self::$membershipid = $balanceArray[0]['membership_id'] ?? ''; // Assuming 'membership_id' is in the array
+        self::$asatdate = self::$asatdate; // Assuming this is set elsewhere
+        self::$balance = $balanceArray[0]['balance'] ?? 0;
     }
 
     /**
@@ -107,36 +117,39 @@ Class Savings extends ProductConfig {
      * @$pageparams string 
      */
     public static function getSavingsAccounts($pageparams = '', $theid = '', $cWhere = '') {
-        // Construct the WHERE clause based on pageparams and theid
-        if ($theid != "") {
-            switch ($pageparams) {
-                case 'INDSAVACC':
-                case 'BUSSAVACC':
-                    $cWhere = " AND c.client_idno='" . $theid . "'";
-                    break;
 
-                case 'GRPSAVACC':
-                case 'MEMSAVACC':
-                    $cWhere = " AND (c.entity_idno='" . $theid . "' )";
-                    break;
+        try {
 
-                default:
-                    break;
+            if ($theid != "") {
+                switch ($pageparams) {
+                    case 'INDSAVACC':
+                    case 'GRPSAVACC':
+                    case 'BUSSAVACC':
+                        $cWhere = " AND c.client_idno='" . $theid . "'";
+                        break;
+
+                    case 'MEMSAVACC':
+                        $cWhere = " AND (c.entity_idno='" . $theid . "' )";
+                        break;
+
+                    default:
+                        break;
+                }
             }
-        }
 
         $query = '';
 
         switch ($pageparams) {
             case 'INDSAVACC':            
             case 'BUSSAVACC':
+                case 'GRPSAVACC':
+                
 
                 $query =  TABLE_SAVACCOUNTS . " sa 
                           JOIN " . TABLE_VCLIENTS . " c ON sa.client_idno = c.client_idno" . $cWhere;
                 break;
-    
-            case 'MEMSAVACC':
-            case 'GRPSAVACC':
+
+                case 'MEMSAVACC':
                 $query =  TABLE_SAVACCOUNTS . " sa 
                           JOIN " . TABLE_MEMBERS . " c ON sa.client_idno = c.entity_idno" . $cWhere;
                 break;
@@ -146,7 +159,12 @@ Class Savings extends ProductConfig {
         }
     
         return $query;
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+            return Common::createResponse('err', $e->getMessage());
+        }
     }
+
 
     /**
      * getSavingsAccounts
@@ -156,8 +174,8 @@ Class Savings extends ProductConfig {
      */
     public static function getClientDetails($pageparams = '', $theid = '', $cWhere = '') {
 
-
-        switch ($pageparams):
+        try {
+            switch ($pageparams):
             case 'IND':
             case 'BUSS':
                 if ($theid != ""):
@@ -220,8 +238,38 @@ Class Savings extends ProductConfig {
         endswitch;
 
         return $query;
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+            return Common::createResponse('err', $e->getMessage());
+        }
     }
-    
+
+    /*     
+     * getSavingsTransactionsById
+     * This function is used to get Savings Transactions of a Savings Account
+     * Returns String
+    */
+    public static function getSavingsTransactionsById()
+    {
+
+        return sprintf(
+            "(
+                SELECT
+                    savaccounts_account,
+                    product_prodid
+                FROM
+                    savaccounts
+                WHERE
+                    savaccounts_id = '%s'
+            ) AS s,
+            savtransactions t
+            WHERE
+                t.savaccounts_account = s.savaccounts_account
+                AND t.product_prodid = s.product_prodid",
+            self::$savaccid
+        );
+    }
+
     /*     
      * getSavingsBalance
      * This function is used to get Savings Balance of a Savings Account
@@ -229,64 +277,85 @@ Class Savings extends ProductConfig {
      * @param string $acc  : Savings Account
      * @param date $ddate  : As at
      * Returns array
-    */  
-    public static function getSavingsBalance($amount = 0) {
-
-        // check savings balance
-        $parameters = array();
-
-        Common::prepareParameters($parameters, 'asat', self::$asatdate);
-
-        if (self::$savaccid != ""):
-
-            Common::prepareParameters($parameters, 'accountid', self::$savaccid);
-            Common::prepareParameters($parameters, 'code', 'SAVBALSBYID');
-            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
-
-            if (self::$bal_array??''!=="") {
-                $balance = array_sum(array_column(self::$bal_array, 'balance'));
-            } else {
-                $balance = 0;
-            }         
-      
-        else:
-
-            Common::prepareParameters($parameters, 'productid', self::$prodid);
-            Common::prepareParameters($parameters, 'accountid', self::$savacc);
-            Common::prepareParameters($parameters, 'memid', self::$membershipid);
+    */
+    /**
+     * getSavingsBalance
+     * Retrieves the savings balance of a savings account.
+     *
+     * @return bool        Returns true if balance is non-negative, false otherwise
+     */
+    public static function getSavingsBalance()
+    {
+        try {
+            $parameters = [];
             Common::prepareParameters($parameters, 'asat', self::$asatdate);
-            Common::prepareParameters($parameters, 'code', 'SAVBALS');                       
-            
-            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, true);
 
-            if (isset(self::$bal_array['balance'])) {
-                $balance = self::$bal_array['balance'];
+            // Determine if we are using an account ID or product ID
+            if (!empty(self::$savaccid)) {
+                Common::prepareParameters($parameters, 'accountid', self::$savaccid);
+                Common::prepareParameters($parameters, 'code', 'SAVBALSBYID');
             } else {
-                $balance = 0;
-            }           
+                Common::prepareParameters($parameters, 'productid', self::$prodid);
+                Common::prepareParameters($parameters, 'accountid', self::$savacc);
+                Common::prepareParameters($parameters, 'memid', self::$membershipid);
+                Common::prepareParameters($parameters, 'code', 'SAVBALS');
+            }
 
-        endif;
+            // Call the stored procedure
+            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, empty(self::$savaccid));
 
-
-        $balance = bcsub($balance, abs($amount), SETTING_ROUNDING);
-
-        if ($balance < 0):
-            return false;
-        else:
-            return true;
-        endif;
+            // Set properties using the balance array
+            self::setProps(self::$bal_array);
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+            return Common::createResponse('err', $e->getMessage());
+        }
     }
 
-    /**
 
-      /**
+    /*     
+     * getGroupSavingsBalance
+     * This function is used to get Savings Balance for Group members 
+     * 
+    */
+    public static function getGroupSavingsBalances()
+    {
+
+        try {
+
+            // check savings balance
+            $parameters = array();
+
+            self::$bal_array = array();
+
+            Common::prepareParameters(
+                $parameters,
+                'asat',
+                self::$asatdate
+            );
+            Common::prepareParameters($parameters, 'account', self::$savacc);
+            Common::prepareParameters($parameters, 'productid', self::$prodid);
+            Common::prepareParameters($parameters, 'memid', '');
+            Common::prepareParameters($parameters, 'code', 'SAVBALS');
+
+            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+            return Common::createResponse('err', $e->getMessage());
+        }
+    }
+
+
+
+    /**
      * updateSavings
      * 
      * This function is used to update savings transactions
      * @param array $formdata: Data from the form
      * Returns array
      */
-    public static function updateSavings(&$formdata) {
+    public static function updateSavings(&$formdata)
+    {
 
 
         try {
@@ -395,49 +464,9 @@ Class Savings extends ProductConfig {
                     case 'SA':
                     case 'IT':
 
-                        // Bussiness::covertArrayToXML(array($value), false);
-//                        $tep_prod = $value['PRODUCT_PRODID'];
-//                        $tep_savacc = $value['SAVACC'];
-//                        $tep_amt = $value['AMOUNT'];
-//
-//                        $accounts_to_array = $value['ACCOUNTSTO'];
-//
-//                        $nCount = count($accounts_to_array);
-//
-//                        if ($nCount == 0 && $value['SAVACCTO'] != ''):
-//                            $accounts_to_array[] = array('SAVACCTO' => $value['SAVACCTO'], 'PRODUCT_PRODIDTO' => $value['PRODUCT_PRODIDTO'], 'MEMIDTO' => $value['MEMIDTO'], 'AMOUNTTO' => $value['AMOUNT']);
-//                        endif;
-//                        foreach ($accounts_to_array as $thekey => $thevalue) {
-//
-//                            $acc_array = array();
-//                            
-//                            if($thevalue['CLIENTIDNO']==""):
-//                                $acc_array = Common::$connObj->SQLSelect("SELECT client_idno FROM " . TABLE_SAVACCOUNTS . " WHERE  savaccounts_account='" . $thevalue['SAVACCTO'] . "' AND product_prodid='" . $value['PRODUCT_PRODIDTO'] . "' GROUP BY client_idno");
-//                                $ctype = Common::getClientType($acc_array[0]['client_idno']);
-//                            else:
-//                                $ctype = Common::getClientType($thevalue['CLIENTIDNO']);
-//                            endif;
-//                          
-//
-                        //    $accounts_array[] = $value['SAVACC'];
-//
-//                            $products_array[] = $thevalue['PRODUCT_PRODID'];
-                        //$value['SAVACC'] = $thevalue['SAVACCTO'];
-                        // $value['PRODUCT_PRODID'] = $value['PRODUCT_PRODIDTO'];
-                        // $value['AMOUNT'] = abs($thevalue['AMOUNTTO']);
-//                            if ($nCount == 1) {
-//                                Bussiness::covertArrayToXML(array($value), false);
-//                            } else {
-                        //  Bussiness::covertArrayToXML(array($value), false);
-                        // }
-
+   
                         self::$aLines[] = array('AMOUNT' => abs($value['AMOUNT']), 'DESC' => $value['DESC'], 'TTYPE' => 'SD', 'CLIENTIDNO' => $value['CLIENTIDNO'], 'PRODUCT_PRODID' => $value['PRODUCT_PRODID'], 'CTYPE' => $ctype1, 'GLACC' => '', 'TRANCODE' => 'SD000', 'BANKID' => $thevalue['BID'], 'SIDE' => 'CR', 'SAVACC' => $thevalue['SAVACC'], 'BRANCHCODE' => $value['BRANCHCODE']);
 
-                        // $nCount--;
-                        // }
-                        //$value['PRODUCT_PRODID'] = $tep_prod;
-                        //$value['SAVACC'] = $tep_savacc;
-                        // $value['AMOUNT'] = $tep_amt;
 
                         break;
 

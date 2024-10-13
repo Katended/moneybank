@@ -3882,9 +3882,19 @@ ol {
 }
 
 .savings-container {
-  padding:2px;
-  align-items: flex-start;
+  max-height: 200px;  
+  display: flex;
+  flex-direction: column;
+  align-items:start;
+  justify-content: flex-start;
+  flex-wrap: wrap;    
 }
+
+.savings-container > span {
+  max-height: 50px;
+}
+
+
 .grid-options > div {  
   padding: 5px;
   flex:1;

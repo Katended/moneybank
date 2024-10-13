@@ -257,10 +257,9 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     search: globalParameterStorage.search.value
                 })
                 .always(data => {
-
-
-
                     try {
+
+                        debugger;
 
                         if (typeof data === 'object' && data.status === '500') {
                             window.location = "<?php echo HTTP_SERVER; ?>"; // Redirect on server error
@@ -300,8 +299,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 switch (jsonObj.status) {
                     case 'data':
                         // Handle table data
-
-                        handleDataTable(jsonObj, elementId);
+                        handleDataTable(frm, jsonObj, elementId);
                         break;
 
                     case 'ok':
@@ -329,15 +327,16 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                 dfrd3.resolve();
 
+            } catch (error) {
 
-            } catch (e) {
-                displaymessage(frm, data, 'err');
-                console.log(data, e);
+                displaymessage(frm, error, 'err');
+                console.log(error);
             }
         };
 
 
         function isValidJsonString(str) {
+
             if (typeof str !== "string") {
                 return null; // Not a string
             }
@@ -349,32 +348,36 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             }
         };
 
-        const populateFormElement = (frm, jsonObj, elementId) => {
-
-        };
-
-
         const handleFormActions = (action, frm, jsonObj, elementId) => {
-            switch (action) {
-                case "loadform":
-                case "edit":
-                case "add":
 
-                    if (jsonObj instanceof String) {
-                        eval(jsonObj);
-                    } else {
-                        populateForm(frm, jsonObj.data);
-                    }
+            try {
 
-                    break;
-                case "eval":
-                    eval(data);
-                    break;
-                case "search":
-                case "loadelement":
-                default:
-                    handleDataTable(jsonObj, elementId);
-                    break;
+                switch (action) {
+                    case "loadform":
+                    case "edit":
+                    case "add":
+
+                        if (jsonObj instanceof String) {
+                            eval(jsonObj);
+                        } else {
+                            populateForm(frm, jsonObj.data);
+                        }
+
+                        break;
+                    case "eval":
+                        eval(data);
+                        break;
+                    case "search":
+                    case "loadelement":
+                    default:
+                        handleDataTable(frm, jsonObj, elementId);
+                        break;
+                }
+
+            } catch (error) {
+
+                displaymessage(frm, error.message, 'err');
+                console.log(e);
             }
         };
 
@@ -387,66 +390,75 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
         let dataTableInstances = []; // Array to hold multiple DataTable instances
 
-        const handleDataTable = (tableData, elementId) => {
-            if (tableData instanceof Object && tableData !== null) {
-                // Initialize the DataTable and store the instance
-                const tableSelector = `#grid_${elementId}`;
+        const handleDataTable = (frm, tableData, elementId) => {
 
-                // check see if its element data
-                if (tableData.data === null) {
+            try {
 
-                    if ($.fn.DataTable.isDataTable(tableSelector)) {
-                        $(tableSelector).DataTable().clear().destroy();
+                if (tableData instanceof Object && tableData !== null) {
+                    // Initialize the DataTable and store the instance
+                    const tableSelector = `#grid_${elementId}`;
+
+                    // check see if its element data
+                    if (tableData.data === null) {
+
+                        if ($.fn.DataTable.isDataTable(tableSelector)) {
+                            $(tableSelector).DataTable().clear().destroy();
+                        }
+
+                        $(tableSelector).empty().removeAttr('style'); // Clear all content
+
+                        // Add new caption
+                        $(tableSelector).prepend(`<caption style='font-size:16px;'>${tableData.table.caption}</caption>`);
+
+                        const tableInstance = $('#grid_' + elementId).DataTable({
+                            fixedHeader: true,
+                            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                            responsive: true,
+                            scrollResize: true,
+                            searchDelay: 100,
+                            scrollX: true,
+                            serverSide: false,
+                            order: 3,
+                            scrollY: 100,
+                            data: tableData.table.data,
+                            columns: tableData.table.columns,
+                            scroller: {
+                                loadingIndicator: true
+                            },
+                            columnDefs: [{
+                                defaultContent: "-",
+                                targets: "_all",
+                                width: '15px',
+                                targets: 0,
+                            }],
+                            orderable: false,
+                            pageLength: 20,
+                            scrollCollapse: true,
+                            bDestroy: true
+                        });
+
+                        // Redraw the table
+                        tableInstance.draw();
+
+                        dataTableInstances.push(tableInstance); // Store the instance in the array
+
+                        configureDataTableSearch(tableInstance);
+                        // configureRowSelection(tableInstance, elementId);
+                    } else {
+                        loadHtmlElement(tableData, elementId);
                     }
-
-                    $(tableSelector).empty().removeAttr('style'); // Clear all content
-
-                    // Add new caption
-                    $(tableSelector).prepend(`<caption style='font-size:16px;'>${tableData.table.caption}</caption>`);
-
-                    const tableInstance = $('#grid_' + elementId).DataTable({
-                        fixedHeader: true,
-                        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-                        responsive: true,
-                        scrollResize: true,
-                        searchDelay: 100,
-                        scrollX: true,
-                        serverSide: false,
-                        order: 3,
-                        scrollY: 100,
-                        data: tableData.table.data,
-                        columns: tableData.table.columns,
-                        scroller: {
-                            loadingIndicator: true
-                        },
-                        columnDefs: [{
-                            defaultContent: "-",
-                            targets: "_all",
-                            width: '15px',
-                            targets: 0,
-                        }],
-                        orderable: false,
-                        pageLength: 20,
-                        scrollCollapse: true,
-                        bDestroy: true
-                    });
-
-                    // Redraw the table
-                    tableInstance.draw();
-
-                    dataTableInstances.push(tableInstance); // Store the instance in the array
-
-                    configureDataTableSearch(tableInstance);
-                    // configureRowSelection(tableInstance, elementId);
                 } else {
+                    tableData = tableData.replace("\\x3C", "<");
+
                     loadHtmlElement(tableData, elementId);
+
+                    // $("#" + elementId).html(tableData.data);
                 }
-            } else {
-                tableData = tableData.replace("\\x3C", "<");
 
-                loadHtmlElement(tableData, elementId);
+            } catch (error) {
 
-                // $("#" + elementId).html(tableData.data);
+                displaymessage(frm, error.message, 'err');
+                console.log(error);
             }
         };
 
@@ -654,51 +666,59 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
             var dfrd1 = $.Deferred();
 
-            if (jQuery.type(jobj) === "undefined") {
-                return;
-            }
+            try {
 
-            $.each(jobj, function(key, value) {
-
-                var $ctrl = $('#' + frm + ' [id=' + key + ']');
-
-                switch ($ctrl.prop('type')) {
-                    case "text":
-                    case "hidden":
-                        $ctrl.val(value);
-                        break;
-
-                    case "select-one":
-                        $ctrl.val(value);
-                        break;
-
-                    case "us-date":
-                        w2utils.date(new Date());
-                        break;
-
-                    case "radio":
-                    case "checkbox":
-                        $ctrl.each(function() {
-
-                            if ($(this).prop('value') == value) {
-                                $(this).prop("checked", true);
-                            } else {
-                                $(this).prop("checked", false);
-                            }
-
-                        });
-                        break;
-
-                    default:
-                        $("#" + key).html(value);
-                        //$ctrl.val(value); 
-                        break;
+                if (jQuery.type(jobj) === "undefined") {
+                    return;
                 }
 
-            });
+                $.each(jobj, function(key, value) {
 
-            dfrd1.resolve();
-            return dfrd1.promise();
+                    var $ctrl = $('#' + frm + ' [id=' + key + ']');
+
+                    switch ($ctrl.prop('type')) {
+                        case "text":
+                        case "hidden":
+                            $ctrl.val(value);
+                            break;
+
+                        case "select-one":
+                            $ctrl.val(value);
+                            break;
+
+                        case "us-date":
+                            w2utils.date(new Date());
+                            break;
+
+                        case "radio":
+                        case "checkbox":
+                            $ctrl.each(function() {
+
+                                if ($(this).prop('value') == value) {
+                                    $(this).prop("checked", true);
+                                } else {
+                                    $(this).prop("checked", false);
+                                }
+
+                            });
+                            break;
+
+                        default:
+                            $("#" + key).html(value);
+                            //$ctrl.val(value); 
+                            break;
+                    }
+
+                });
+
+                dfrd1.resolve();
+                return dfrd1.promise();
+
+            } catch (error) {
+
+                displaymessage(frm, error.message, 'err');
+                console.log(error);
+            }
 
         }
     </script>

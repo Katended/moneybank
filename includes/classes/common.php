@@ -12,7 +12,7 @@ class Common {
     public static $sav_products_array = array();
     public static $accounts_array = array();
 
-    //uniqid � Generate a unique ID
+    //uniqid Generate a unique ID
     public static function uniqidReal($lenght = 13) {
         // uniqid gives 13 chars, but you could adjust it to your needs.
         if (function_exists("random_bytes")) {
@@ -1179,14 +1179,15 @@ class Common {
      */
 
     public static function common_sp_call($parameters, $format, &$Conn, $flaten = false) {
+        try {
 
         // process parameters
-
         $parameters = unserialize($parameters);
 
-
         $key = '';
+
         $parameters_final = array();
+        
         unset($parameters_final);
 
         // Note:Parameters MUST be ordered according to the SP signature
@@ -1208,13 +1209,18 @@ class Common {
         }
 
         if ($flaten) {
+
             if (count($results) == 0) {
-                return;
+                    return "";
             } else {
                 return call_user_func_array('array_merge', $results);
             }
+
         } else {
             return $results;
+        }
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 
@@ -2161,8 +2167,8 @@ class Common {
                 $decimal = '.';
                 $thousands = ',';
         }
-       
-        return number_format((string)$number, $decimals, $decimal, $thousands);
+
+        return number_format(((string)$number ?? 0), $decimals, $decimal, $thousands);
     }
 
     # This function is format numeric values for computing

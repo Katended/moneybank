@@ -187,13 +187,13 @@ class DataTable
 	//               array( 'db' => 'client_surname',  'dt' => 2 ),
 	//               array( 'db' => 'client_firstname',   'dt' => 3 ),
 	//               array( 'db' => 'client_middlename',     'dt' => 4 ))
-	public static function prepareFieldListForDisplay($fieldlist = array())
+	public static function prepareFieldListForDisplay()
 	{
-		// self::$columns = array();
+		self::$columns = array();
 
 		$nCount = 0;
 
-		foreach ($fieldlist as $value):
+		foreach (self::$fieldlist as $value):
 			// Use regex to find the value within backticks
 			if (preg_match('/`([^`]+)`/', $value, $matches)) {
 				$extractedValue = $matches[1]; // This will contain the value inside backticks
