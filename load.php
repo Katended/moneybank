@@ -1955,17 +1955,15 @@
                     Savings::$savaccid = $keyparam;
 
                     Savings::getSavingsBalance();
+                    Savings::getSumBalances();
 
                     if ($_POST['keyparam'] != "") {
                         Common::push_element_into_array($main_array, 'theid', $_POST['keyparam']);
                     }
-                    
-                    
-                    $balarray = (Savings::$bal_array[0] ?? 0);
-
+                   
                     if (preg_match(
                         '/[G]/',
-                        $balarray['client_idno']
+                        Savings::$clientidno
                     )) {
 
                         Savings::getGroupSavingsBalances();
@@ -1995,11 +1993,11 @@
                         Common::push_element_into_array($main_array, 'section1', $mems);
                     } else {
 
-                        Common::push_element_into_array($main_array, 'client_idno', $balarray['client_idno']);
+                        Common::push_element_into_array($main_array, 'client_idno', Savings::$clientidno);
                         Common::push_element_into_array($main_array, 'action', 'add');
-                        Common::push_element_into_array($main_array, 'product_prodid', $balarray['product_prodid']);
-                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display($balarray['balance']));
-                        Common::push_element_into_array($main_array, 'txtsavaccount', $balarray['savaccounts_account']);
+                        Common::push_element_into_array($main_array, 'product_prodid', Savings::$prodid);
+                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display(Savings::$balance));
+                        Common::push_element_into_array($main_array, 'txtsavaccount', Savings::$savacc);
                     }
                 }
 

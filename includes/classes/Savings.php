@@ -16,6 +16,7 @@ Class Savings extends ProductConfig {
     Public static $savaccid;
     public static $bal_array = array();
     Public static $aLines = null;
+    private static $_instance = null;
 
     public static function getInstance() {
 
@@ -23,7 +24,7 @@ Class Savings extends ProductConfig {
             self::$_instance = new self;
         }
 
-        return self::$_instance;
+       // return self::$_instance;
     }
 
     /**
@@ -34,12 +35,12 @@ Class Savings extends ProductConfig {
      */
     public static function setProps(array $balanceArray)
     {
-        self::$savacc = $balanceArray[0]['savaccounts_account'] ?? '';
-        self::$prodid = $balanceArray[0]['product_prodid'] ?? ''; // Assuming 'product_id' is in the array
-        self::$clientidno = $balanceArray[0]['client_idno'] ?? '';
-        self::$membershipid = $balanceArray[0]['membership_id'] ?? ''; // Assuming 'membership_id' is in the array
+        self::$savacc = $balanceArray[0][0]['savaccounts_account'] ?? '';
+        self::$prodid = $balanceArray[0][0]['product_prodid'] ?? ''; // Assuming 'product_id' is in the array
+        self::$clientidno = $balanceArray[0][0]['client_idno'] ?? '';
+        self::$membershipid = $balanceArray[0][0]['membership_id'] ?? ''; // Assuming 'membership_id' is in the array
         self::$asatdate = self::$asatdate; // Assuming this is set elsewhere
-        self::$balance = $balanceArray[0]['balance'] ?? 0;
+        self::$balance = $balanceArray[0][0]['balance'] ?? 0;
     }
 
     /**
@@ -339,7 +340,8 @@ Class Savings extends ProductConfig {
             Common::prepareParameters($parameters, 'memid', '');
             Common::prepareParameters($parameters, 'code', 'SAVBALS');
 
-            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
+            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);  
+            
         } catch (Exception $e) {
             Common::$lablearray['E01'] = $e->getMessage();
             return Common::createResponse('err', $e->getMessage());
@@ -351,16 +353,21 @@ Class Savings extends ProductConfig {
      * This function is used to get Savings Balance for Group members 
      * 
     */
-    public static function getCurrentBalances()
+    public static function getSumBalances()
     {
 
         try {
+            
             $total = 0;
+
+            $i = 0;
+
             foreach (self::$bal_array as $item) {
-                $total += $item['balance'];
+                $total += $item[$i]['balance'];
+                $i++;
             }
 
-            return $total;
+            self::$balance = $total;
         } catch (Exception $e) {
             Common::$lablearray['E01'] = $e->getMessage();
         }

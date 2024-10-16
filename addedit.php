@@ -2635,13 +2635,13 @@ Common::$lablearray['E01'] = '';
                 Savings::$savacc = $formdata['txtsavaccount'];
                 Savings::$prodid  = $formdata['product_prodid'];
                 Savings::getGroupSavingsBalances();
-                $balance = Savings::getCurrentBalances();
+                Savings::getCurrentBalances();
 
                 if ($formdata['ttype'] == 'SA' || $formdata['ttype'] == 'SW'):
                     
                     $nTotwithdraw = $formdata['txtamount'] + $formdata['CHARGE'];
 
-                    if ($nTotwithdraw > $balance) {
+                    if ($nTotwithdraw > Savings::$balance) {
                         Common::getlables("1216", "", "", $Conn);
                         echo  Common::createResponse('info', Common::$lablearray['1216'] . ' - ' . $grpbalance);
                         exit();

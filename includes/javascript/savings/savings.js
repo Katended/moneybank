@@ -15,7 +15,7 @@ function handleCheckboxClick(event) {
       var tid = checkbox.value;
 
       const params = {
-        formId: formId,
+        frm: formId,
         elementId: "div_name",
         action: "add",
         pageparams: ctype,

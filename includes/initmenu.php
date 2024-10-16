@@ -251,7 +251,6 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     frm: globalParameterStorage.frm,
                     pageparams: globalParameterStorage.pageparams,
                     keyparam: globalParameterStorage.keyparam,
-                    frmid: globalParameterStorage.frm,
                     action: globalParameterStorage.action,
                     elementId: globalParameterStorage.elementId,
                     search: globalParameterStorage.search.value
