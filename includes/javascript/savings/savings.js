@@ -4,18 +4,15 @@ function handleCheckboxClick(event) {
 
   // Check if the clicked element is a checkbox with the class 'row-checkbox'
   if (checkbox.matches('input[type="checkbox"].row-checkbox')) {
-
-    var formId = getCurrentFormId();
+    var frmid = getCurrentFormId();
 
     if (checkbox.checked) {
-
-
       var ctype = getCategory(checkbox.value);
 
       var tid = checkbox.value;
 
       const params = {
-        frm: formId,
+        frmid: frmid,
         elementId: "div_name",
         action: "add",
         pageparams: ctype,
@@ -57,15 +54,15 @@ function loadSavingAccounts(sid) {
       TXTPAGE = tags[i].value + "SAVACC";
     }
   }
-  var formId = getCurrentFormId();
+  var frmid = getCurrentFormId();
 
-  return showValues(formId, "accounts", "search", TXTPAGE, "load.php", sid);
+  return showValues(frmid, "accounts", "search", TXTPAGE, "load.php", sid);
 }
 
 function loadAccount(accountId) {
-  var formId = getCurrentFormId();
+  var frmid = getCurrentFormId();
 
-  return showValues(formId, "", "add", accountId, "load.php", accountId).done(
+  return showValues(frmid, "", "add", accountId, "load.php", accountId).done(
     accountId,
     () => {
       loadTransactions(accountId);
@@ -75,7 +72,7 @@ function loadAccount(accountId) {
 
 function loadTransactions(accountId) {
   // Get the current form ID
-  var formId = getCurrentFormId();
+  var frmid = getCurrentFormId();
 
   // Construct the URL for loading transactions
   var url =
@@ -85,5 +82,5 @@ function loadTransactions(accountId) {
     $("#product_prodid").val();
 
   // Call the showValues function with the constructed parameters
-  return showValues(formId, "savdata", "search", "SAVTRAN", url, accountId);
+  return showValues(frmid, "savdata", "search", "SAVTRAN", url, accountId);
 }

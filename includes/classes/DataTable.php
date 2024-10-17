@@ -63,11 +63,13 @@ class DataTable
 
 		switch ($response) {
 			case self::RESPONSE_REVERSE:
-				return self::REVERSE_ICON; // Return the response or handle accordingly
+				return self::REVERSE_ICON; 
+
 			case self::RESPONSE_DELETE:
-				return self::TRASH_ICON; // Return the path to the trash icon
+				return self::TRASH_ICON; 
+
 			default:
-				return 'Unknown action';
+				return '';
 		}
 	}
 
@@ -116,7 +118,7 @@ class DataTable
 					$action = self::checkPageParams();
 					$icon  = self::getIcon();
 
-					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',%s)\"><img src='images/icons/%s' title='%s' ></a>", $formId, $elementId, $action, $pageparams, $dataValue, $callbackFunction, $icon, $icon);
+					$function  = sprintf("<a href='#' onClick=\"showValues('%s','%s','%s','%s','addedit.php','%s','',%s)\"><img src='images/icons/%s' title='%s' ></a>", $formId, $elementId, $action, $pageparams, $dataValue, $callbackFunction, $icon, $action);
 				}
 				
 

@@ -2776,10 +2776,9 @@ Common::$lablearray['E01'] = '';
                                     if ($membalance < abs($formdata['AMOUNT'])):
 
                                     $memname = Common::sum_array('members_idno', $formdata['MEMID'], 'name', Savings::$bal_array);
+                                    Common::getlables("1666", "", "", $Conn);
 
-                                        getlables("1666");
-
-                                    echo  Common::createResponse('err', $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID']);
+                                    echo  Common::createResponse('err', Common::$lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID']);
                                         
                                         exit();
 
@@ -2791,7 +2790,6 @@ Common::$lablearray['E01'] = '';
                                     unset($formdata[$key]);
                                 endif;                     
                                 
-
                             endforeach;
 
                         endif;

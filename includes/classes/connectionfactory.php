@@ -675,6 +675,10 @@ class ConnectionFactory
                 $var_sp = 'sp_get_savings_balances';
                 break;
 
+            case 'GROUPMEMBERSAVBALS': // Savings Balnces Report
+                $var_sp = 'sp_get_savings_grou_member_balances';
+                break;
+
             case 'SAVBALSBYID': // Savings Balnces Report
                 $var_sp = 'sp_get_savings_balances_by_id';
                 break;
@@ -923,7 +927,7 @@ class ConnectionFactory
         }
     }
 
-    public function SQLSelect($query = '', $returnresults = true)
+    public function SQLSelect($query = '', $returnresults = true, $flatenresults  = false)
     {
 
         try {
@@ -938,10 +942,16 @@ class ConnectionFactory
 
                 if (count($array_results) > 0
                 ) {
-                    return $array_results;
+                    if ($flatenresults) {
+                        return call_user_func_array('array_merge', $array_results);
+                    } else {
+                        return $array_results;
+                    }
                 } else {
                     return array(array('1' => '1'));
                 }
+
+                    
             } else {
                 $this->stmt->execute();
             }

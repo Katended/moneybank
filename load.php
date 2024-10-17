@@ -958,7 +958,7 @@
 
             case 'SAVTRAN':
 
-            Common::getlables("301,298,1208,271,24936", "", "", $Conn);
+            Common::getlables("301,298,1208,271,249,36", "", "", $Conn);
 
             SavingS::$savaccid = $_POST['keyparam'];
 
@@ -988,7 +988,7 @@
             NewGrid::$order = ' ORDER BY savtransactions_tday DESC ';
             NewGrid::$searchcatparam = $pageparams;
             NewGrid::$grid_id = 'grid_' . $_POST['keyparam'];
-            NewGrid::$keyfield = 'transactioncode';
+            // NewGrid::$keyfield = 'transactioncode';
 
             // NewGrid::$actionlinks = "<a class='divlinks' href='#'  onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'reverse','','addedit.php')\" title ='" . $grid_lables_lablearray['272'] . "'><img src='images/icons/withdraw.png' border='0'></a>";
 
@@ -1031,7 +1031,7 @@
 
             Common::getlables("391,1096,1628,1245,1159,1241,9", "", "", $Conn);
 
-            $query = Savings::getSavingsAccounts($pageparams, ($_POST['keyparam'] ?? ""), $cWhere);
+            $query = Savings::getSavingsAccountsQuery($pageparams, ($_POST['keyparam'] ?? ""), $cWhere);
             
                 NewGrid::$actionlinks = "<a class='divlinks' onClick=\"getinfo('" . $_POST['frmid'] . "',$( 'body').data( 'gridchk'),'edit','','load.php')\" data-balloon='" . Common::$lablearray['1665'] . "'  data-balloon-pos='up' data-balloon-length='large'>&nbsp;<img src='images/plus.gif' border='0' >&nbsp;</span>";
 
@@ -1316,6 +1316,99 @@
     $main_array = array();
 
     switch ($_POST['frmid']) {
+
+    case 'frmSave':
+
+        $formdata = Common::decodeSerialisedPagedata($_POST['pageparams']);
+
+        switch ($_POST['action']) {
+
+            case 'edit':
+            case 'add':
+
+                Common::getlables("1664,1694,1199,470", "", "", $Conn);
+
+                if (!isset($_POST['keyparam'])):
+                    echo "MSG " . Common::$lablearray['1199'];
+                    exit();
+                endif;
+
+                if (preg_match('/[IBG]/', $_POST['keyparam'])) {
+
+                    Clients::$clientid = $_POST['keyparam'];
+                    Clients::getClientDetails();
+                    Common::push_element_into_array($main_array, 'client_idno', Clients::$client_array[0]['entity_idno']);
+                    Common::push_element_into_array($main_array, 'div_name', Clients::$client_array[0]['name']);
+                } else {
+
+                    $keyparam = $_POST['keyparam'] ?? $_POST['theid'];
+
+                    Savings::$savaccid = $keyparam;
+
+                    Savings::getSavingsAccountById();
+
+
+                    if ($_POST['keyparam'] != "") {
+                        Common::push_element_into_array($main_array, 'theid', $_POST['keyparam']);
+                    }
+
+                    if (preg_match(
+                        '/[G]/',
+                        Savings::$clientidno
+                    )) {
+
+                        Savings::getGroupMemberSavingsBalances();
+                        Savings::getSumBalances();
+
+                        Common::push_element_into_array($main_array, 'theid', $keyparam);
+                        Common::push_element_into_array($main_array, 'client_idno', Savings::$clientidno);
+                        Common::push_element_into_array($main_array, 'action', 'add');
+                        Common::push_element_into_array($main_array, 'product_prodid', Savings::$prodid);
+                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display(Savings::$balance));
+                        Common::push_element_into_array($main_array, 'txtsavaccount', Savings::$savacc);
+
+                        $mems = "<div  style='overflow:scroll; height:200px;padding:5x;'  >";
+                        $mems .= "<table cellpadding='0' width='100%' cellspacing='0' id='customers'>";
+                        $mems .= "<tr><th>Name</th><th>Amount</th><th>Charge</th><th>Balance</th><tr>";
+                        $combo = "<div><select id='memids' name='memids'>";
+
+                        foreach (Savings::$bal_array as $dkey => $dval):
+
+                            $memid = Common::replace_string($dval['members_idno']);
+                            $mems .= "<tr><td>" . $dval['name'] . " " . $dval['members_no'] . "</td><td><input type='numeric' name='AMT_" . $memid . "' id='AMT_" . $memid . "' size='16' value='0.0' class='AMT' onKeyUp=updatetotals()\></td><td><input type='numeric' size='16' name='CHARGE_" . $memid . "' id='CHARGE_" . $memid . "' class='CHARGE' onKeyUp=updatetotals('CHARGE') value='0.0'></td><td><input type='numeric' name='BAL_" . $memid . "' id='BAL_" . $memid . "' size='16' value='" . Common::number_format_locale_display(($dval['balance'] ?? 0)) . "' class='BAL'\ disabled=disabled></td><tr>";
+                            $combo .= "<option id='MEM_" . $memid . "' name='MEM_" . $memid . "' value='" . $memid . "'>" . $dval['name'] . " " . $dval['members_no'] . "</option>";
+
+                        endforeach;
+
+                        $combo .= "</select><button type='button' class='btn' name='Go'  type='button' onClick=\"$( '#radiotran' ).trigger( 'click' )\">" . Common::$lablearray['1664'] . "</button></div>";
+                        $mems .= "</table></div>" . $combo;
+
+                        Common::push_element_into_array($main_array, 'section1', $mems);
+                    } else {
+                        Savings::getSavingsBalance();
+                        Common::push_element_into_array($main_array, 'client_idno', Savings::$clientidno);
+                        Common::push_element_into_array($main_array, 'action', 'add');
+                        Common::push_element_into_array($main_array, 'product_prodid', Savings::$prodid);
+                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display(Savings::$balance));
+                        Common::push_element_into_array($main_array, 'txtsavaccount', Savings::$savacc);
+                    }
+                }
+
+
+                // denominations for currency
+                if (SETTING_CURRENCY_DENO == 'checked'):
+                //  Common::push_element_into_array($main_array, 'section2', Common::displayDenominations($balarray['product_prodid']));
+                endif;
+
+                echo Common::createResponse('form', '', [], $main_array);
+                exit();
+
+            default:
+                break;
+        }
+
+        break;
+
         case 'frmsms':
             switch ($_POST['action']) {
                 case 'edit':
@@ -1432,7 +1525,6 @@
             break;
 
         case 'frmmanageusers':
-
 
             $formdata = Common::decodeSerialisedPagedata($_POST['pageparams']);
 
@@ -1923,98 +2015,8 @@
 
             echo $jason;
 
-            break;
-            
-        case 'frmSave':
-
-            $formdata = Common::decodeSerialisedPagedata($_POST['pageparams']);
-
-            switch ($_POST['action']) {
-
-                case 'edit':
-                case 'add':
-
-                    Common::getlables("1664,1694,1199,470", "", "", $Conn);
-
-                    if (!isset($_POST['keyparam'])):
-                        echo "MSG " . Common::$lablearray['1199'];
-                        exit();
-                    endif;
-
-                if (preg_match('/[IBG]/', $_POST['keyparam'])) {
-
-                    Clients::$clientid = $_POST['keyparam'];
-                    Clients::getClientDetails();
-                    Common::push_element_into_array($main_array, 'client_idno', Clients::$client_array[0]['entity_idno']);
-                    Common::push_element_into_array($main_array, 'div_name', Clients::$client_array[0]['name']);
-                
-                } else {
-
-                    $keyparam = $_POST['keyparam'] ?? $_POST['theid'];
-
-                    Savings::$savaccid = $keyparam;
-
-                    Savings::getSavingsBalance();
-                    Savings::getSumBalances();
-
-                    if ($_POST['keyparam'] != "") {
-                        Common::push_element_into_array($main_array, 'theid', $_POST['keyparam']);
-                    }
-                   
-                    if (preg_match(
-                        '/[G]/',
-                        Savings::$clientidno
-                    )) {
-
-                        Savings::getGroupSavingsBalances();
-                        Common::push_element_into_array($main_array, 'theid', $keyparam);
-                        Common::push_element_into_array($main_array, 'client_idno', Savings::$clientidno);
-                        Common::push_element_into_array($main_array, 'action', 'add');
-                        Common::push_element_into_array($main_array, 'product_prodid', Savings::$prodid);
-                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display(Savings::$balance));
-                        Common::push_element_into_array($main_array, 'txtsavaccount', Savings::$savacc);
-
-                        $mems = "<div  style='overflow:scroll; height:200px;padding:5x;'  >";
-                        $mems .= "<table cellpadding='0' width='100%' cellspacing='0' id='customers'>";
-                        $mems .= "<tr><th>Name</th><th>Amount</th><th>Charge</th><th>Balance</th><tr>";
-                        $combo = "<div><select id='memids' name='memids'>";
-
-                        foreach (Savings::$bal_array as $dkey => $dval):
-
-                            $memid = Common::replace_string($dval['members_idno']);
-                            $mems .= "<tr><td>" . $dval['name'] . " " . $dval['members_no'] . "</td><td><input type='numeric' name='AMT_" . $memid . "' id='AMT_" . $memid . "' size='16' value='0.0' class='AMT' onKeyUp=updatetotals()\></td><td><input type='numeric' size='16' name='CHARGE_" . $memid . "' id='CHARGE_" . $memid . "' class='CHARGE' onKeyUp=updatetotals('CHARGE') value='0.0'></td><td><input type='numeric' name='BAL_" . $memid . "' id='BAL_" . $memid . "' size='16' value='" . Common::number_format_locale_display(($dval['balance'] ?? 0)) . "' class='BAL'\ disabled=disabled></td><tr>";
-                            $combo .= "<option id='MEM_" . $memid . "' name='MEM_" . $memid . "' value='" . $memid . "'>" . $dval['name'] . " " . $dval['members_no'] . "</option>";
-
-                        endforeach;
-
-                        $combo .= "</select><button type='button' class='btn' name='Go'  type='button' onClick=\"$( '#radiotran' ).trigger( 'click' )\">" . Common::$lablearray['1664'] . "</button></div>";
-                        $mems .= "</table></div>" . $combo;
-
-                        Common::push_element_into_array($main_array, 'section1', $mems);
-                    } else {
-
-                        Common::push_element_into_array($main_array, 'client_idno', Savings::$clientidno);
-                        Common::push_element_into_array($main_array, 'action', 'add');
-                        Common::push_element_into_array($main_array, 'product_prodid', Savings::$prodid);
-                        Common::push_element_into_array($main_array, 'txtBalance', Common::number_format_locale_display(Savings::$balance));
-                        Common::push_element_into_array($main_array, 'txtsavaccount', Savings::$savacc);
-                    }
-                }
-
-
-                // denominations for currency
-                if (SETTING_CURRENCY_DENO == 'checked'):
-                //  Common::push_element_into_array($main_array, 'section2', Common::displayDenominations($balarray['product_prodid']));
-                endif;
-
-                echo Common::createResponse('form', '', [], $main_array);
-                exit();
-                    break 2;
-                default:
-                    break;
-            }
-
-            break;
+        break;           
+        
 
         case 'frmTDeposit':
 

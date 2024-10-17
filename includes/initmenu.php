@@ -205,7 +205,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         // urlpage; URL to execute
 
         var globalParameterStorage = {
-            frm: null,
+            frmid: null,
             keyparam: null,
             action: null,
             pageparams: null,
@@ -217,19 +217,19 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             elementId: null
         };
 
-        const showValues = (frm, elementId, action, pageparams, urlpage, keyparam, search, callback) => {
+        const showValues = (frmid, elementId, action, pageparams, urlpage, keyparam, search, callback) => {
 
             const dfrd3 = jQuery.Deferred();
 
             // Set default page parameters
             if (typeof pageparams === 'undefined' && action !== 'edit') {
-                const formToSerialize = frm ? $("#" + frm) : $("form");
+                const formToSerialize = frmid ? $("#" + frmid) : $("form");
                 pageparams = JSON.stringify(formToSerialize.serializeArray());
             }
 
             // Store global parameters
             Object.assign(globalParameterStorage, {
-                frm: frm, // Replace with new frm value
+                frmid: frmid, // Replace with new frm value
                 elementId: elementId, // Replace with new elementId value
                 action: action, // Replace with new action value
                 pageparams: pageparams, // Replace with new pageparams value
@@ -248,7 +248,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             $("#ajaxSpinnerImage").show();
 
             $.post(urlpage, {
-                    frm: globalParameterStorage.frm,
+                    frmid: globalParameterStorage.frmid,
                     pageparams: globalParameterStorage.pageparams,
                     keyparam: globalParameterStorage.keyparam,
                     action: globalParameterStorage.action,
@@ -265,7 +265,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                             return;
                         }
 
-                        processResponseData(data, frm, action, elementId, dfrd3);
+                        processResponseData(data, frmid, action, elementId, dfrd3);
 
                         // Check if the provided argument is a function
                         if (typeof callback === 'function') {
@@ -287,7 +287,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             return dfrd3.promise();
         };
 
-        const processResponseData = (data, frm, action, elementId, dfrd3) => {
+        const processResponseData = (data, frmid, action, elementId, dfrd3) => {
 
             var trimmedData = data.trim();
 
@@ -302,24 +302,24 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 switch (jsonObj.status) {
                     case 'data':
                         // Handle table data
-                        handleDataTable(frm, jsonObj, elementId);
+                        handleDataTable(frmid, jsonObj, elementId);
                         break;
 
                     case 'ok':
                         // Display success message
-                        displaymessage(frm, jsonObj.message, jsonObj.status);
+                        displaymessage(frmid, jsonObj.message, jsonObj.status);
                         break;
 
                     case 'form':
                         // Load form
-                        handleFormActions(action, frm, jsonObj, elementId);
+                        handleFormActions(action, frmid, jsonObj, elementId);
                         break;
 
                     case 'err':
                     case 'war':
                     case 'info':
                         // Display error message
-                        displaymessage(frm, jsonObj.message, jsonObj.status);
+                        displaymessage(frmid, jsonObj.message, jsonObj.status);
                         break;
 
                     default:
@@ -332,7 +332,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
             } catch (error) {
 
-                displaymessage(frm, error.message, 'err');
+                displaymessage(frmid, error.message, 'err');
                 console.log(error);
             }
         };
@@ -351,7 +351,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             }
         };
 
-        const handleFormActions = (action, frm, jsonObj, elementId) => {
+        const handleFormActions = (action, frmid, jsonObj, elementId) => {
 
             try {
 
@@ -363,7 +363,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                         if (jsonObj instanceof String) {
                             eval(jsonObj);
                         } else {
-                            populateForm(frm, jsonObj.data);
+                            populateForm(frmid, jsonObj.data);
                         }
 
                         break;
@@ -373,13 +373,13 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                     case "search":
                     case "loadelement":
                     default:
-                        handleDataTable(frm, jsonObj, elementId);
+                        handleDataTable(frmid, jsonObj, elementId);
                         break;
                 }
 
             } catch (error) {
 
-                displaymessage(frm, error.message, 'err');
+                displaymessage(frmid, error.message, 'err');
                 console.log(e);
             }
         };
@@ -393,7 +393,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
         let dataTableInstances = []; // Array to hold multiple DataTable instances
 
-        const handleDataTable = (frm, tableData, elementId) => {
+        const handleDataTable = (frmid, tableData, elementId) => {
 
             try {
 
@@ -460,7 +460,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
             } catch (error) {
 
-                displaymessage(frm, error.message, 'err');
+                displaymessage(frmid, error.message, 'err');
                 console.log(error);
             }
         };
@@ -488,7 +488,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
                 if (e.keyCode === 13) {
                     globalParameterStorage.search.value = this.querySelector('input').value;
                     showValues(
-                        globalParameterStorage.frm,
+                        globalParameterStorage.frmid,
                         globalParameterStorage.elementId,
                         globalParameterStorage.action,
                         globalParameterStorage.pageparams,
@@ -542,15 +542,15 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         /**
          * Resets all form fields except specified elements.
          * 
-         * @param {string} formId - The ID of the form to reset.
+         * @param {string} frmid - The ID of the form to reset.
          * @param {string[]} excludeIds - An array of IDs of elements to exclude from reset.
          */
-        function resetFormExcluding(formId, excludeIds) {
+        function resetFormExcluding(frmid, excludeIds) {
 
-            const form = document.getElementById(formId);
+            const form = document.getElementById(frmid);
 
             if (!form) {
-                console.error(`Form with ID "${formId}" not found.`);
+                console.error(`Form with ID "${frmid}" not found.`);
                 return;
             }
 
@@ -616,7 +616,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
         // This functin is used to load clients
         function loadClients({
-            formId,
+            frmid,
             elementId,
             action,
             pageparams,
@@ -624,18 +624,18 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
             searchTerm
         }) {
 
-            return showValues(formId, elementId, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
+            return showValues(frmid, elementId, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
         }
 
         function loadMembers({
-            formId,
+            frmid,
             ajaxDataDiv,
             action,
             pageparams,
             keyparam,
             searchTerm
         }) {
-            return showValues(formId, ajaxDataDiv, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
+            return showValues(frmid, ajaxDataDiv, action, pageparams, `load.php?searchterm=${searchTerm}`, keyparam);
         }
 
 
@@ -665,7 +665,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
         }
 
 
-        function populateForm(frm, jobj) {
+        function populateForm(frmid, jobj) {
 
             var dfrd1 = $.Deferred();
 
@@ -677,7 +677,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
                 $.each(jobj, function(key, value) {
 
-                    var $ctrl = $('#' + frm + ' [id=' + key + ']');
+                    var $ctrl = $('#' + frmid + ' [id=' + key + ']');
 
                     switch ($ctrl.prop('type')) {
                         case "text":
@@ -719,7 +719,7 @@ array_walk_recursive($modules_array, function ($v, $k) use ($key, &$modules) {
 
             } catch (error) {
 
-                displaymessage(frm, error.message, 'err');
+                displaymessage(frmid, error.message, 'err');
                 console.log(error);
             }
 

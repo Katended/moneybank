@@ -31,16 +31,16 @@ Class Savings extends ProductConfig {
      * setProps
      * Sets properties for savings account details based on the provided balance array.
      *
-     * @param array $balanceArray        Array containing savings account details
+     * @param array self::bal_array        Array containing savings account details
      */
-    public static function setProps(array $balanceArray)
+    public static function setProps()
     {
-        self::$savacc = $balanceArray[0][0]['savaccounts_account'] ?? '';
-        self::$prodid = $balanceArray[0][0]['product_prodid'] ?? ''; // Assuming 'product_id' is in the array
-        self::$clientidno = $balanceArray[0][0]['client_idno'] ?? '';
-        self::$membershipid = $balanceArray[0][0]['membership_id'] ?? ''; // Assuming 'membership_id' is in the array
-        self::$asatdate = self::$asatdate; // Assuming this is set elsewhere
-        self::$balance = $balanceArray[0][0]['balance'] ?? 0;
+        self::$savacc = self::$bal_array['savaccounts_account'] ?? '';
+        self::$prodid = self::$bal_array['product_prodid'] ?? '';
+        self::$clientidno = self::$bal_array['client_idno'] ?? '';
+        self::$membershipid = self::$bal_array['membership_id'] ?? '';
+        self::$asatdate = self::$asatdate;
+        self::$balance = self::$bal_array['balance'] ?? 0;
     }
 
     /**
@@ -107,9 +107,8 @@ Class Savings extends ProductConfig {
 
     public static function getSavingsDeleteAccount($savingsAccountID = '')
     {
-        Common::$connObj->SQLDelete(TABLE_SAVACCOUNTS, "savaccounts_account", $savingsAccountID);
+        Common::$connObj->SQLDelete(TABLE_SAVACCOUNTS, "savaccounts_id", $savingsAccountID);
     }
-
 
     /**
      * getSavingsAccounts
@@ -117,7 +116,24 @@ Class Savings extends ProductConfig {
      * This function is used to get Savings Accounts 
      * @$pageparams string 
      */
-    public static function getSavingsAccounts($pageparams = '', $theid = '', $cWhere = '') {
+    public static function getSavingsAccountById()
+    {
+        $result = Common::$connObj->SQLSelect("SELECT savaccounts_account,product_prodid,client_idno FROM " . TABLE_SAVACCOUNTS . " WHERE savaccounts_id = '" . self::$savaccid . "'", true, true);
+
+        self::$savacc = $result['savaccounts_account'];
+        self::$prodid = $result['product_prodid'];
+        self::$clientidno = $result['client_idno'];
+    }
+
+    
+    /**
+     * getSavingsAccounts
+     * 
+     * This function is used to get Savings Accounts 
+     * @$pageparams string 
+     */
+    public static function getSavingsAccountsQuery($pageparams = '', $theid = '', $cWhere = '')
+    {
 
         try {
 
@@ -290,24 +306,17 @@ Class Savings extends ProductConfig {
     {
         try {
             $parameters = [];
+
             Common::prepareParameters($parameters, 'asat', self::$asatdate);
+            Common::prepareParameters($parameters, 'productid', self::$prodid);
+            Common::prepareParameters($parameters, 'accountid', self::$savacc);
+            Common::prepareParameters($parameters, 'memid', self::$membershipid);
+            Common::prepareParameters($parameters, 'code', 'SAVBALS');
 
-            // Determine if we are using an account ID or product ID
-            if (!empty(self::$savaccid)) {
-                Common::prepareParameters($parameters, 'accountid', self::$savaccid);
-                Common::prepareParameters($parameters, 'code', 'SAVBALSBYID');
-            } else {
-                Common::prepareParameters($parameters, 'productid', self::$prodid);
-                Common::prepareParameters($parameters, 'accountid', self::$savacc);
-                Common::prepareParameters($parameters, 'memid', self::$membershipid);
-                Common::prepareParameters($parameters, 'code', 'SAVBALS');
-            }
+            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);
 
-            // Call the stored procedure
-            self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, empty(self::$savaccid));
-
-            // Set properties using the balance array
-            self::setProps(self::$bal_array);
+            self::setProps();
+            
         } catch (Exception $e) {
             Common::$lablearray['E01'] = $e->getMessage();
             return Common::createResponse('err', $e->getMessage());
@@ -316,11 +325,11 @@ Class Savings extends ProductConfig {
 
 
     /*     
-     * getGroupSavingsBalance
+     * getGroupSavingsBalances
      * This function is used to get Savings Balance for Group members 
      * 
     */
-    public static function getGroupSavingsBalances()
+    public static function getGroupMemberSavingsBalances()
     {
 
         try {
@@ -337,8 +346,7 @@ Class Savings extends ProductConfig {
             );
             Common::prepareParameters($parameters, 'account', self::$savacc);
             Common::prepareParameters($parameters, 'productid', self::$prodid);
-            Common::prepareParameters($parameters, 'memid', '');
-            Common::prepareParameters($parameters, 'code', 'SAVBALS');
+            Common::prepareParameters($parameters, 'code', 'GROUPMEMBERSAVBALS');
 
             self::$bal_array = Common::common_sp_call(serialize($parameters), '', Common::$connObj, false);  
             
@@ -363,11 +371,12 @@ Class Savings extends ProductConfig {
             $i = 0;
 
             foreach (self::$bal_array as $item) {
-                $total += $item[$i]['balance'];
+                $total += $item['balance'];
                 $i++;
             }
 
             self::$balance = $total;
+
         } catch (Exception $e) {
             Common::$lablearray['E01'] = $e->getMessage();
         }
