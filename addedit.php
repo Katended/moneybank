@@ -2631,11 +2631,14 @@ Common::$lablearray['E01'] = '';
                if ($formdata['ttype'] == 'SA'):
                     $formdata['MODE'] ='';
                endif;
-                Savings::$asatdate = $formdata['txtDate'];
+
+                Savings::$asatdate = Common::changeDateFromPageToMySQLFormat($formdata['txtDate']);
                 Savings::$savacc = $formdata['txtsavaccount'];
                 Savings::$prodid  = $formdata['product_prodid'];
-                Savings::getGroupSavingsBalances();
-                Savings::getCurrentBalances();
+
+
+
+                Savings::getSumBalances();
 
                 if ($formdata['ttype'] == 'SA' || $formdata['ttype'] == 'SW'):
                     
@@ -2686,15 +2689,17 @@ Common::$lablearray['E01'] = '';
                         Common::replace_key_function($formdata, 'bankbranches_id', 'BACCNO');
                         Common::addKeyValueToArray($formdata, 'STAT', 'Q');
                     }
-                    
-                    if ($formdata['TTYPE'] == 'SA' || $formdata['TTYPE'] == 'SW') {                        
-                        $formdata['AMOUNT'] = -1 * $formdata['AMOUNT'];                        
-                    }  
-                    
-                    $form_data[] = $formdata;
-                    
+
+                    if ($formdata['TTYPE'] == 'SA' || $formdata['TTYPE'] == 'SW') {
+                        $formdata['AMOUNT'] = -1 * $formdata['AMOUNT'];
+                    }
+
+                    Savings::$ttype = $formdata['TTYPE'];
+
+
+
                     // check see if its is savings transfers                 
-                    if ($formdata['TTYPE'] == 'SA') {
+                    if (Savings::$ttype == 'SA') {
 
                         $nAmount = 0;
                         
@@ -2746,30 +2751,40 @@ Common::$lablearray['E01'] = '';
                         }
                     } 
                     
-                    $formdata['MEMID'] = '';
-                    
-                   // $formdata = ($temp_data??""); 
-                   // unset($temp_data);                  
                     
                        // CHECK SEE IF ITS A GROUP TRANSACTION
                      if (preg_match('[G]', ($formdata['CLIENTIDNO']??''))):
 
-                            $memamounts = Common::get_array_elements_with_key($formdata, 'AMT_');
-                  
-                            $formdata['POSTTOGL']= false;
-                            $formdata['POSTTOSL']= true;
-                            
-                            //$mem_bal_array = Savings::$bal_array[1];
-                               
-                            foreach ($memamounts as $key => $val):
-                               
-                                $formdata['MEMID'] = Common::replaces_underscores(Common::replace_string($key, 'AMT_', ''));
+                        $memamounts = Common::get_array_elements_with_key($formdata, 'AMT_');
 
-                                $formdata['AMOUNT'] = Common::number_format_locale_compute($formdata[$key]);
-                                
-                                $formdata['AMOUNT'] = -1 * abs($formdata['AMOUNT']); 
-                                
-                                if ($formdata['TTYPE'] == 'SA' || $formdata['TTYPE'] == 'SW'):
+                        $formdata['POSTTOGL'] = false;
+                        $formdata['POSTTOSL'] = true;
+
+                        Savings::getGroupMemberSavingsBalances();
+                        // Savings::getSumBalances();
+
+                        foreach ($memamounts as $key => $val):
+
+                            $formdata['AMOUNT'] = Common::number_format_locale_compute($formdata[$key]);
+
+                            if ($formdata['AMOUNT'] == 0) continue;
+
+                            $formdata['MEMID'] = Common::replaces_underscores(Common::replace_string($key, 'AMT_', ''));
+
+                            Savings::$membershipid = $formdata['MEMID'];
+
+                            if (!Savings::isWithdrawalAllowed($formdata['AMOUNT'])) {
+                                $balance = Savings::getMemberBalance();
+                                $name = Savings::getMemberName();
+                                echo  Common::createResponse('info', sprintf("Member %s does not have sufficient funds. Balance %s Withdraw %s.", $name, $balance, $formdata['AMOUNT']));
+                                exit();
+                            }
+
+                            preg_match('/\b(SW|SA)\b/', Savings::$ttype) && ($formdata['AMOUNT'] = -1 * abs($formdata['AMOUNT']));
+
+                            //  $formdata['AMOUNT'] = -1 * abs($formdata['AMOUNT']);
+
+                            if ($formdata['TTYPE'] == 'SA' || $formdata['TTYPE'] == 'SW'):
 
                                 $membalance = Common::sum_array('members_idno', $formdata['MEMID'], 'balance', Savings::$bal_array);
 
@@ -2791,10 +2806,13 @@ Common::$lablearray['E01'] = '';
                                 endif;                     
                                 
                             endforeach;
+                    else:
+                        $form_data[] = $formdata;
+                        Savings::getSavingsBalance();
+                    endif;
 
-                        endif;
-                        $formdata['CHARGE'] =($formdata['CHARGE']??0);
-                        if ($formdata['CHARGE'] > 0):
+                    $formdata['CHARGE'] = ($formdata['CHARGE'] ?? 0);
+                    if ($formdata['CHARGE'] > 0):
 
                             $formdata['DATE'] = Common::changeDateFromPageToMySQLFormat($tmpdate);
                             $formdata['TCODE'] = Common::generateTransactionCode($_SESSION['user_id']);
@@ -2839,9 +2857,9 @@ Common::$lablearray['E01'] = '';
 
                         endif;
                                        
-                    Savings::updateSavings($form_data);                    
+                    Savings::updateSavings($form_data);
 
-                    if (Common::$lablearray['E01'] != ''):
+                    if (!empty(Common::$lablearray['E01'])):
                         echo  Common::createResponse('info', Common::$lablearray['E01']);                  
                         exit();
                     endif;

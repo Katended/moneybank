@@ -14,9 +14,12 @@ Class Savings extends ProductConfig {
     public static $clientidno;
     public static $balance;
     Public static $savaccid;
+    public static $ttype;
     public static $bal_array = array();
     Public static $aLines = null;
     private static $_instance = null;
+    
+
 
     public static function getInstance() {
 
@@ -383,6 +386,86 @@ Class Savings extends ProductConfig {
     }
 
 
+    /*     
+     * getMemberBalance
+     * This function is used to get a Group Members Balance
+     * 
+    */
+    public static function getMemberBalance()
+    {
+
+        try {
+
+            foreach (self::$bal_array as $item) {
+
+                if (($item['members_idno']) ?? '' === self::$membershipid) {
+                    return $item['balance'];
+                }
+            }
+
+            return 0;
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+        }
+    }
+
+    /*     
+     * getMemberName
+     * This function is used to get a Group Members name
+     * 
+    */
+    public static function getMemberName()
+    {
+
+        try {
+
+            foreach (self::$bal_array as $item) {
+
+                if (($item['members_idno']) ?? '' === self::$membershipid) {
+                    return $item['name'];
+                }
+            }
+
+            return '';
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+        }
+    }
+
+
+    /*     
+     * getMemberBalance
+     * This function is used to get a Group Members Balance
+     * 
+    */
+    public static function isWithdrawalAllowed($amount = 0)
+    {
+
+        try {
+            if (preg_match('/\b(SW|SA)\b/', Self::$ttype)):
+
+                $balance = 0;
+
+                foreach (self::$bal_array as $item) {
+
+                    if (($item['members_idno']) ?? '' === Self::$membershipid) {
+                        $balance += $item['balance'];
+                    }
+                }
+            else:
+                return true;
+            endif;
+
+            return $balance > $amount;
+        } catch (Exception $e) {
+            Common::$lablearray['E01'] = $e->getMessage();
+        }
+    }
+
+
+
+
+
     /**
      * updateSavings
      * 
@@ -404,8 +487,7 @@ Class Savings extends ProductConfig {
 
             Bussiness::$Conn->beginTransaction();
 
-            Common::getlables("1027,1028,171,1504", "", "", Common::$connObj);
-            
+            Common::getlables("1027,1028,171,1504", "", "", Common::$connObj);            
       
             foreach ($formdata as $key => $value) {
 
@@ -417,7 +499,6 @@ Class Savings extends ProductConfig {
                  
                 $accounts_array[] = $value['SAVACC'];
                 $products_array[] = $value['PRODUCT_PRODID'];
-
 
                 if ($value['TTYPE'] == 'OSA') { // Open Savings Account
                     $value['TABLE'] = TABLE_SAVACCOUNTS;
@@ -438,11 +519,7 @@ Class Savings extends ProductConfig {
                     if ($value['AMOUNT'] > 0):
                         $value['TTYPE'] = 'SD';
                     endif;
-                }
-
-
-
-                // TRANSACTION DESCRIPTIONS
+                }                // TRANSACTION DESCRIPTIONS
                 switch ($value['TTYPE']) {
                     case 'SC':
                         $value['DESC'] = Common::$lablearray['1504'] . ' ' . $value['SAVACC'] . ' ' . $value['MEMID'];
@@ -583,7 +660,7 @@ Class Savings extends ProductConfig {
 
             Common::returnTransactionOptions(self::$aLines, Common::$connObj);
 
-            if (Common::$lablearray['E01'] != "") {
+            if (!empty(Common::$lablearray['E01'])) {
                 throw new Exception(Common::$lablearray['E01']);
             }
 

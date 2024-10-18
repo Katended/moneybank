@@ -1347,7 +1347,6 @@
 
                     Savings::getSavingsAccountById();
 
-
                     if ($_POST['keyparam'] != "") {
                         Common::push_element_into_array($main_array, 'theid', $_POST['keyparam']);
                     }
