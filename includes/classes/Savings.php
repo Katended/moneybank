@@ -448,15 +448,22 @@ Class Savings extends ProductConfig {
 
                 foreach (self::$bal_array as $item) {
 
-                    if (($item['members_idno']) ?? '' === Self::$membershipid) {
-                        $balance += $item['balance'];
-                    }
+                    if (preg_match('[G]', self::$clientidno)) {
+                        if (($item['members_idno']) ?? '' === Self::$membershipid) {
+                            $balance += $item['balance'];
+                        }
+                    } else {
+                        if (($item['client_idno']) ?? '' === Self::$clientidno) {
+                            $balance += $item['balance'];
+                        }
+                    }                    
                 }
             else:
                 return true;
             endif;
 
             return $balance > $amount;
+
         } catch (Exception $e) {
             Common::$lablearray['E01'] = $e->getMessage();
         }
@@ -545,12 +552,10 @@ Class Savings extends ProductConfig {
 
                 //CHECK SEE IF WE ARE POSTING TO SLs ONLY
                 // if ($value['POSTTOSL']):
-                if ($value['AMOUNT'] > 0) {
-                    $value['TABLE'] = TABLE_SAVTRANSACTIONS;
-                    Bussiness::covertArrayToXML(array($value), false);
-                } else {
-                    continue;
-                }
+
+                $value['TABLE'] = TABLE_SAVTRANSACTIONS;
+                Bussiness::covertArrayToXML(array($value), false);
+               
                    
                // endif;
             // TEMPORARY DISABLING THIS 21-MAR-2024

@@ -2635,22 +2635,7 @@ Common::$lablearray['E01'] = '';
                 Savings::$asatdate = Common::changeDateFromPageToMySQLFormat($formdata['txtDate']);
                 Savings::$savacc = $formdata['txtsavaccount'];
                 Savings::$prodid  = $formdata['product_prodid'];
-
-
-
-                Savings::getSumBalances();
-
-                if ($formdata['ttype'] == 'SA' || $formdata['ttype'] == 'SW'):
-                    
-                    $nTotwithdraw = $formdata['txtamount'] + $formdata['CHARGE'];
-
-                    if ($nTotwithdraw > Savings::$balance) {
-                        Common::getlables("1216", "", "", $Conn);
-                        echo  Common::createResponse('info', Common::$lablearray['1216'] . ' - ' . $grpbalance);
-                        exit();
-                    }
-                    
-                endif;
+                Savings::$clientidno  = $formdata['client_idno'];             
                 
                 // replace invalid key                            
                 if ($formdata['txtamount'] > 0) {
@@ -2733,8 +2718,6 @@ Common::$lablearray['E01'] = '';
 
                             $nAmount = $nAmount + $key;
                             
-                            
-                            
                             // $accounts_to_array[] = array('SAVACCTO' => substr($str, 15, strlen($str)), 'AMOUNTTO' => $key);
                             $formdata['ACCOUNTSTO'] = $acc_array[0]['savaccounts_account'];
                             //$formdata['TTYPE'] = 'SD';
@@ -2756,9 +2739,9 @@ Common::$lablearray['E01'] = '';
                      if (preg_match('[G]', ($formdata['CLIENTIDNO']??''))):
 
                         $memamounts = Common::get_array_elements_with_key($formdata, 'AMT_');
-
-                        $formdata['POSTTOGL'] = false;
-                        $formdata['POSTTOSL'] = true;
+                        // $memcharges = Common::get_array_elements_with_key($formdata, 'CHARGE_');
+                        //$formdata['POSTTOGL'] = false;
+                        //$formdata['POSTTOSL'] = true;
 
                         Savings::getGroupMemberSavingsBalances();
                         // Savings::getSumBalances();
@@ -2766,7 +2749,7 @@ Common::$lablearray['E01'] = '';
                         foreach ($memamounts as $key => $val):
 
                             $formdata['AMOUNT'] = Common::number_format_locale_compute($formdata[$key]);
-
+                            
                             if ($formdata['AMOUNT'] == 0) continue;
 
                             $formdata['MEMID'] = Common::replaces_underscores(Common::replace_string($key, 'AMT_', ''));
@@ -2807,11 +2790,22 @@ Common::$lablearray['E01'] = '';
                                 
                             endforeach;
                     else:
+
+                        Savings::getSumBalances();
+
+                        $nTotwithdraw = $formdata['txtamount'] + $formdata['CHARGE'];
+
+                        if (!Savings::isWithdrawalAllowed($nTotwithdraw)) {
+                            echo  Common::createResponse('info', sprintf("Client %s does not have sufficient funds. Balance %s Withdraw %s.", $name, $balance, $nTotwithdraw));
+                            exit();
+                        }
+
                         $form_data[] = $formdata;
-                        Savings::getSavingsBalance();
+                        
                     endif;
 
                     $formdata['CHARGE'] = ($formdata['CHARGE'] ?? 0);
+                    
                     if ($formdata['CHARGE'] > 0):
 
                             $formdata['DATE'] = Common::changeDateFromPageToMySQLFormat($tmpdate);
@@ -2840,9 +2834,10 @@ Common::$lablearray['E01'] = '';
                                     $tamount = bcadd($formdata['AMOUNT'], $memamount, SETTING_ROUNDING);
 
                                     if ($tamount < $memamount):
-                                        getlables("1666");
-                                    echo  Common::createResponse('err', $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID']);
-                                      //  echo "ERR " . $lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID'];
+                                    Common::getlables("1666", "", "", $Conn);
+
+                                    echo  Common::createResponse('err', Common::$lablearray['1666'] . " " . $memname . ":" . $formdata['MEMID']);
+                                      
                                         exit();
                                     endif;
                                     

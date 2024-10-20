@@ -302,7 +302,7 @@ getlables("21,1097,300,1161,20,1199,1608");
 </style>
 <?php
 require('../' . DIR_WS_INCLUDES . 'pageheader.php');
-getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654,1208,296,1681,1682");
+getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654,1208,296,1681,1682,889");
 ?>
 <style>
     input[type="numeric"],
@@ -348,7 +348,7 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
                     <span><?php echo $lablearray['271']; ?><br><input class="total" type="numeric" id="txtamount" name="txtamount" value="0.0" <?php echo (SETTING_CURRENCY_DENO != '' ? 'readonly=true' : ''); ?> size="20"></span>
 
 
-                    <span><?php echo $lablearray['1379']; ?><br><input type="numeric" id="txtchargeamount" name="txtchargeamount" value="0.0" size="20"></span>
+                    <span><?php echo $lablearray['889']; ?><br><input type="numeric" id="txtchargeamount" name="txtchargeamount" value="0.0" size="20"></span>
 
                     <span id="modes"></span>
 
@@ -510,7 +510,6 @@ getlables("1662,1663,2,1214,249,1667,20,21,24,300,1379,299,298,1197,1305,271,654
             str = "";
             $('input[type=text][name=txtamountto]').each(function() {
                 str += $(this).val() + "$";
-                alert(str);
             });
 
 

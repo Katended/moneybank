@@ -676,7 +676,7 @@ class ConnectionFactory
                 break;
 
             case 'GROUPMEMBERSAVBALS': // Savings Balnces Report
-                $var_sp = 'sp_get_savings_grou_member_balances';
+                $var_sp = 'sp_get_savings_group_member_balances';
                 break;
 
             case 'SAVBALSBYID': // Savings Balnces Report
